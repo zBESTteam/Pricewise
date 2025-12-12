@@ -29,11 +29,21 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
+import com.google.firebase.appcheck.appCheck
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
+import com.vkedu.pricewise.elements.EmailInputField
+import com.vkedu.pricewise.screens.RegistrationScreen
 import com.vkedu.pricewise.theme.PricewiseTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
+        Firebase.appCheck.installAppCheckProviderFactory(
+            DebugAppCheckProviderFactory.getInstance(),
+        )
         enableEdgeToEdge()
         setContent {
             PricewiseTheme {
@@ -46,7 +56,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PricewiseApp() {
-    var currentScreen by rememberSaveable { mutableStateOf(AppDestinations.MAIN) }
+    var currentScreen by rememberSaveable { mutableStateOf(AppDestinations.MAIN) } //If authorised
 
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Scaffold(
@@ -114,7 +124,7 @@ fun PricewiseApp() {
                         .fillMaxSize()
                 ) {
                     when (currentScreen) {
-                        AppDestinations.MAIN -> Text("Main")
+                        AppDestinations.MAIN -> RegistrationScreen()
                         AppDestinations.FAVORITES -> Text("Favorite")
                         AppDestinations.PROFILE -> Text("Profile")
                     }
