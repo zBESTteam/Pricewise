@@ -60,7 +60,7 @@ fun PricewiseApp() {
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Scaffold(
             bottomBar = { BottomBar(navController = navController) },
-            content = { _ ->
+            content = {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()

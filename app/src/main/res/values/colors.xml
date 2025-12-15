@@ -8,4 +8,10 @@
     <color name="input_field_text_color">#8D9094</color>
     <color name="start_gradient_color">#FFAB35</color>
     <color name="end_gradient_color">#E62727</color>
+    <color name="card_background_color">#FCFCFC</color>
+    <color name="handle_color">#FF272727</color>
+    <color name="mid_dark">#FF232323</color>
+    <color name="disabled_filter_button_color">#F8F8F8</color>
+    <color name="filter_button_color">#F8F8F8</color>
+    <color name="disabled_filter_button_text_color">#FF727272</color>
 </resources>

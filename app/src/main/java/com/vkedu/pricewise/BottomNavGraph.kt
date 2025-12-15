@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.vkedu.pricewise.screens.RegistrationScreen
+import com.vkedu.pricewise.screens.SearchScreen
 
 @Composable
 fun BottomNavGraph(navController: NavHostController) {
@@ -18,7 +18,7 @@ fun BottomNavGraph(navController: NavHostController) {
         enterTransition = { fadeIn(animationSpec = tween(0)) },
         exitTransition = { fadeOut(animationSpec = tween(0)) }) {
         composable(route = AppScreen.MAIN.route) {
-            RegistrationScreen() // Для теста, нужно заменить на главный экран
+            SearchScreen()
         }
         composable(route = AppScreen.FAVORITES.route) {
             Text("Favorites")
