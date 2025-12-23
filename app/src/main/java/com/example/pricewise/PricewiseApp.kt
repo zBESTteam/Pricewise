@@ -28,6 +28,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.pricewise.feature.auth.presentation.AuthorizationScreen
+import com.example.pricewise.feature.auth.presentation.RegistrationScreen
+import com.example.pricewise.feature.favorites.domain.presentation.FavoritesScreen
 import com.example.pricewise.feature.main.presentation.MainScreen
 import com.example.pricewise.feature.search.presentation.SearchScreen
 import com.example.pricewise.feature.search.presentation.SearchViewModel
@@ -46,18 +49,22 @@ fun PricewiseApp() {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         bottomBar = {
-            PricewiseBottomBar(
-                currentDestination = currentDestination,
-                onNavigate = { destination ->
-                    navController.navigate(destination.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+            // Скрываем нижнюю панель на экранах авторизации и регистрации
+            val currentRoute = currentDestination?.route
+            if (currentRoute != AppDestinations.LOGIN.route && currentRoute != AppDestinations.REGISTRATION.route) {
+                PricewiseBottomBar(
+                    currentDestination = currentDestination,
+                    onNavigate = { destination ->
+                        navController.navigate(destination.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
-                }
-            )
+                )
+            }
         }
     ) { innerPadding ->
         val contentModifier = Modifier
@@ -66,7 +73,7 @@ fun PricewiseApp() {
 
         NavHost(
             navController = navController,
-            startDestination = AppDestinations.SEARCH.route,
+            startDestination = AppDestinations.LOGIN.route,
             modifier = contentModifier,
             enterTransition = { defaultEnterTransition() },
             exitTransition = { defaultExitTransition() },
@@ -85,7 +92,7 @@ fun PricewiseApp() {
                             modifier = Modifier.fillMaxSize(),
                             searchQueryOverride = searchState.query,
                             onSearchQueryChangeOverride = searchViewModel::onQueryChange,
-                            onSearchSubmitOverride = searchViewModel::submitSearch,
+                            onSearchSubmitOverride = searchViewModel::submitSearch
                         )
                     } else {
                         SearchScreen(
@@ -96,15 +103,38 @@ fun PricewiseApp() {
                 }
             }
             composable(AppDestinations.FAVORITES.route) {
-                PlaceholderScreen(
-                    label = stringResource(id = AppDestinations.FAVORITES.contentDescriptionId),
-                    modifier = Modifier.fillMaxSize()
-                )
+                 FavoritesScreen()
             }
             composable(AppDestinations.PROFILE.route) {
                 PlaceholderScreen(
                     label = stringResource(id = AppDestinations.PROFILE.contentDescriptionId),
                     modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            composable(AppDestinations.LOGIN.route) {
+                AuthorizationScreen(
+                    onNavigateToRegistration = {
+                        navController.navigate(AppDestinations.REGISTRATION.route)
+                    },
+                    onNavigateToMain = {
+                        navController.navigate(AppDestinations.SEARCH.route) {
+                            popUpTo(AppDestinations.LOGIN.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
+            composable(AppDestinations.REGISTRATION.route) {
+                RegistrationScreen(
+                    onNavigateToLogin = {
+                        navController.popBackStack()
+                    },
+                    onNavigateToMain = {
+                        navController.navigate(AppDestinations.SEARCH.route) {
+                            popUpTo(AppDestinations.LOGIN.route) { inclusive = true }
+                        }
+                    }
                 )
             }
         }

@@ -1,4 +1,4 @@
-package com.example.pricewise.feature.auth.data
+package com.example.pricewise.feature.auth.presentation
 
 import android.util.Log
 import android.widget.Toast
@@ -11,13 +11,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,20 +27,32 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pricewise.R
+import com.example.pricewise.feature.auth.data.ApiAuthRepository
+import com.example.pricewise.feature.auth.domain.model.RegisterInput
+import com.example.pricewise.feature.auth.domain.repository.AuthRepository
+import com.example.pricewise.feature.auth.presentation.elements.AuthorisationButton
+import com.example.pricewise.feature.auth.presentation.elements.EmailInputField
+import com.example.pricewise.feature.auth.presentation.elements.PasswordInputField
 import kotlinx.coroutines.launch
 
 @Composable
-fun RegistrationScreen() {
-    val repository = remember { /*TODO: Initialize Repository*/ }
+fun RegistrationScreen(
+    onNavigateToLogin: () -> Unit,
+    onNavigateToMain: () -> Unit
+) {
+    val repository: AuthRepository = remember { ApiAuthRepository() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -53,6 +62,13 @@ fun RegistrationScreen() {
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
+
+    val inter = FontFamily(
+        Font(R.font.inter_regular, weight = FontWeight.W400),
+        Font(R.font.inter_medium, weight = FontWeight.W500),
+        Font(R.font.inter_semibold, weight = FontWeight.W600),
+        Font(R.font.inter_bold, weight = FontWeight.W700),
+    )
 
     Scaffold(
         modifier = Modifier
@@ -75,6 +91,7 @@ fun RegistrationScreen() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(120.dp))
                 Image(
                     modifier = Modifier
                         .width(96.dp)
@@ -83,12 +100,17 @@ fun RegistrationScreen() {
                     contentDescription = stringResource(R.string.logo_description)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(18.dp))
 
                 Text(
                     text = stringResource(R.string.default_register_text),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
+                    style = TextStyle(
+                        fontSize = 24.sp,
+                        lineHeight = 31.2.sp,
+                        fontFamily = inter,
+                        fontWeight = FontWeight(700),
+                        color = colorResource(R.color.login_Pricewise_color),
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -116,14 +138,36 @@ fun RegistrationScreen() {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                AuthorisationButton(password, confirmPassword, email, scope, context, repository)
+                AuthorisationButton(
+                    text = stringResource(R.string.default_register_text),
+                    isLoading = isLoading,
+                    onClick = {
+                        if (password != confirmPassword) {
+                            Toast.makeText(context, "Пароли не совпадают", Toast.LENGTH_SHORT).show()
+                            return@AuthorisationButton
+                        }
+                        scope.launch {
+                            isLoading = true
+                            try {
+                                repository.signUp(RegisterInput(email, password, confirmPassword))
+                                Toast.makeText(context, "Регистрация успешна", Toast.LENGTH_SHORT).show()
+                                onNavigateToMain()
+                            } catch (e: Exception) {
+                                Log.d("RegistrationScreen", e.message.toString())
+                                Toast.makeText(context, "Ошибка регистрации: ${e.message}", Toast.LENGTH_LONG).show()
+                            }
+                            isLoading = false
+                        }
+                    }
+                )
 
                 Spacer(modifier = Modifier.weight(1f))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.have_acc_question))
-                    TextButton(onClick = { /* TODO: Navigate to Login */ }, enabled = !isLoading) {
-                        Text(stringResource(R.string.login))
+                    TextButton(onClick = { onNavigateToLogin() }, enabled = !isLoading) {
+                        Text(text = stringResource(R.string.login),
+                            color = colorResource(id = R.color.black))
                     }
                 }
             }

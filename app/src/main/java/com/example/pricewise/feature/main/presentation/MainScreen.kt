@@ -162,7 +162,6 @@ private fun HeroSearchBlock(
     Box(
         modifier = modifier
             .fillMaxWidth()
-
             .background(brush = gradient, shape = heroShape),
         contentAlignment = Alignment.TopCenter
     ) {
@@ -226,7 +225,7 @@ private fun MainScreenPreview() {
                 ),
                 popularQueries = listOf(
                     PopularQuery(id = "iphone", query = "Iphone 16 pro"),
-                    PopularQuery(id = "buy", query = "Лаббугу купить"),
+                    PopularQuery(id = "buy", query = "Лабубу купить"),
                     PopularQuery(id = "mic", query = "Fifine микрофон"),
                 ),
                 recommendations = listOf(

@@ -13,4 +13,10 @@
     <color name="accent_purple">#FF6D5DFB</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="bar_color">#FFFFFFFF</color>
+    <color name="input_field_background_color">#F2F3F5</color>
+    <color name="input_field_border_color">#FF8D9094</color>
+    <color name="input_field_text_color">#8D9094</color>
+    <color name="mid_dark">#FF232323</color>
+    <color name="login_Pricewise_color">#FF1D1D1D</color>
 </resources>

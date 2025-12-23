@@ -16,7 +16,7 @@ class ApiAuthRepository(
     private val api: PricewiseApi = NetworkModule.api,
 ) : AuthRepository {
 
-    override suspend fun register(input: RegisterInput): AuthSession {
+    override suspend fun signUp(input: RegisterInput): AuthSession {
         val response = api.register(
             RegisterRequestDto(
                 email = input.email,
@@ -27,7 +27,7 @@ class ApiAuthRepository(
         return response.toDomain()
     }
 
-    override suspend fun login(input: LoginInput): AuthSession {
+    override suspend fun signIn(input: LoginInput): AuthSession {
         val response = api.login(
             LoginRequestDto(
                 email = input.email,

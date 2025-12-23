@@ -1,8 +1,6 @@
 <resources>
-    <string name="app_name">Прайсвайз</string>
+    <string name="app_name">Pricewise</string>
     <string name="search_icon_description">Поиск</string>
-    <string name="favorites_icon_description">Избранное</string>
-    <string name="profile_icon_description">Профиль</string>
     <string name="main_title">Главный экран</string>
     <string name="search_hint">Введите запрос</string>
     <string name="search_field_content_description">Поле ввода поискового запроса</string>
@@ -21,4 +19,21 @@
     <string name="image_placeholder">Фото</string>
     <string name="merchant_placeholder_initial">М</string>
     <string name="clear_search_content_description">Очистить поиск</string>
+    <string name="main_icon_description">На главный экран</string>
+    <string name="favorites_icon_description">В избранное</string>
+    <string name="profile_icon_description">В профиль</string>
+    <string name="default_mail_text">Почта</string>
+    <string name="default_register_text">Регистрация</string>
+    <string name="Confirm_password_text">Подтвердите пароль</string>
+    <string name="have_acc_question">Уже есть аккаунт?</string>
+    <string name="login">Войти</string>
+    <string name="logo_description">PriceWise логотип</string>
+    <string name="default_password_text">Пароль</string>
+    <string name="lock_icon_description">Иконка замок</string>
+    <string name="vk_logo_description">VK логотип</string>
+    <string name="pricewise_login">Вход PriceWise</string>
+    <string name="or_login_with">или войти с помощью</string>
+    <string name="vk_id_login">Вход по VK ID</string>
+    <string name="no_account_question">Нет аккаунта?</string>
+    <string name="register_suggestion">Зарегистрируйтесь</string>
 </resources>
