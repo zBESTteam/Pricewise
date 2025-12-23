@@ -1,16 +1,13 @@
 package com.example.pricewise
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.ui.graphics.vector.ImageVector
 
 enum class AppDestinations(
+    val route: String,
     val contentDescriptionId: Int,
-    val icon: ImageVector,
+    val activeIconAsset: String,
+    val inactiveIconAsset: String,
 ) {
-    MAIN(R.string.main_icon_description, Icons.Default.Home),
-    FAVORITES(R.string.favorites_icon_description, Icons.Default.Favorite),
-    PROFILE(R.string.profile_icon_description, Icons.Default.AccountBox),
+    SEARCH("search", R.string.search_icon_description, "nav/search_active.svg", "nav/search_unactive.svg"),
+    FAVORITES("favorites", R.string.favorites_icon_description, "nav/favorite_active.svg", "nav/favorite_unactive.svg"),
+    PROFILE("profile", R.string.profile_icon_description, "nav/profile_active.svg", "nav/profile_unactive.svg"),
 }

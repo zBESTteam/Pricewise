@@ -1,6 +1,24 @@
 <resources>
-    <string name="app_name">Pricewise</string>
-    <string name="main_icon_description">Main</string>
-    <string name="favorites_icon_description">Favorites</string>
-    <string name="profile_icon_description">Profile</string>
+    <string name="app_name">Прайсвайз</string>
+    <string name="search_icon_description">Поиск</string>
+    <string name="favorites_icon_description">Избранное</string>
+    <string name="profile_icon_description">Профиль</string>
+    <string name="main_title">Главный экран</string>
+    <string name="search_hint">Введите запрос</string>
+    <string name="search_field_content_description">Поле ввода поискового запроса</string>
+    <string name="search_action_content_description">Открыть сканер или камеру для поиска</string>
+    <string name="popular_queries_title">Популярные запросы</string>
+    <string name="recommendations_title">Рекомендации</string>
+    <string name="search_status_title">Ищем товары</string>
+    <string name="search_status_progress">Проверили %1$d из %2$d магазинов</string>
+    <string name="search_filter_sort">Сортировка</string>
+    <string name="search_filter_filters">Фильтры</string>
+    <string name="search_filter_only_new">Только новые</string>
+    <string name="search_filter_only_delivery">Только с доставкой</string>
+    <string name="banner_content_description">Баннер %1$s</string>
+    <string name="popular_query_chip_content_description">Запрос %1$s</string>
+    <string name="price_currency_template">%1$s ₽</string>
+    <string name="image_placeholder">Фото</string>
+    <string name="merchant_placeholder_initial">М</string>
+    <string name="clear_search_content_description">Очистить поиск</string>
 </resources>
