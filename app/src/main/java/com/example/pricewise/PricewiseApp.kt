@@ -1,5 +1,14 @@
 package com.example.pricewise
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,21 +67,32 @@ fun PricewiseApp() {
         NavHost(
             navController = navController,
             startDestination = AppDestinations.SEARCH.route,
-            modifier = contentModifier
+            modifier = contentModifier,
+            enterTransition = { defaultEnterTransition() },
+            exitTransition = { defaultExitTransition() },
+            popEnterTransition = { defaultPopEnterTransition() },
+            popExitTransition = { defaultPopExitTransition() },
         ) {
             composable(AppDestinations.SEARCH.route) {
-                if (searchState.submittedQuery.isBlank()) {
-                    MainScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        searchQueryOverride = searchState.query,
-                        onSearchQueryChangeOverride = searchViewModel::onQueryChange,
-                        onSearchSubmitOverride = searchViewModel::submitSearch,
-                    )
-                } else {
-                    SearchScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        viewModel = searchViewModel,
-                    )
+                AnimatedContent(
+                    targetState = searchState.submittedQuery.isBlank(),
+                    transitionSpec = { searchContentTransform() },
+                    modifier = Modifier.fillMaxSize(),
+                    label = "SearchContent",
+                ) { showMain ->
+                    if (showMain) {
+                        MainScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            searchQueryOverride = searchState.query,
+                            onSearchQueryChangeOverride = searchViewModel::onQueryChange,
+                            onSearchSubmitOverride = searchViewModel::submitSearch,
+                        )
+                    } else {
+                        SearchScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            viewModel = searchViewModel,
+                        )
+                    }
                 }
             }
             composable(AppDestinations.FAVORITES.route) {
@@ -104,4 +124,50 @@ fun MainPreview() {
     PricewiseTheme {
         PricewiseApp()
     }
+}
+
+private fun defaultEnterTransition(): androidx.compose.animation.EnterTransition {
+    return fadeIn(animationSpec = androidx.compose.animation.core.tween(220)) +
+        scaleIn(
+            initialScale = 0.98f,
+            animationSpec = androidx.compose.animation.core.tween(220),
+        )
+}
+
+private fun defaultExitTransition(): androidx.compose.animation.ExitTransition {
+    return fadeOut(animationSpec = androidx.compose.animation.core.tween(180)) +
+        scaleOut(
+            targetScale = 0.98f,
+            animationSpec = androidx.compose.animation.core.tween(180),
+        )
+}
+
+private fun defaultPopEnterTransition(): androidx.compose.animation.EnterTransition {
+    return fadeIn(animationSpec = androidx.compose.animation.core.tween(180)) +
+        scaleIn(
+            initialScale = 0.98f,
+            animationSpec = androidx.compose.animation.core.tween(180),
+        )
+}
+
+private fun defaultPopExitTransition(): androidx.compose.animation.ExitTransition {
+    return fadeOut(animationSpec = androidx.compose.animation.core.tween(160)) +
+        scaleOut(
+            targetScale = 0.98f,
+            animationSpec = androidx.compose.animation.core.tween(160),
+        )
+}
+
+private fun searchContentTransform(): ContentTransform {
+    val enter = fadeIn(animationSpec = androidx.compose.animation.core.tween(200)) +
+        slideInVertically(
+            animationSpec = androidx.compose.animation.core.tween(200),
+            initialOffsetY = { it / 12 },
+        )
+    val exit = fadeOut(animationSpec = androidx.compose.animation.core.tween(150)) +
+        slideOutVertically(
+            animationSpec = androidx.compose.animation.core.tween(150),
+            targetOffsetY = { -it / 12 },
+        )
+    return enter togetherWith exit
 }
