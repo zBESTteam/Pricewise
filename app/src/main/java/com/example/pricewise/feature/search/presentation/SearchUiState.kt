@@ -11,6 +11,7 @@ data class SearchUiState(
     val checkedSources: Int = 0,
     val totalSources: Int = DEFAULT_TOTAL_SOURCES,
     val pendingSources: List<String> = emptyList(),
+    val isError: Boolean = false,
 )
 
 internal const val DEFAULT_TOTAL_SOURCES = 8
