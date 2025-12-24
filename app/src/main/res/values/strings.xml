@@ -36,4 +36,5 @@
     <string name="vk_id_login">Вход по VK ID</string>
     <string name="no_account_question">Нет аккаунта?</string>
     <string name="register_suggestion">Зарегистрируйтесь</string>
+    <string name="sort_by_brand">По бренду</string>
 </resources>

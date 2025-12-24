@@ -16,10 +16,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,35 +33,43 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pricewise.R
-import com.example.pricewise.feature.auth.data.ApiAuthRepository
-import com.example.pricewise.feature.auth.domain.model.LoginInput
 import com.example.pricewise.feature.auth.presentation.elements.AuthorisationButton
 import com.example.pricewise.feature.auth.presentation.elements.EmailInputField
 import com.example.pricewise.feature.auth.presentation.elements.PasswordInputField
 import com.example.pricewise.feature.auth.presentation.elements.VkLoginButton
-import kotlinx.coroutines.launch
 
 @Composable
 fun AuthorizationScreen(
     onNavigateToRegistration: () -> Unit,
-    onNavigateToMain: () -> Unit
+    onNavigateToMain: () -> Unit,
+    viewModel: AuthViewModel = viewModel()
 ) {
-    val repository = remember { ApiAuthRepository() }
-    val scope = rememberCoroutineScope()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(false) }
+    LaunchedEffect(uiState.session) {
+        if (uiState.session != null) {
+            onNavigateToMain()
+        }
+    }
 
-    val inter = FontFamily(
-        Font(R.font.inter_regular, weight = FontWeight.W400),
-        Font(R.font.inter_medium, weight = FontWeight.W500),
-        Font(R.font.inter_semibold, weight = FontWeight.W600),
-        Font(R.font.inter_bold, weight = FontWeight.W700),
-    )
+    LaunchedEffect(uiState.error) {
+        if (uiState.error != null) {
+            Toast.makeText(context, uiState.error, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    val inter = remember {
+        FontFamily(
+            Font(R.font.inter_regular, weight = FontWeight.W400),
+            Font(R.font.inter_medium, weight = FontWeight.W500),
+            Font(R.font.inter_semibold, weight = FontWeight.W600),
+            Font(R.font.inter_bold, weight = FontWeight.W700),
+        )
+    }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Box(
@@ -102,14 +109,19 @@ fun AuthorizationScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                EmailInputField(email = email, onValueChange = { email = it })
+                EmailInputField(
+                    email = uiState.email,
+                    onValueChange = viewModel::onEmailChange
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                var passwordVisible by remember { androidx.compose.runtime.mutableStateOf(false) }
+
                 PasswordInputField(
-                    password = password,
+                    password = uiState.password,
                     passwordVisible = passwordVisible,
-                    onValueChange = { password = it },
+                    onValueChange = viewModel::onPasswordChange,
                     changeVisibility = { passwordVisible = it },
                     stringResource(R.string.default_password_text)
                 )
@@ -118,24 +130,8 @@ fun AuthorizationScreen(
 
                 AuthorisationButton(
                     text = stringResource(R.string.login),
-                    isLoading = isLoading,
-                    onClick = {
-                        scope.launch {
-                            isLoading = true
-                            try {
-                                repository.signIn(LoginInput(email, password))
-                                Toast.makeText(context, "Вход выполнен", Toast.LENGTH_SHORT).show()
-                                onNavigateToMain()
-                            } catch (e: Exception) {
-                                Toast.makeText(
-                                    context,
-                                    "Ошибка входа: ${e.message}",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                            isLoading = false
-                        }
-                    }
+                    isLoading = uiState.isLoading,
+                    onClick = viewModel::login
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -145,7 +141,7 @@ fun AuthorizationScreen(
                 Spacer(modifier = Modifier.height(18.dp))
 
                 VkLoginButton(
-                    isLoading = isLoading,
+                    isLoading = uiState.isLoading,
                     onClick = { /* TODO: Implement VK Login */ }
                 )
 
@@ -155,7 +151,7 @@ fun AuthorizationScreen(
                     Text(text = stringResource(R.string.no_account_question))
                     TextButton(
                         onClick = onNavigateToRegistration,
-                        enabled = !isLoading
+                        enabled = !uiState.isLoading
                     ) {
                         Text(
                             text = stringResource(R.string.register_suggestion),
@@ -164,7 +160,7 @@ fun AuthorizationScreen(
                     }
                 }
             }
-            if (isLoading) {
+            if (uiState.isLoading) {
                 CircularProgressIndicator()
             }
         }

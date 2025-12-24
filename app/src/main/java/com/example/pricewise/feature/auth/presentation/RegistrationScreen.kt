@@ -20,10 +20,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,37 +37,42 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pricewise.R
-import com.example.pricewise.feature.auth.data.ApiAuthRepository
-import com.example.pricewise.feature.auth.domain.model.RegisterInput
-import com.example.pricewise.feature.auth.domain.repository.AuthRepository
 import com.example.pricewise.feature.auth.presentation.elements.AuthorisationButton
 import com.example.pricewise.feature.auth.presentation.elements.EmailInputField
 import com.example.pricewise.feature.auth.presentation.elements.PasswordInputField
-import kotlinx.coroutines.launch
 
 @Composable
 fun RegistrationScreen(
     onNavigateToLogin: () -> Unit,
-    onNavigateToMain: () -> Unit
+    onNavigateToMain: () -> Unit,
+    viewModel: AuthViewModel = viewModel()
 ) {
-    val repository: AuthRepository = remember { ApiAuthRepository() }
-    val scope = rememberCoroutineScope()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var confirmPasswordVisible by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(false) }
+    LaunchedEffect(uiState.session) {
+        if (uiState.session != null) {
+            onNavigateToMain()
+        }
+    }
 
-    val inter = FontFamily(
-        Font(R.font.inter_regular, weight = FontWeight.W400),
-        Font(R.font.inter_medium, weight = FontWeight.W500),
-        Font(R.font.inter_semibold, weight = FontWeight.W600),
-        Font(R.font.inter_bold, weight = FontWeight.W700),
-    )
+    LaunchedEffect(uiState.error) {
+        if (uiState.error != null) {
+            Toast.makeText(context, uiState.error, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    val inter = remember {
+        FontFamily(
+            Font(R.font.inter_regular, weight = FontWeight.W400),
+            Font(R.font.inter_medium, weight = FontWeight.W500),
+            Font(R.font.inter_semibold, weight = FontWeight.W600),
+            Font(R.font.inter_bold, weight = FontWeight.W700),
+        )
+    }
 
     Scaffold(
         modifier = Modifier
@@ -115,23 +119,28 @@ fun RegistrationScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                EmailInputField(email = email, onValueChange = { email = it })
+                EmailInputField(
+                    email = uiState.email,
+                    onValueChange = viewModel::onEmailChange
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                var passwordVisible by remember { androidx.compose.runtime.mutableStateOf(false) }
                 PasswordInputField(
-                    password = password,
+                    password = uiState.password,
                     passwordVisible = passwordVisible,
-                    onValueChange = { password = it },
+                    onValueChange = viewModel::onPasswordChange,
                     changeVisibility = { passwordVisible = it },
                     stringResource(R.string.default_password_text)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
+                var confirmPasswordVisible by remember { androidx.compose.runtime.mutableStateOf(false) }
                 PasswordInputField(
-                    password = confirmPassword,
+                    password = uiState.passwordConfirm,
                     passwordVisible = confirmPasswordVisible,
-                    onValueChange = { confirmPassword = it },
+                    onValueChange = viewModel::onPasswordConfirmChange,
                     changeVisibility = { confirmPasswordVisible = it },
                     stringResource(R.string.Confirm_password_text)
                 )
@@ -140,38 +149,21 @@ fun RegistrationScreen(
 
                 AuthorisationButton(
                     text = stringResource(R.string.default_register_text),
-                    isLoading = isLoading,
-                    onClick = {
-                        if (password != confirmPassword) {
-                            Toast.makeText(context, "Пароли не совпадают", Toast.LENGTH_SHORT).show()
-                            return@AuthorisationButton
-                        }
-                        scope.launch {
-                            isLoading = true
-                            try {
-                                repository.signUp(RegisterInput(email, password, confirmPassword))
-                                Toast.makeText(context, "Регистрация успешна", Toast.LENGTH_SHORT).show()
-                                onNavigateToMain()
-                            } catch (e: Exception) {
-                                Log.d("RegistrationScreen", e.message.toString())
-                                Toast.makeText(context, "Ошибка регистрации: ${e.message}", Toast.LENGTH_LONG).show()
-                            }
-                            isLoading = false
-                        }
-                    }
+                    isLoading = uiState.isLoading,
+                    onClick = viewModel::register
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.have_acc_question))
-                    TextButton(onClick = { onNavigateToLogin() }, enabled = !isLoading) {
+                    TextButton(onClick = { onNavigateToLogin() }, enabled = !uiState.isLoading) {
                         Text(text = stringResource(R.string.login),
                             color = colorResource(id = R.color.black))
                     }
                 }
             }
-            if (isLoading) {
+            if (uiState.isLoading) {
                 CircularProgressIndicator()
             }
         }
