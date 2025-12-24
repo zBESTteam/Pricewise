@@ -24,4 +24,5 @@
     <color name="secondary_text_color">#FF727272</color>
     <color name="icons_color">#FF727272</color>
     <color name="disabled_filter_button_text_color">#FF727272</color>
+    <color name="light_gray">#FFCCCCCC</color>
 </resources>

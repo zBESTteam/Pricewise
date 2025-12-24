@@ -14,6 +14,8 @@ interface ApiSearch {
     suspend fun search(
         query: String,
         limit: Int,
-        offset: Int
+        offset: Int,
+        perSource: Boolean,
+        partial: Boolean,
     ): SearchResult
 }

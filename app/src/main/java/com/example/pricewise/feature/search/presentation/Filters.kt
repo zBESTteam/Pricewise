@@ -22,6 +22,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,11 +40,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import com.example.pricewise.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Filters(sheetState: SheetState, closeFilters: () -> Unit) {
+fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchViewModel) {
     var isProductChosen by rememberSaveable { mutableStateOf(true) }
     var deliveryChosen by rememberSaveable { mutableStateOf(0) }
     var onlyOriginals by rememberSaveable { mutableStateOf(false) }
@@ -50,6 +53,26 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit) {
     var onlyBU by rememberSaveable { mutableStateOf(false) }
     var onlyMarketplaces by rememberSaveable { mutableStateOf(false) }
     var onlyOfflineShops by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        isProductChosen = viewModel.isProductChosen.value
+        deliveryChosen = viewModel.deliveryChosen.value
+        onlyOriginals = viewModel.onlyOriginals.value
+        onlyNew = viewModel.onlyNew.value
+        onlyBU = viewModel.onlyBU.value
+        onlyMarketplaces = viewModel.onlyMarketplaces.value
+        onlyOfflineShops = viewModel.onlyOfflineShops.value
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.setIsProductChosen(isProductChosen)
+            viewModel.setDeliveryChosen(deliveryChosen)
+            viewModel.setOnlyOriginals(onlyOriginals)
+            viewModel.setOnlyNew(onlyNew)
+            viewModel.setOnlyBU(onlyBU)
+            viewModel.setOnlyMarketplaces(onlyMarketplaces)
+            viewModel.setOnlyOfflineShops(onlyOfflineShops)
+        }
+    }
     val customModifier: Modifier = Modifier.offset(y = (-7).dp)
     ModalBottomSheet(
         sheetState = sheetState, onDismissRequest = { closeFilters() }, dragHandle =
@@ -221,87 +244,22 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit) {
                     verticalArrangement = Arrangement.spacedBy(13.dp, Alignment.Top),
                     horizontalAlignment = Alignment.Start,
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(44.dp)
-                            .background(color = colorResource(R.color.disabled_filter_button_color), shape = RoundedCornerShape(size = 14.dp))
-                            .padding(start = 14.dp, top = 10.dp, end = 14.dp, bottom = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "Только оригиналы",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                lineHeight = 24.sp,
-                                fontFamily = FontFamily(Font(R.font.inter_regular)),
-                                fontWeight = FontWeight(500),
-                                color = colorResource(R.color.disabled_filter_button_text_color),
+                    FilterSwitch(
+                        title = "Только оригиналы",
+                        isChecked = onlyOriginals,
+                        onCheckedChange = { onlyOriginals = it }
+                    )
 
-                                letterSpacing = 0.3.sp,
-                            )
-                        )
-                        Image(
-                            modifier = Modifier.clickable { onlyOriginals = !onlyOriginals },
-                            painter = if (onlyOriginals) painterResource(R.drawable.switch_on) else painterResource(R.drawable.switch_off),
-                            contentDescription = null
-                        )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(44.dp)
-                            .background(color = colorResource(R.color.disabled_filter_button_color), shape = RoundedCornerShape(size = 14.dp))
-                            .padding(start = 14.dp, top = 10.dp, end = 14.dp, bottom = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "Только новые",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                lineHeight = 24.sp,
-                                fontFamily = FontFamily(Font(R.font.inter_regular)),
-                                fontWeight = FontWeight(500),
-                                color = colorResource(R.color.disabled_filter_button_text_color),
+                    FilterSwitch(
+                        title = "Только новые",
+                        isChecked = onlyNew,
+                        onCheckedChange = { onlyNew = it }
+                    )
 
-                                letterSpacing = 0.3.sp,
-                            )
-                        )
-                        Image(
-                            modifier = Modifier.clickable { onlyNew = !onlyNew },
-                            painter = if (onlyNew) painterResource(R.drawable.switch_on) else painterResource(R.drawable.switch_off),
-                            contentDescription = null
-                        )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(44.dp)
-                            .background(color = colorResource(R.color.disabled_filter_button_color), shape = RoundedCornerShape(size = 14.dp))
-                            .padding(start = 14.dp, top = 10.dp, end = 14.dp, bottom = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "Только Б/У",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                lineHeight = 24.sp,
-                                fontFamily = FontFamily(Font(R.font.inter_regular)),
-                                fontWeight = FontWeight(500),
-                                color = colorResource(R.color.disabled_filter_button_text_color),
-
-                                letterSpacing = 0.3.sp,
-                            )
-                        )
-                        Image(
-                            modifier = Modifier.clickable { onlyBU = !onlyBU },
-                            painter = if (onlyBU) painterResource(R.drawable.switch_on) else painterResource(R.drawable.switch_off),
-                            contentDescription = null
-                        )
-                    }
+                    FilterSwitch(
+                        title = "Только Б/У",
+                        isChecked = onlyBU,
+                        onCheckedChange = { onlyBU = it })
                 }
                 Text(
                     text = "Магазины",
@@ -319,60 +277,17 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit) {
                     verticalArrangement = Arrangement.spacedBy(13.dp, Alignment.Top),
                     horizontalAlignment = Alignment.Start,
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(44.dp)
-                            .background(color = colorResource(R.color.disabled_filter_button_color), shape = RoundedCornerShape(size = 14.dp))
-                            .padding(start = 14.dp, top = 10.dp, end = 14.dp, bottom = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "Маркетплейсы",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                lineHeight = 24.sp,
-                                fontFamily = FontFamily(Font(R.font.inter_regular)),
-                                fontWeight = FontWeight(500),
-                                color = colorResource(R.color.disabled_filter_button_text_color),
+                    FilterSwitch(
+                        title = "Маркетплейсы",
+                        isChecked = onlyMarketplaces,
+                        onCheckedChange = { onlyMarketplaces = it }
+                    )
 
-                                letterSpacing = 0.3.sp,
-                            )
-                        )
-                        Image(
-                            modifier = Modifier.clickable { onlyMarketplaces = !onlyMarketplaces },
-                            painter = if (onlyMarketplaces) painterResource(R.drawable.switch_on) else painterResource(R.drawable.switch_off),
-                            contentDescription = null
-                        )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(44.dp)
-                            .background(color = colorResource(R.color.disabled_filter_button_color), shape = RoundedCornerShape(size = 14.dp))
-                            .padding(start = 14.dp, top = 10.dp, end = 14.dp, bottom = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "Оффлайн магазины",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                lineHeight = 24.sp,
-                                fontFamily = FontFamily(Font(R.font.inter_regular)),
-                                fontWeight = FontWeight(500),
-                                color = colorResource(R.color.disabled_filter_button_text_color),
-
-                                letterSpacing = 0.3.sp,
-                            )
-                        )
-                        Image(
-                            modifier = Modifier.clickable { onlyOfflineShops = !onlyOfflineShops },
-                            painter = if (onlyOfflineShops) painterResource(R.drawable.switch_on) else painterResource(R.drawable.switch_off),
-                            contentDescription = null
-                        )
-                    }
+                    FilterSwitch(
+                        title = "Оффлайн магазины",
+                        isChecked = onlyOfflineShops,
+                        onCheckedChange = { onlyOfflineShops = it }
+                    )
                 }
             }
         }
@@ -410,6 +325,44 @@ fun DeliveryDateButton(
                 ),
                 letterSpacing = 0.3.sp,
             )
+        )
+    }
+}
+
+@Composable
+fun FilterSwitch(
+    title: String,
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(44.dp)
+            .background(
+                color = colorResource(R.color.disabled_filter_button_color),
+                shape = RoundedCornerShape(size = 14.dp)
+            )
+            .padding(start = 14.dp, top = 10.dp, end = 14.dp, bottom = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = title,
+            style = TextStyle(
+                fontSize = 16.sp,
+                lineHeight = 24.sp,
+                fontFamily = FontFamily(Font(R.font.inter_regular)),
+                fontWeight = FontWeight(500),
+                color = colorResource(R.color.disabled_filter_button_text_color),
+                letterSpacing = 0.3.sp,
+            )
+        )
+        Image(
+            modifier = Modifier.clickable { onCheckedChange(!isChecked) },
+            painter = if (isChecked) painterResource(R.drawable.switch_on) else painterResource(R.drawable.switch_off),
+            contentDescription = null
         )
     }
 }

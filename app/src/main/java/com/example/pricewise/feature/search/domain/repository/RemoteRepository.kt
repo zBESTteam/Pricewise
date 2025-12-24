@@ -1,4 +1,4 @@
-package com.example.pricewise.feature.search.domain.repository
+package com.example.pricewise.feature.search.data
 
 import com.example.pricewise.core.network.NetworkModule
 import com.example.pricewise.core.network.PricewiseApi
@@ -6,8 +6,6 @@ import com.example.pricewise.core.network.dto.MerchantDto
 import com.example.pricewise.core.network.dto.ProductDto
 import com.example.pricewise.feature.main.domain.model.Merchant
 import com.example.pricewise.feature.main.domain.model.ProductRecommendation
-import com.example.pricewise.feature.search.data.ApiSearch
-import com.example.pricewise.feature.search.data.SearchResult
 
 class RemoteRepository(
     private val api: PricewiseApi = NetworkModule.api,
@@ -17,12 +15,16 @@ class RemoteRepository(
     override suspend fun search(
         query: String,
         limit: Int,
-        offset: Int
+        offset: Int,
+        perSource: Boolean,
+        partial: Boolean,
     ): SearchResult {
         val response = api.search(
             query = query,
             limit = limit,
             offset = offset,
+            perSource = if (perSource) 1 else null,
+            partial = if (partial) 1 else null,
             sources = sources.takeIf { it.isNotEmpty() }?.joinToString(","),
         )
         val items = parseItems(response.items.orEmpty())
@@ -71,7 +73,7 @@ class RemoteRepository(
         val id = obj.id.asStringId()
         val name = obj.name?.trim().orEmpty()
         val logoUrl = obj.logoUrl?.trim().orEmpty()
-        val fallbackId = id.ifEmpty { name }
+        val fallbackId = if (id.isNotEmpty()) id else name
         return Merchant(id = fallbackId, name = name, logoUrl = logoUrl)
     }
 

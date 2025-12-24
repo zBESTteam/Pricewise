@@ -18,10 +18,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -39,6 +44,7 @@ import com.example.pricewise.R
 import com.example.pricewise.feature.main.presentation.MainDimens
 import com.example.pricewise.feature.main.presentation.components.PricewiseSearchBar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
@@ -50,11 +56,25 @@ fun SearchScreen(
         Font(R.font.inter_semibold, weight = FontWeight.W600),
         Font(R.font.inter_bold, weight = FontWeight.W700),
     )
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val total = viewModel.uiState.value.totalSources.coerceAtLeast(1)
-    val checked = viewModel.uiState.value.checkedSources.coerceAtLeast(0)
-    val safeChecked = if (!viewModel.uiState.value.isLoading && checked < total) total else checked
+
+    val sheetState = rememberModalBottomSheetState()
+    var showFilters by rememberSaveable { mutableStateOf(false) }
+    val closeFilters = { showFilters = false }
+
+    if (showFilters) {
+        Filters(
+            sheetState = sheetState,
+            closeFilters = closeFilters,
+            viewModel = viewModel
+        )
+    }
+
     Column(modifier = modifier) {
+        val total = state.totalSources.coerceAtLeast(1)
+        val checked = state.checkedSources.coerceAtLeast(0)
+        val safeChecked = if (!state.isLoading && checked < total) total else checked
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -130,7 +150,7 @@ fun SearchScreen(
                     .animateContentSize()
                     .width(
                         with(
-                            ((LocalConfiguration.current.screenWidthDp.dp - SearchScreenDimensions.contentHorizontalPadding * 2)) *
+                            ((screenWidthDp.dp - SearchScreenDimensions.contentHorizontalPadding * 2)) *
                                     safeChecked / total
                         ) {
                             if (this == 0.dp) 16.dp
@@ -159,7 +179,7 @@ fun SearchScreen(
                 DefaultButton(icon = R.drawable.icon_sort, isSelected = false, onClick = {})
             }
             item {
-                DefaultButton(icon = R.drawable.icon_filter, isSelected = false, onClick = {})
+                DefaultButton(icon = R.drawable.icon_filter, isSelected = false, onClick = { showFilters = true })
             }
             item {
                 DefaultButton(text = "Только новые", isSelected = false, onClick = {})
@@ -168,7 +188,7 @@ fun SearchScreen(
                 DefaultButton(text = "Только c доставкой", isSelected = false, onClick = {})
             }
         }
-        if (viewModel.uiState.value.items.isNotEmpty()) {
+        if (state.items.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier
                     .padding(horizontal = SearchScreenDimensions.contentHorizontalPadding)
@@ -177,10 +197,25 @@ fun SearchScreen(
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 items(
-                    items = viewModel.uiState.value.items,
+                    items = state.items,
                     key = { it.id }
                 ) { item ->
                     ProductCard(item, {})
+                }
+            }
+        }
+        if (state.items.isEmpty()) {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(horizontal = SearchScreenDimensions.contentHorizontalPadding)
+                    .fillMaxSize()
+                    .padding(top = 14.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                items(
+                    100
+                ) {
+                    ProductCardShimmer()
                 }
             }
         }
