@@ -49,7 +49,6 @@ fun PricewiseApp() {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         bottomBar = {
-            // Скрываем нижнюю панель на экранах авторизации и регистрации
             val currentRoute = currentDestination?.route
             if (currentRoute != AppDestinations.LOGIN.route && currentRoute != AppDestinations.REGISTRATION.route) {
                 PricewiseBottomBar(

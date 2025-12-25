@@ -8,7 +8,7 @@ import com.example.pricewise.feature.favorites.data.ApiFavoritesRepository
 import com.example.pricewise.feature.favorites.domain.model.FavoriteCreate
 import com.example.pricewise.feature.favorites.domain.repository.FavoritesRepository
 import com.example.pricewise.feature.main.data.ApiMainRepository
-import com.example.pricewise.feature.main.domain.model.ProductRecommendation
+import com.example.pricewise.feature.main.domain.model.Product
 import com.example.pricewise.feature.main.domain.usecase.GetMainScreenDataUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,7 +57,7 @@ class MainScreenViewModel : ViewModel() {
         }
     }
     
-    fun toggleFavorite(product: ProductRecommendation) {
+    fun toggleFavorite(product: Product) {
         val currentList = _uiState.value.recommendations
         val isFavorite = product.isFavorite
         

@@ -1,6 +1,4 @@
-package com.example.pricewise.feature.search.domain.model
-
-import com.example.pricewise.feature.main.domain.model.Merchant
+package com.example.pricewise.feature.main.domain.model
 
 data class Product(
     val id: String,

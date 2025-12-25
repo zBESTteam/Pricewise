@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -21,25 +20,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
 import com.example.pricewise.R
-import com.example.pricewise.feature.main.domain.model.Merchant
-import com.example.pricewise.feature.main.domain.model.ProductRecommendation
-import com.example.pricewise.feature.search.domain.model.Product
+import com.example.pricewise.feature.main.domain.model.Product
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-fun ProductCard(product: ProductRecommendation, addToFavourites: (Product) -> Unit) {
+fun ProductCard(product: Product, addToFavourites: (Product) -> Unit) {
     val inter = FontFamily(
         Font(R.font.inter_regular, weight = FontWeight.W400),
         Font(R.font.inter_medium, weight = FontWeight.W500),
@@ -82,6 +80,11 @@ fun ProductCard(product: ProductRecommendation, addToFavourites: (Product) -> Un
                             .width(18.dp)
                             .height(18.dp),
                         model = product.merchant.logoUrl,
+                        imageLoader = ImageLoader.Builder(LocalContext.current)
+                            .components {
+                                add(SvgDecoder.Factory())
+                            }
+                            .build(),
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.size(6.dp))
@@ -214,23 +217,4 @@ fun ProductCardShimmer() {
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProductCardPreview() {
-    ProductCard(
-        product = ProductRecommendation(
-            id = "TOvar",
-            "Iphone XS PRo max ultra super duper",
-            100000,
-            Merchant(
-                "id",
-                "ozonzonzon",
-                "https://cdn-1.webcatalog.io/catalog/ozon/ozon-icon-filled-256.png?v=1714780866200"
-            ),
-            "https://apple-com.ru/image/cache/catalog/product/iPhone%2011/iphone_11_b_2-800x540h.jpg.webp",
-            false
-        ), addToFavourites = {}
-    )
 }

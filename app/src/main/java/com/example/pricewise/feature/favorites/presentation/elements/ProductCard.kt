@@ -34,11 +34,11 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.pricewise.R
 import com.example.pricewise.feature.main.domain.model.Merchant
-import com.example.pricewise.feature.main.domain.model.ProductRecommendation
+import com.example.pricewise.feature.main.domain.model.Product
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-fun ProductCard(product: ProductRecommendation, addToFavorites: (ProductRecommendation) -> Unit) {
+fun ProductCard(product: Product, addToFavorites: (Product) -> Unit) {
     val inter = FontFamily(
         Font(R.font.inter_regular, weight = FontWeight.W400),
         Font(R.font.inter_medium, weight = FontWeight.W500),
@@ -221,7 +221,7 @@ fun ProductCardShimmer() {
 @Composable
 fun ProductCardPreview() {
     ProductCard(
-        product = ProductRecommendation(
+        product = Product(
             id = "TOvar",
             "Iphone XS PRo max ultra super duper",
             100000,

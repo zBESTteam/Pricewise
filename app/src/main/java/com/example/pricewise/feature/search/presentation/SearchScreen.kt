@@ -14,14 +14,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -35,6 +33,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -110,7 +109,7 @@ fun SearchScreen(
                 start = SearchScreenDimensions.contentHorizontalPadding,
                 top = 14.dp
             ),
-            text = "Ищем товары",
+            text = stringResource(R.string.finding_products),
             style = TextStyle(
                 fontSize = 20.sp,
                 lineHeight = 26.sp,
@@ -124,7 +123,7 @@ fun SearchScreen(
                 start = SearchScreenDimensions.contentHorizontalPadding,
                 top = 7.dp
             ),
-            text = "Проверили $safeChecked из $total магазинов",
+            text = stringResource(R.string.checked, safeChecked, total),
             style = TextStyle(
                 fontSize = 14.sp,
                 lineHeight = 21.sp,
@@ -181,13 +180,16 @@ fun SearchScreen(
                 DefaultButton(icon = R.drawable.icon_sort, isSelected = false, onClick = {})
             }
             item {
-                DefaultButton(icon = R.drawable.icon_filter, isSelected = false, onClick = { showFilters = true })
+                DefaultButton(
+                    icon = R.drawable.icon_filter,
+                    isSelected = false,
+                    onClick = { showFilters = true })
             }
             item {
-                DefaultButton(text = "Только новые", isSelected = false, onClick = {})
+                DefaultButton(text = stringResource(R.string.only_new), isSelected = false, onClick = {})
             }
             item {
-                DefaultButton(text = "Только c доставкой", isSelected = false, onClick = {})
+                DefaultButton(text = stringResource(R.string.only_delievery), isSelected = false, onClick = {})
             }
         }
         if (state.items.isNotEmpty()) {

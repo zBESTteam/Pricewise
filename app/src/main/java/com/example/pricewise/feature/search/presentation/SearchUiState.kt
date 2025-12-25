@@ -1,12 +1,12 @@
 package com.example.pricewise.feature.search.presentation
 
-import com.example.pricewise.feature.main.domain.model.ProductRecommendation
+import com.example.pricewise.feature.main.domain.model.Product
 
 data class SearchUiState(
     val query: String = "",
     val submittedQuery: String = "",
     val isLoading: Boolean = false,
-    val items: List<ProductRecommendation> = emptyList(),
+    val items: List<Product> = emptyList(),
     val hasMore: Boolean = false,
     val checkedSources: Int = 0,
     val totalSources: Int = DEFAULT_TOTAL_SOURCES,

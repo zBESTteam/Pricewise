@@ -6,7 +6,7 @@ import com.example.pricewise.core.network.dto.ProductDto
 import com.example.pricewise.core.network.dto.MerchantDto
 import com.example.pricewise.feature.main.domain.model.Merchant
 import com.example.pricewise.feature.main.domain.model.PopularQuery
-import com.example.pricewise.feature.main.domain.model.ProductRecommendation
+import com.example.pricewise.feature.main.domain.model.Product
 import com.example.pricewise.feature.main.domain.model.PromoBanner
 import com.example.pricewise.feature.main.domain.repository.MainRepository
 
@@ -16,7 +16,7 @@ class ApiMainRepository(
 ) : MainRepository {
 
     private var cachedBanners: List<PromoBanner>? = null
-    private var cachedRecommendations: List<ProductRecommendation>? = null
+    private var cachedRecommendations: List<Product>? = null
 
     override suspend fun loadBanners(): List<PromoBanner> {
         ensureMainLoaded()
@@ -31,7 +31,7 @@ class ApiMainRepository(
             .map { PopularQuery(id = it, query = it) }
     }
 
-    override suspend fun loadRecommendations(): List<ProductRecommendation> {
+    override suspend fun loadRecommendations(): List<Product> {
         ensureMainLoaded()
         return cachedRecommendations.orEmpty()
     }
@@ -58,7 +58,7 @@ class ApiMainRepository(
         }
     }
 
-    private fun parseRecommendations(items: List<ProductDto>): List<ProductRecommendation> {
+    private fun parseRecommendations(items: List<ProductDto>): List<Product> {
         return items.mapNotNull { item ->
             val id = item.id.asStringId()
             val title = item.title?.trim().orEmpty()
@@ -66,7 +66,7 @@ class ApiMainRepository(
                 return@mapNotNull null
             }
             val merchant = parseMerchant(item)
-            ProductRecommendation(
+            Product(
                 id = id,
                 title = title,
                 price = item.price ?: 0L,

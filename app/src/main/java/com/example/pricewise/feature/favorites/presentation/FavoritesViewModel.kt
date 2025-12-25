@@ -7,7 +7,7 @@ import com.example.pricewise.feature.favorites.data.ApiFavoritesRepository
 import com.example.pricewise.feature.favorites.domain.model.FavoriteItem
 import com.example.pricewise.feature.favorites.domain.repository.FavoritesRepository
 import com.example.pricewise.feature.main.domain.model.Merchant
-import com.example.pricewise.feature.main.domain.model.ProductRecommendation
+import com.example.pricewise.feature.main.domain.model.Product
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 data class FavoritesUiState(
-    val items: List<ProductRecommendation> = emptyList(),
+    val items: List<Product> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
@@ -55,7 +55,7 @@ class FavoritesViewModel : ViewModel() {
         }
     }
 
-    fun removeFavorite(product: ProductRecommendation) = viewModelScope.launch {
+    fun removeFavorite(product: Product) = viewModelScope.launch {
         val oldItems = _uiState.value.items
         _uiState.update { it.copy(items = oldItems.filter { item -> item.id != product.id }) }
 
@@ -71,8 +71,8 @@ class FavoritesViewModel : ViewModel() {
     }
 }
 
-private fun FavoriteItem.toProductRecommendation(): ProductRecommendation {
-    return ProductRecommendation(
+private fun FavoriteItem.toProductRecommendation(): Product {
+    return Product(
         id = this.externalId,
         title = this.title,
         price = this.price,

@@ -5,7 +5,7 @@ import com.example.pricewise.core.network.PricewiseApi
 import com.example.pricewise.core.network.dto.MerchantDto
 import com.example.pricewise.core.network.dto.ProductDto
 import com.example.pricewise.feature.main.domain.model.Merchant
-import com.example.pricewise.feature.main.domain.model.ProductRecommendation
+import com.example.pricewise.feature.main.domain.model.Product
 
 class RemoteRepository(
     private val api: PricewiseApi = NetworkModule.api,
@@ -37,7 +37,7 @@ class RemoteRepository(
         )
     }
 
-    private fun parseItems(items: List<ProductDto>): List<ProductRecommendation> {
+    private fun parseItems(items: List<ProductDto>): List<Product> {
         return items.mapNotNull { item ->
             val id = item.id.asStringId()
             val title = item.title?.trim().orEmpty()
@@ -45,7 +45,7 @@ class RemoteRepository(
                 return@mapNotNull null
             }
             val merchant = parseMerchant(item)
-            ProductRecommendation(
+            Product(
                 id = id,
                 title = title,
                 price = item.price ?: 0L,

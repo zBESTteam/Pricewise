@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -29,9 +28,10 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -39,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -54,12 +53,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pricewise.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,9 +69,9 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
     var onlyBU by rememberSaveable { mutableStateOf(false) }
     var onlyMarketplaces by rememberSaveable { mutableStateOf(false) }
     var onlyOfflineShops by rememberSaveable { mutableStateOf(false) }
-    var priceFrom by rememberSaveable { mutableStateOf(0L) }
-    var priceTo by rememberSaveable { mutableStateOf(0L) }
-    var popularDiapasonChosen by rememberSaveable { mutableStateOf(0) }
+    var priceFrom by rememberSaveable { mutableLongStateOf(0L) }
+    var priceTo by rememberSaveable { mutableLongStateOf(0L) }
+    var popularDiapasonChosen by rememberSaveable { mutableIntStateOf(0) }
     var canPayLater by rememberSaveable { mutableStateOf(false) }
     val state = viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
@@ -86,7 +83,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
         onlyMarketplaces = viewModel.onlyMarketplaces.value
         onlyOfflineShops = viewModel.onlyOfflineShops.value
         priceFrom = viewModel.priceFrom.value
-        priceTo = viewModel.priceFrom.value
+        priceTo = viewModel.priceTo.value
         popularDiapasonChosen = viewModel.popularDiapasonChosen.value
         canPayLater = viewModel.canPayLater.value
     }
@@ -251,7 +248,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         )
                     }
                     Text(
-                        text = "Качество товара",
+                        text = stringResource(R.string.quality),
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
@@ -267,24 +264,24 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         horizontalAlignment = Alignment.Start,
                     ) {
                         FilterSwitch(
-                            title = "Только оригиналы",
+                            title = stringResource(R.string.only_originals),
                             isChecked = onlyOriginals,
                             onCheckedChange = { onlyOriginals = it }
                         )
 
                         FilterSwitch(
-                            title = "Только новые",
+                            title = stringResource(R.string.only_new),
                             isChecked = onlyNew,
                             onCheckedChange = { onlyNew = it }
                         )
 
                         FilterSwitch(
-                            title = "Только Б/У",
+                            title = stringResource(R.string.only_bu),
                             isChecked = onlyBU,
                             onCheckedChange = { onlyBU = it })
                     }
                     Text(
-                        text = "Магазины",
+                        text = stringResource(R.string.shops),
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
@@ -300,13 +297,13 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         horizontalAlignment = Alignment.Start,
                     ) {
                         FilterSwitch(
-                            title = "Маркетплейсы",
+                            title = stringResource(R.string.marketplaces),
                             isChecked = onlyMarketplaces,
                             onCheckedChange = { onlyMarketplaces = it }
                         )
 
                         FilterSwitch(
-                            title = "Оффлайн магазины",
+                            title = stringResource(R.string.offline_shops),
                             isChecked = onlyOfflineShops,
                             onCheckedChange = { onlyOfflineShops = it }
                         )
@@ -338,7 +335,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Применить",
+                            text = stringResource(R.string.apply),
                             style = TextStyle(
                                 fontSize = 16.sp,
                                 lineHeight = 21.sp,
@@ -351,7 +348,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                     }
                 } else {
                     Text(
-                        text = "Отсортировать по цене",
+                        text = stringResource(R.string.sort_price),
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
@@ -393,9 +390,12 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         modifier = Modifier
                             .width(345.dp)
                             .height(14.dp)
+                            .align(Alignment.CenterHorizontally)
                     ) {
-                        val minPrice = state.value.items.minBy { it.price }.price.toFloat()
-                        val maxPrice = state.value.items.maxBy { it.price }.price.toFloat()
+                        val minPrice =
+                            state.value.items.minByOrNull { it.price }?.price?.toFloat() ?: 0f
+                        val maxPrice =
+                            state.value.items.maxByOrNull { it.price }?.price?.toFloat() ?: 0f
                         val priceRange = maxPrice - minPrice
                         val normalizedFrom = if (priceRange > 0) {
                             ((priceFrom - minPrice) / priceRange).coerceIn(0f, 1f)
@@ -469,7 +469,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         )
                     }
                     Text(
-                        text = "Популярные ценовые диапазоны",
+                        text = stringResource(R.string.popular_diapasons),
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
@@ -487,7 +487,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         DeliveryDateButton(
-                            text = "До 80 000 ₽",
+                            text = stringResource(R.string.below_80_000),
                             isSelected = popularDiapasonChosen == 1,
                             onClick = {
                                 popularDiapasonChosen = if (popularDiapasonChosen == 1) 0 else 1
@@ -495,7 +495,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                                 priceTo = 0
                             })
                         DeliveryDateButton(
-                            text = "80 000 ₽ - 120 000 ₽",
+                            text = stringResource(R.string.in_80_000_120_000),
                             isSelected = popularDiapasonChosen == 2,
                             onClick = {
                                 popularDiapasonChosen = if (popularDiapasonChosen == 2) 0 else 2
@@ -504,15 +504,15 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                             })
                     }
                     DeliveryDateButton(
-                        text = "120 000 ₽ и дороже",
+                        text = stringResource(R.string.after_120_000),
                         isSelected = popularDiapasonChosen == 3,
                         onClick = {
-                            popularDiapasonChosen = if (popularDiapasonChosen == 2) 0 else 2
+                            popularDiapasonChosen = if (popularDiapasonChosen == 3) 0 else 3
                             priceFrom = 0
                             priceTo = 0
                         })
                     Text(
-                        text = "Оплата в рассрочку",
+                        text = stringResource(R.string.pay_later),
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
@@ -525,9 +525,10 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                     )
                     FilterSwitch(
                         modifier = Modifier.height(60.dp),
-                        title = "Показать товары, которые можно оплатить позже от 0%",
+                        title = stringResource(R.string.show_product_pay_later),
                         isChecked = canPayLater,
                         onCheckedChange = { canPayLater = it })
+                    Spacer(modifier = Modifier.size(56.dp))
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -555,7 +556,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Применить",
+                            text = stringResource(R.string.apply),
                             style = TextStyle(
                                 fontSize = 16.sp,
                                 lineHeight = 21.sp,
@@ -614,7 +615,7 @@ fun FilterSwitch(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .height(44.dp)
@@ -622,26 +623,38 @@ fun FilterSwitch(
                 color = colorResource(R.color.disabled_filter_button_color),
                 shape = RoundedCornerShape(size = 14.dp)
             )
-            .padding(start = 14.dp, top = 10.dp, end = 14.dp, bottom = 10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(horizontal = 14.dp)
+            .clickable { onCheckedChange(!isChecked) },
+        contentAlignment = Alignment.CenterStart
     ) {
-        Text(
-            text = title,
-            style = TextStyle(
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-                fontFamily = FontFamily(Font(R.font.inter_regular)),
-                fontWeight = FontWeight(500),
-                color = colorResource(R.color.disabled_filter_button_text_color),
-                letterSpacing = 0.3.sp,
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = title,
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp,
+                    fontFamily = FontFamily(Font(R.font.inter_regular)),
+                    fontWeight = FontWeight(500),
+                    color = colorResource(R.color.disabled_filter_button_text_color),
+                    letterSpacing = 0.3.sp,
+                ),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
-        )
-        Image(
-            modifier = Modifier.clickable { onCheckedChange(!isChecked) }.weight(1f),
-            painter = if (isChecked) painterResource(R.drawable.switch_on) else painterResource(R.drawable.switch_off),
-            contentDescription = null
-        )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Image(
+                painter = if (isChecked) painterResource(R.drawable.switch_on)
+                else painterResource(R.drawable.switch_off),
+                contentDescription = null
+            )
+        }
     }
 }
 

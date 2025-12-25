@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,7 +22,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -32,14 +30,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pricewise.R
 import com.example.pricewise.feature.main.domain.model.Merchant
 import com.example.pricewise.feature.main.domain.model.PopularQuery
-import com.example.pricewise.feature.main.domain.model.ProductRecommendation
+import com.example.pricewise.feature.main.domain.model.Product
 import com.example.pricewise.feature.main.domain.model.PromoBanner
 import com.example.pricewise.feature.main.presentation.MainDimens.ContentHorizontalPadding
 import com.example.pricewise.feature.main.presentation.MainDimens.OrangeHeaderHeight
 import com.example.pricewise.feature.main.presentation.MainDimens.SearchBottomInset
-import com.example.pricewise.feature.main.presentation.MainDimens.SearchTopInset
 import com.example.pricewise.feature.main.presentation.MainDimens.SectionVerticalSpacing
-import com.example.pricewise.feature.main.presentation.MainTypography
 import com.example.pricewise.feature.main.presentation.components.BannerCarousel
 import com.example.pricewise.feature.main.presentation.components.PopularQueriesSection
 import com.example.pricewise.feature.main.presentation.components.PricewiseSearchBar
@@ -73,7 +69,7 @@ fun MainScreen(
 private fun MainScreenContent(
     state: MainUiState,
     onQueryChange: (String) -> Unit,
-    onFavoriteToggle: (ProductRecommendation) -> Unit,
+    onFavoriteToggle: (Product) -> Unit,
     onSearchSubmit: (() -> Unit)? = null,
     queryOverride: String? = null,
     modifier: Modifier = Modifier,
@@ -189,7 +185,7 @@ private fun HeroSearchBlock(
 private fun RecommendationsSection(
     title: String,
     state: MainUiState,
-    onFavoriteToggle: (ProductRecommendation) -> Unit,
+    onFavoriteToggle: (Product) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -233,7 +229,7 @@ private fun MainScreenPreview() {
                     PopularQuery(id = "mic", query = "Fifine микрофон"),
                 ),
                 recommendations = listOf(
-                    ProductRecommendation(
+                    Product(
                         id = "1",
                         title = "Телефон Apple iPhone 16 Pro 128Gb Dual Sim",
                         price = 83980,
@@ -241,7 +237,7 @@ private fun MainScreenPreview() {
                         thumbnailUrl = "",
                         isFavorite = false
                     ),
-                    ProductRecommendation(
+                    Product(
                         id = "2",
                         title = "Клавиатура Nuphy AIR75v3 Wireless",
                         price = 13497,

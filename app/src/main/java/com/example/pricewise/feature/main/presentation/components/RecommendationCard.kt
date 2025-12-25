@@ -36,7 +36,7 @@ import coil.compose.SubcomposeAsyncImage
 import com.example.pricewise.R
 import com.example.pricewise.core.ui.rememberPricewiseImageLoader
 import com.example.pricewise.feature.main.domain.model.Merchant
-import com.example.pricewise.feature.main.domain.model.ProductRecommendation
+import com.example.pricewise.feature.main.domain.model.Product
 import com.example.pricewise.feature.main.presentation.MainTypography
 import com.example.pricewise.ui.theme.RecommendationCardBackground
 import java.text.NumberFormat
@@ -44,8 +44,8 @@ import java.util.Locale
 
 @Composable
 fun RecommendationCard(
-    recommendation: ProductRecommendation,
-    onFavoriteClick: (ProductRecommendation) -> Unit,
+    recommendation: Product,
+    onFavoriteClick: (Product) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(

@@ -1,11 +1,8 @@
 package com.example.pricewise.feature.search.presentation
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.pricewise.feature.main.domain.model.Product
 import com.example.pricewise.feature.search.data.ApiSearch
 import com.example.pricewise.feature.search.data.RemoteRepository
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +26,7 @@ class SearchViewModel(
     private val _uiState = MutableStateFlow(SearchUiState())
     private val _resolvedTotal = MutableStateFlow(0)
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
+    private val _allItems = MutableStateFlow(listOf<Product>())
     val resolvedTotal: StateFlow<Int> = _resolvedTotal.asStateFlow()
 
     private val _isProductChosen = MutableStateFlow(true)
@@ -100,7 +98,55 @@ class SearchViewModel(
     }
 
     fun makeFilter() {
+        _uiState.update { currentState ->
+            val filteredItems = when {
+                _onlyBU.value -> {
+                    _allItems.value.filter { it.merchant.name == "avito.ru" }
+                }
 
+                _onlyMarketplaces.value -> {
+                    _allItems.value.filter {
+                        it.merchant.name in listOf(
+                            "market.yandex.ru",
+                            "cdek.shopping",
+                            "aliexpress.ru",
+                        )
+                    }
+                }
+
+                _onlyOfflineShops.value -> {
+                    _allItems.value.filter {
+                        it.merchant.name in listOf(
+                            "mvideo.ru",
+                            "citilink.ru",
+                            "eldorado.ru"
+                        )
+                    }
+                }
+
+                _priceFrom.value != 0L && _priceTo.value != 0L -> {
+                    _allItems.value.filter {
+                        it.price >= _priceFrom.value && it.price <= _priceTo.value
+                    }
+                }
+
+                _popularDiapasonChosen.value == 1 -> {
+                    _allItems.value.filter { it.price <= 80000 }
+                }
+
+                _popularDiapasonChosen.value == 2 -> {
+                    _allItems.value.filter { it.price in 80000..1200000 }
+                }
+
+                _popularDiapasonChosen.value == 3 -> {
+                    _allItems.value.filter { it.price >= 1200000 }
+                }
+
+                else -> _allItems.value
+            }
+
+            currentState.copy(items = filteredItems)
+        }
     }
 
     fun resetAllFilters() {
@@ -160,6 +206,7 @@ class SearchViewModel(
                         partial = true
                     )
                 }
+                _allItems.value = result.items
                 val shouldSearchAgain =
                     result.pendingSources.isNotEmpty() && searchAttempts < MAX_SEARCH_ATTEMPTS
                 _uiState.update { state ->
@@ -184,14 +231,10 @@ class SearchViewModel(
                 if (shouldSearchAgain) {
                     repeatSearch(query = query)
                 }
-            } catch (exception: Exception) {
+            } catch (_: Exception) {
                 _uiState.update { state -> state.copy(isError = true) }
             }
         }
-    }
-
-    fun fixError() {
-        _uiState.update { state -> state.copy(isError = false) }
     }
 
     fun repeatSearch(query: String) {
