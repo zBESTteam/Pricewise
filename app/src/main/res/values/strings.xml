@@ -37,4 +37,5 @@
     <string name="no_account_question">Нет аккаунта?</string>
     <string name="register_suggestion">Зарегистрируйтесь</string>
     <string name="sort_by_brand">По бренду</string>
+    <string name="favorites">Избранное</string>
 </resources>

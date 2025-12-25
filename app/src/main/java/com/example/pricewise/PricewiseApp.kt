@@ -30,7 +30,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.pricewise.feature.auth.presentation.AuthorizationScreen
 import com.example.pricewise.feature.auth.presentation.RegistrationScreen
-import com.example.pricewise.feature.favorites.domain.presentation.FavoritesScreen
+import com.example.pricewise.feature.favorites.presentation.FavoritesScreen
 import com.example.pricewise.feature.main.presentation.MainScreen
 import com.example.pricewise.feature.search.presentation.SearchScreen
 import com.example.pricewise.feature.search.presentation.SearchViewModel
@@ -73,7 +73,7 @@ fun PricewiseApp() {
 
         NavHost(
             navController = navController,
-            startDestination = AppDestinations.LOGIN.route,
+            startDestination = AppDestinations.SEARCH.route,
             modifier = contentModifier,
             enterTransition = { defaultEnterTransition() },
             exitTransition = { defaultExitTransition() },

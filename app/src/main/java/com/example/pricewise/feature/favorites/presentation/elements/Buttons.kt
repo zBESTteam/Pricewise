@@ -1,4 +1,4 @@
-package com.example.pricewise.feature.favorites.domain.presentation.elements
+package com.example.pricewise.feature.favorites.presentation.elements
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

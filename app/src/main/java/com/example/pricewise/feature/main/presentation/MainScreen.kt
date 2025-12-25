@@ -63,6 +63,7 @@ fun MainScreen(
         state = state,
         onQueryChange = onSearchQueryChangeOverride ?: viewModel::onSearchQueryChange,
         onSearchSubmit = onSearchSubmitOverride,
+        onFavoriteToggle = viewModel::toggleFavorite,
         queryOverride = searchQueryOverride,
         modifier = modifier
     )
@@ -72,6 +73,7 @@ fun MainScreen(
 private fun MainScreenContent(
     state: MainUiState,
     onQueryChange: (String) -> Unit,
+    onFavoriteToggle: (ProductRecommendation) -> Unit,
     onSearchSubmit: (() -> Unit)? = null,
     queryOverride: String? = null,
     modifier: Modifier = Modifier,
@@ -125,7 +127,8 @@ private fun MainScreenContent(
                     .fillMaxWidth()
                     .padding(horizontal = horizontalPadding),
                 title = stringResource(id = R.string.recommendations_title),
-                state = state
+                state = state,
+                onFavoriteToggle = onFavoriteToggle
             )
         }
     }
@@ -186,6 +189,7 @@ private fun HeroSearchBlock(
 private fun RecommendationsSection(
     title: String,
     state: MainUiState,
+    onFavoriteToggle: (ProductRecommendation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -203,7 +207,7 @@ private fun RecommendationsSection(
             state.recommendations.forEach { recommendation ->
                 RecommendationCard(
                     recommendation = recommendation,
-                    onFavoriteClick = {},
+                    onFavoriteClick = { onFavoriteToggle(recommendation) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -247,7 +251,8 @@ private fun MainScreenPreview() {
                     )
                 )
             ),
-            onQueryChange = {}
+            onQueryChange = {},
+            onFavoriteToggle = {}
         )
     }
 }

@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,13 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -260,11 +255,6 @@ private fun FavoriteButton(
     modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val orangeStart = colorResource(id = R.color.orange_gradient_start)
-    val orangeEnd = colorResource(id = R.color.orange_gradient_end)
-    val gradient = remember(orangeStart, orangeEnd) {
-        Brush.linearGradient(colors = listOf(orangeStart, orangeEnd))
-    }
 
     Box(
         modifier = modifier
@@ -277,39 +267,21 @@ private fun FavoriteButton(
         contentAlignment = Alignment.Center
     ) {
         if (isFavorite) {
-            GradientIcon(
-                imageVector = Icons.Filled.Favorite,
-                brush = gradient,
+            Icon(
+                painter = painterResource(id = R.drawable.ic_favorite),
+                contentDescription = null,
+                tint = Color.Unspecified, // Сохраняем градиент из XML
                 modifier = Modifier.size(20.dp)
             )
         } else {
             Icon(
-                imageVector = Icons.Outlined.FavoriteBorder,
+                painter = painterResource(id = R.drawable.ic_favorite_disabled),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                tint = Color.Unspecified,
                 modifier = Modifier.size(20.dp)
             )
         }
     }
-}
-
-@Composable
-private fun GradientIcon(
-    imageVector: ImageVector,
-    brush: Brush,
-    modifier: Modifier = Modifier,
-) {
-    Icon(
-        imageVector = imageVector,
-        contentDescription = null,
-        tint = Color.White,
-        modifier = modifier.drawWithCache {
-            onDrawWithContent {
-                drawContent()
-                drawRect(brush = brush, blendMode = BlendMode.SrcAtop)
-            }
-        }
-    )
 }
 
 @Composable
