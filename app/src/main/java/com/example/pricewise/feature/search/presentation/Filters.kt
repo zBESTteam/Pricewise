@@ -1,5 +1,6 @@
 package com.example.pricewise.feature.search.presentation
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,14 +9,20 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -26,21 +33,33 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pricewise.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,6 +72,11 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
     var onlyBU by rememberSaveable { mutableStateOf(false) }
     var onlyMarketplaces by rememberSaveable { mutableStateOf(false) }
     var onlyOfflineShops by rememberSaveable { mutableStateOf(false) }
+    var priceFrom by rememberSaveable { mutableStateOf(0L) }
+    var priceTo by rememberSaveable { mutableStateOf(0L) }
+    var popularDiapasonChosen by rememberSaveable { mutableStateOf(0) }
+    var canPayLater by rememberSaveable { mutableStateOf(false) }
+    val state = viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
         isProductChosen = viewModel.isProductChosen.value
         deliveryChosen = viewModel.deliveryChosen.value
@@ -61,17 +85,10 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
         onlyBU = viewModel.onlyBU.value
         onlyMarketplaces = viewModel.onlyMarketplaces.value
         onlyOfflineShops = viewModel.onlyOfflineShops.value
-    }
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.setIsProductChosen(isProductChosen)
-            viewModel.setDeliveryChosen(deliveryChosen)
-            viewModel.setOnlyOriginals(onlyOriginals)
-            viewModel.setOnlyNew(onlyNew)
-            viewModel.setOnlyBU(onlyBU)
-            viewModel.setOnlyMarketplaces(onlyMarketplaces)
-            viewModel.setOnlyOfflineShops(onlyOfflineShops)
-        }
+        priceFrom = viewModel.priceFrom.value
+        priceTo = viewModel.priceFrom.value
+        popularDiapasonChosen = viewModel.popularDiapasonChosen.value
+        canPayLater = viewModel.canPayLater.value
     }
     val customModifier: Modifier = Modifier.offset(y = (-7).dp)
     ModalBottomSheet(
@@ -92,10 +109,14 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
     ) {
         Box(
             modifier = customModifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .wrapContentHeight()
                 .padding(horizontal = 15.dp)
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(15.dp), modifier = Modifier
+                    .wrapContentHeight()
+            ) {
                 Text(
                     modifier = Modifier
                         .width(187.dp)
@@ -190,104 +211,361 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         )
                     }
                 }
-                Text(
-                    text = stringResource(R.string.delieveryDate),
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp,
-                        fontFamily = FontFamily(Font(R.font.inter_regular)),
-                        fontWeight = FontWeight(600),
-                        color = colorResource(R.color.mid_dark),
-                        letterSpacing = 0.3.sp,
+                if (isProductChosen) {
+                    Text(
+                        text = stringResource(R.string.delieveryDate),
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            lineHeight = 24.sp,
+                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontWeight = FontWeight(600),
+                            color = colorResource(R.color.mid_dark),
+                            letterSpacing = 0.3.sp,
+                        )
                     )
-                )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .horizontalScroll(rememberScrollState())
-                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .horizontalScroll(rememberScrollState())
+                    ) {
+                        DeliveryDateButton(
+                            text = stringResource(R.string.today),
+                            isSelected = deliveryChosen == 1,
+                            onClick = { deliveryChosen = if (deliveryChosen == 1) 0 else 1 }
+                        )
+                        DeliveryDateButton(
+                            text = stringResource(R.string.today_or_tomorrow),
+                            isSelected = deliveryChosen == 2,
+                            onClick = { deliveryChosen = if (deliveryChosen == 2) 0 else 2 }
+                        )
+                        DeliveryDateButton(
+                            text = stringResource(R.string.week),
+                            isSelected = deliveryChosen == 3,
+                            onClick = { deliveryChosen = if (deliveryChosen == 3) 0 else 3 }
+                        )
+                        DeliveryDateButton(
+                            text = stringResource(R.string.two_weeks),
+                            isSelected = deliveryChosen == 4,
+                            onClick = { deliveryChosen = if (deliveryChosen == 4) 0 else 4 }
+                        )
+                    }
+                    Text(
+                        text = "Качество товара",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            lineHeight = 24.sp,
+                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontWeight = FontWeight(600),
+                            color = colorResource(R.color.mid_dark),
+
+                            letterSpacing = 0.3.sp,
+                        )
+                    )
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(13.dp, Alignment.Top),
+                        horizontalAlignment = Alignment.Start,
+                    ) {
+                        FilterSwitch(
+                            title = "Только оригиналы",
+                            isChecked = onlyOriginals,
+                            onCheckedChange = { onlyOriginals = it }
+                        )
+
+                        FilterSwitch(
+                            title = "Только новые",
+                            isChecked = onlyNew,
+                            onCheckedChange = { onlyNew = it }
+                        )
+
+                        FilterSwitch(
+                            title = "Только Б/У",
+                            isChecked = onlyBU,
+                            onCheckedChange = { onlyBU = it })
+                    }
+                    Text(
+                        text = "Магазины",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            lineHeight = 24.sp,
+                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontWeight = FontWeight(600),
+                            color = colorResource(R.color.mid_dark),
+
+                            letterSpacing = 0.3.sp,
+                        )
+                    )
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(13.dp, Alignment.Top),
+                        horizontalAlignment = Alignment.Start,
+                    ) {
+                        FilterSwitch(
+                            title = "Маркетплейсы",
+                            isChecked = onlyMarketplaces,
+                            onCheckedChange = { onlyMarketplaces = it }
+                        )
+
+                        FilterSwitch(
+                            title = "Оффлайн магазины",
+                            isChecked = onlyOfflineShops,
+                            onCheckedChange = { onlyOfflineShops = it }
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(44.dp)
+                            .background(
+                                color = colorResource(R.color.mid_dark),
+                                shape = RoundedCornerShape(size = 14.dp)
+                            )
+                            .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
+                            .clickable {
+                                viewModel.setIsProductChosen(isProductChosen)
+                                viewModel.setDeliveryChosen(deliveryChosen)
+                                viewModel.setOnlyOriginals(onlyOriginals)
+                                viewModel.setOnlyNew(onlyNew)
+                                viewModel.setOnlyBU(onlyBU)
+                                viewModel.setOnlyMarketplaces(onlyMarketplaces)
+                                viewModel.setOnlyOfflineShops(onlyOfflineShops)
+                                viewModel.setPriceFrom(priceFrom)
+                                viewModel.setPriceTo(priceTo)
+                                viewModel.setPopularDiapasonChosen(popularDiapasonChosen)
+                                viewModel.setCanPayLater(canPayLater)
+                                viewModel.makeFilter()
+                                closeFilters()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Применить",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                lineHeight = 21.sp,
+                                fontFamily = FontFamily(Font(R.font.inter_regular)),
+                                fontWeight = FontWeight(600),
+                                color = colorResource(R.color.white),
+                                letterSpacing = 0.3.sp,
+                            )
+                        )
+                    }
+                } else {
+                    Text(
+                        text = "Отсортировать по цене",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            lineHeight = 24.sp,
+                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontWeight = FontWeight(600),
+                            color = colorResource(R.color.mid_dark),
+                            letterSpacing = 0.3.sp,
+                        )
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(
+                            10.dp,
+                            Alignment.CenterHorizontally
+                        ),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        PriceInputField(
+                            modifier = Modifier.weight(1f),
+                            text = "От",
+                            onValueChange = {
+                                priceFrom = it
+                                popularDiapasonChosen = 0
+                            },
+                            context = LocalContext.current,
+                            value = priceFrom.toString()
+                        )
+                        PriceInputField(
+                            modifier = Modifier.weight(1f),
+                            text = "До",
+                            onValueChange = {
+                                priceTo = it
+                                popularDiapasonChosen = 0
+                            },
+                            context = LocalContext.current,
+                            value = priceTo.toString()
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .width(345.dp)
+                            .height(14.dp)
+                    ) {
+                        val minPrice = state.value.items.minBy { it.price }.price.toFloat()
+                        val maxPrice = state.value.items.maxBy { it.price }.price.toFloat()
+                        val priceRange = maxPrice - minPrice
+                        val normalizedFrom = if (priceRange > 0) {
+                            ((priceFrom - minPrice) / priceRange).coerceIn(0f, 1f)
+                        } else {
+                            0f
+                        }
+                        val normalizedTo = if (priceRange > 0) {
+                            ((priceTo - minPrice) / priceRange).coerceIn(0f, 1f)
+                        } else {
+                            1f
+                        }
+
+                        val containerWidth = 345.dp
+                        val leftOffset = containerWidth * normalizedFrom
+                        val rightOffset = containerWidth * (1 - normalizedTo)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                                .align(Alignment.Center)
+                                .background(
+                                    color = colorResource(R.color.disabled_filter_button_color),
+                                    shape = RoundedCornerShape(size = 14.dp)
+                                )
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                                .align(Alignment.Center)
+                                .padding(start = leftOffset, end = rightOffset)
+                                .background(
+                                    brush = Brush.linearGradient(
+                                        listOf(
+                                            colorResource(R.color.start_gradient_color),
+                                            colorResource(R.color.end_gradient_color)
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(size = 14.dp)
+                                )
+                        )
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopStart)
+                                .offset(x = leftOffset)
+                                .size(if (priceTo - priceFrom > 0) 14.dp else 0.dp)
+                                .background(
+                                    brush = Brush.linearGradient(
+                                        listOf(
+                                            colorResource(R.color.start_gradient_color),
+                                            colorResource(R.color.end_gradient_color)
+                                        )
+                                    ),
+                                    shape = CircleShape
+                                )
+                        )
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopStart)
+                                .offset(x = (containerWidth - rightOffset) - 14.dp)
+                                .size(if (priceTo - priceFrom > 0) 14.dp else 0.dp)
+                                .background(
+                                    brush = Brush.linearGradient(
+                                        listOf(
+                                            colorResource(R.color.start_gradient_color),
+                                            colorResource(R.color.end_gradient_color)
+                                        )
+                                    ),
+                                    shape = CircleShape
+                                )
+                        )
+                    }
+                    Text(
+                        text = "Популярные ценовые диапазоны",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            lineHeight = 24.sp,
+                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontWeight = FontWeight(600),
+                            color = colorResource(R.color.mid_dark),
+                            letterSpacing = 0.3.sp,
+                        )
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(
+                            10.dp,
+                            Alignment.CenterHorizontally
+                        ),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        DeliveryDateButton(
+                            text = "До 80 000 ₽",
+                            isSelected = popularDiapasonChosen == 1,
+                            onClick = {
+                                popularDiapasonChosen = if (popularDiapasonChosen == 1) 0 else 1
+                                priceFrom = 0
+                                priceTo = 0
+                            })
+                        DeliveryDateButton(
+                            text = "80 000 ₽ - 120 000 ₽",
+                            isSelected = popularDiapasonChosen == 2,
+                            onClick = {
+                                popularDiapasonChosen = if (popularDiapasonChosen == 2) 0 else 2
+                                priceFrom = 0
+                                priceTo = 0
+                            })
+                    }
                     DeliveryDateButton(
-                        text = stringResource(R.string.today),
-                        isSelected = deliveryChosen == 1,
-                        onClick = { deliveryChosen = if (deliveryChosen == 1) 0 else 1 }
-                    )
-                    DeliveryDateButton(
-                        text = stringResource(R.string.today_or_tomorrow),
-                        isSelected = deliveryChosen == 2,
-                        onClick = { deliveryChosen = if (deliveryChosen == 2) 0 else 2 }
-                    )
-                    DeliveryDateButton(
-                        text = stringResource(R.string.week),
-                        isSelected = deliveryChosen == 3,
-                        onClick = { deliveryChosen = if (deliveryChosen == 3) 0 else 3 }
-                    )
-                    DeliveryDateButton(
-                        text = stringResource(R.string.two_weeks),
-                        isSelected = deliveryChosen == 4,
-                        onClick = { deliveryChosen = if (deliveryChosen == 4) 0 else 4 }
-                    )
-                }
-                Text(
-                    text = "Качество товара",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp,
-                        fontFamily = FontFamily(Font(R.font.inter_regular)),
-                        fontWeight = FontWeight(600),
-                        color = colorResource(R.color.mid_dark),
+                        text = "120 000 ₽ и дороже",
+                        isSelected = popularDiapasonChosen == 3,
+                        onClick = {
+                            popularDiapasonChosen = if (popularDiapasonChosen == 2) 0 else 2
+                            priceFrom = 0
+                            priceTo = 0
+                        })
+                    Text(
+                        text = "Оплата в рассрочку",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            lineHeight = 24.sp,
+                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontWeight = FontWeight(600),
+                            color = colorResource(R.color.mid_dark),
 
-                        letterSpacing = 0.3.sp,
+                            letterSpacing = 0.3.sp,
+                        )
                     )
-                )
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(13.dp, Alignment.Top),
-                    horizontalAlignment = Alignment.Start,
-                ) {
                     FilterSwitch(
-                        title = "Только оригиналы",
-                        isChecked = onlyOriginals,
-                        onCheckedChange = { onlyOriginals = it }
-                    )
-
-                    FilterSwitch(
-                        title = "Только новые",
-                        isChecked = onlyNew,
-                        onCheckedChange = { onlyNew = it }
-                    )
-
-                    FilterSwitch(
-                        title = "Только Б/У",
-                        isChecked = onlyBU,
-                        onCheckedChange = { onlyBU = it })
-                }
-                Text(
-                    text = "Магазины",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp,
-                        fontFamily = FontFamily(Font(R.font.inter_regular)),
-                        fontWeight = FontWeight(600),
-                        color = colorResource(R.color.mid_dark),
-
-                        letterSpacing = 0.3.sp,
-                    )
-                )
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(13.dp, Alignment.Top),
-                    horizontalAlignment = Alignment.Start,
-                ) {
-                    FilterSwitch(
-                        title = "Маркетплейсы",
-                        isChecked = onlyMarketplaces,
-                        onCheckedChange = { onlyMarketplaces = it }
-                    )
-
-                    FilterSwitch(
-                        title = "Оффлайн магазины",
-                        isChecked = onlyOfflineShops,
-                        onCheckedChange = { onlyOfflineShops = it }
-                    )
+                        modifier = Modifier.height(60.dp),
+                        title = "Показать товары, которые можно оплатить позже от 0%",
+                        isChecked = canPayLater,
+                        onCheckedChange = { canPayLater = it })
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(44.dp)
+                            .background(
+                                color = colorResource(R.color.mid_dark),
+                                shape = RoundedCornerShape(size = 14.dp)
+                            )
+                            .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
+                            .clickable {
+                                viewModel.setIsProductChosen(isProductChosen)
+                                viewModel.setDeliveryChosen(deliveryChosen)
+                                viewModel.setOnlyOriginals(onlyOriginals)
+                                viewModel.setOnlyNew(onlyNew)
+                                viewModel.setOnlyBU(onlyBU)
+                                viewModel.setOnlyMarketplaces(onlyMarketplaces)
+                                viewModel.setOnlyOfflineShops(onlyOfflineShops)
+                                viewModel.setPriceFrom(priceFrom)
+                                viewModel.setPriceTo(priceTo)
+                                viewModel.setPopularDiapasonChosen(popularDiapasonChosen)
+                                viewModel.setCanPayLater(canPayLater)
+                                viewModel.makeFilter()
+                                closeFilters()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Применить",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                lineHeight = 21.sp,
+                                fontFamily = FontFamily(Font(R.font.inter_regular)),
+                                fontWeight = FontWeight(600),
+                                color = colorResource(R.color.white),
+                                letterSpacing = 0.3.sp,
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -360,9 +638,111 @@ fun FilterSwitch(
             )
         )
         Image(
-            modifier = Modifier.clickable { onCheckedChange(!isChecked) },
+            modifier = Modifier.clickable { onCheckedChange(!isChecked) }.weight(1f),
             painter = if (isChecked) painterResource(R.drawable.switch_on) else painterResource(R.drawable.switch_off),
             contentDescription = null
         )
+    }
+}
+
+@Composable
+fun PriceInputField(
+    modifier: Modifier = Modifier,
+    value: String,
+    text: String,
+    onValueChange: (Long) -> Unit,
+    context: Context
+) {
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(value)) }
+
+    Box(
+        modifier = modifier
+            .height(44.dp)
+            .background(
+                color = colorResource(R.color.disabled_filter_button_color),
+                shape = RoundedCornerShape(size = 14.dp)
+            )
+            .padding(horizontal = 10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = text,
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp,
+                    fontWeight = FontWeight(500),
+                    color = colorResource(R.color.disabled_filter_button_text_color),
+                    letterSpacing = 0.3.sp,
+                )
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.weight(1f)
+            ) {
+                BasicTextField(
+                    value = textFieldValue,
+                    onValueChange = { newValue ->
+                        val filteredText = newValue.text.filter { it.isDigit() }
+                        val cleanedText = filteredText.trimStart('0')
+                        val resultText = cleanedText.ifEmpty { "" }
+                        val limitedText = if (resultText.length > 11) {
+                            context.getString(R.string.long_max)
+                        } else {
+                            resultText
+                        }
+                        textFieldValue = newValue.copy(
+                            text = limitedText,
+                            selection = TextRange(limitedText.length)
+                        )
+                        try {
+                            val longValue = if (limitedText.isEmpty()) 0L else limitedText.toLong()
+                            onValueChange(longValue)
+                        } catch (e: NumberFormatException) {
+                            onValueChange(0L)
+                        }
+                    },
+                    textStyle = TextStyle(
+                        fontSize = 16.sp,
+                        lineHeight = 24.sp,
+                        fontWeight = FontWeight(500),
+                        color = colorResource(R.color.disabled_filter_button_text_color),
+                        letterSpacing = 0.3.sp,
+                        textAlign = TextAlign.Center
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                    visualTransformation = VisualTransformation.None,
+                    singleLine = true,
+                    decorationBox = { innerTextField ->
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            innerTextField()
+                        }
+                    }
+                )
+            }
+
+            Text(
+                text = "₽",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp,
+                    fontWeight = FontWeight(500),
+                    color = colorResource(R.color.disabled_filter_button_text_color),
+                    letterSpacing = 0.3.sp,
+                )
+            )
+        }
     }
 }

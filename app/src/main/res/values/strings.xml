@@ -31,4 +31,5 @@
     <string name="filtration">Фильтрация</string>
     <string name="two_weeks">До 14 дней</string>
     <string name="delieveryDate">Срок доставки</string>
+    <string name="long_max">99999999999</string>
 </resources>
