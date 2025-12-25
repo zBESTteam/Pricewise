@@ -4,14 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.WindowCompat
+import com.example.pricewise.core.network.TokenStorage
 import com.example.pricewise.ui.theme.PricewiseTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Инициализируем хранилище токенов
+        TokenStorage.init(applicationContext)
+        
         enableEdgeToEdge()
-        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = false
         setContent {
             PricewiseTheme {
                 PricewiseApp()

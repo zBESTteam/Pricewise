@@ -33,6 +33,14 @@ fun PricewiseBottomBar(
     modifier: Modifier = Modifier,
 ) {
     val navShape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp)
+    
+    // Определяем список экранов, которые должны быть в BottomBar
+    val bottomBarDestinations = listOf(
+        AppDestinations.SEARCH,
+        AppDestinations.FAVORITES,
+        AppDestinations.PROFILE
+    )
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -47,7 +55,7 @@ fun PricewiseBottomBar(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AppDestinations.entries.forEach { destination ->
+            bottomBarDestinations.forEach { destination ->
                 val selected = currentDestination.isDestinationSelected(destination)
                 val interactionSource = remember(destination.route) { MutableInteractionSource() }
                 Box(
