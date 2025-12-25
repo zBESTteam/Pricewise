@@ -2,6 +2,7 @@ package com.example.pricewise.feature.auth.data
 
 import com.example.pricewise.core.network.NetworkModule
 import com.example.pricewise.core.network.PricewiseApi
+import com.example.pricewise.core.network.TokenStorage
 import com.example.pricewise.core.network.dto.AuthResponseDto
 import com.example.pricewise.core.network.dto.LoginRequestDto
 import com.example.pricewise.core.network.dto.RegisterRequestDto
@@ -16,7 +17,7 @@ class ApiAuthRepository(
     private val api: PricewiseApi = NetworkModule.api,
 ) : AuthRepository {
 
-    override suspend fun register(input: RegisterInput): AuthSession {
+    override suspend fun signUp(input: RegisterInput): AuthSession {
         val response = api.register(
             RegisterRequestDto(
                 email = input.email,
@@ -24,22 +25,30 @@ class ApiAuthRepository(
                 passwordConfirm = input.passwordConfirm,
             ),
         )
-        return response.toDomain()
+        val session = response.toDomain()
+        saveToken(session)
+        return session
     }
 
-    override suspend fun login(input: LoginInput): AuthSession {
+    override suspend fun signIn(input: LoginInput): AuthSession {
         val response = api.login(
             LoginRequestDto(
                 email = input.email,
                 password = input.password,
             ),
         )
-        return response.toDomain()
+        val session = response.toDomain()
+        saveToken(session)
+        return session
     }
 
     override suspend fun getMe(token: String): AuthUser {
         val response = api.getMe(authorization = token.asBearer())
         return response.toDomain()
+    }
+    
+    private fun saveToken(session: AuthSession) {
+        TokenStorage.saveToken(session.accessToken)
     }
 }
 

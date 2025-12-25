@@ -63,6 +63,7 @@ fun MainScreen(
         state = state,
         onQueryChange = onSearchQueryChangeOverride ?: viewModel::onSearchQueryChange,
         onSearchSubmit = onSearchSubmitOverride,
+        onFavoriteToggle = viewModel::toggleFavorite,
         queryOverride = searchQueryOverride,
         modifier = modifier
     )
@@ -72,6 +73,7 @@ fun MainScreen(
 private fun MainScreenContent(
     state: MainUiState,
     onQueryChange: (String) -> Unit,
+    onFavoriteToggle: (ProductRecommendation) -> Unit,
     onSearchSubmit: (() -> Unit)? = null,
     queryOverride: String? = null,
     modifier: Modifier = Modifier,
@@ -125,7 +127,8 @@ private fun MainScreenContent(
                     .fillMaxWidth()
                     .padding(horizontal = horizontalPadding),
                 title = stringResource(id = R.string.recommendations_title),
-                state = state
+                state = state,
+                onFavoriteToggle = onFavoriteToggle
             )
         }
     }
@@ -162,7 +165,6 @@ private fun HeroSearchBlock(
     Box(
         modifier = modifier
             .fillMaxWidth()
-
             .background(brush = gradient, shape = heroShape),
         contentAlignment = Alignment.TopCenter
     ) {
@@ -187,6 +189,7 @@ private fun HeroSearchBlock(
 private fun RecommendationsSection(
     title: String,
     state: MainUiState,
+    onFavoriteToggle: (ProductRecommendation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -204,7 +207,7 @@ private fun RecommendationsSection(
             state.recommendations.forEach { recommendation ->
                 RecommendationCard(
                     recommendation = recommendation,
-                    onFavoriteClick = {},
+                    onFavoriteClick = { onFavoriteToggle(recommendation) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -226,7 +229,7 @@ private fun MainScreenPreview() {
                 ),
                 popularQueries = listOf(
                     PopularQuery(id = "iphone", query = "Iphone 16 pro"),
-                    PopularQuery(id = "buy", query = "Лаббугу купить"),
+                    PopularQuery(id = "buy", query = "Лабубу купить"),
                     PopularQuery(id = "mic", query = "Fifine микрофон"),
                 ),
                 recommendations = listOf(
@@ -248,7 +251,8 @@ private fun MainScreenPreview() {
                     )
                 )
             ),
-            onQueryChange = {}
+            onQueryChange = {},
+            onFavoriteToggle = {}
         )
     }
 }
