@@ -1,10 +1,14 @@
 package com.example.pricewise.feature.search.presentation
 
-import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pricewise.feature.search.data.ApiSearchRepository
-import com.example.pricewise.feature.search.domain.repository.SearchRepository
+import com.example.pricewise.feature.search.data.ApiSearch
+import com.example.pricewise.feature.search.data.RemoteRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,26 +16,109 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.collections.emptyList
 
 class SearchViewModel(
-    private val repository: SearchRepository = SearchDependencies.defaultRepository(),
-    private val defaultLimit: Int = 20,
-    private val perSource: Boolean = true,
-    private val partial: Boolean = true,
+    private val repository: ApiSearch = RemoteRepository()
 ) : ViewModel() {
 
+    private val defaultLimit: Int = 20
+    private var searchJob: Job? = null
+    private var searchAttempts = 0
     private val _uiState = MutableStateFlow(SearchUiState())
+    private val _resolvedTotal = MutableStateFlow(0)
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
+    val resolvedTotal: StateFlow<Int> = _resolvedTotal.asStateFlow()
 
-    private var pollJob: Job? = null
-    private var pollAttempts = 0
+    private val _isProductChosen = MutableStateFlow(true)
+    private val _deliveryChosen = MutableStateFlow(0)
+    private val _onlyOriginals = MutableStateFlow(false)
+    private val _onlyNew = MutableStateFlow(false)
+    private val _onlyBU = MutableStateFlow(false)
+    private val _onlyMarketplaces = MutableStateFlow(false)
+    private val _onlyOfflineShops = MutableStateFlow(false)
+    private val _priceFrom = MutableStateFlow(0L)
+    private val _priceTo = MutableStateFlow(0L)
+    private val _popularDiapasonChosen = MutableStateFlow(0)
+    private val _canPayLater = MutableStateFlow(false)
+    val isProductChosen: StateFlow<Boolean> = _isProductChosen.asStateFlow()
+    val deliveryChosen: StateFlow<Int> = _deliveryChosen.asStateFlow()
+    val onlyOriginals: StateFlow<Boolean> = _onlyOriginals.asStateFlow()
+    val onlyNew: StateFlow<Boolean> = _onlyNew.asStateFlow()
+    val onlyBU: StateFlow<Boolean> = _onlyBU.asStateFlow()
+    val onlyMarketplaces: StateFlow<Boolean> = _onlyMarketplaces.asStateFlow()
+    val onlyOfflineShops: StateFlow<Boolean> = _onlyOfflineShops.asStateFlow()
+    val priceFrom: StateFlow<Long> = _priceFrom.asStateFlow()
+    val priceTo: StateFlow<Long> = _priceTo.asStateFlow()
+    val popularDiapasonChosen: StateFlow<Int> = _popularDiapasonChosen.asStateFlow()
+    val canPayLater: StateFlow<Boolean> = _canPayLater.asStateFlow()
+
+
+    fun setIsProductChosen(value: Boolean) {
+        _isProductChosen.value = value
+    }
+
+    fun setDeliveryChosen(value: Int) {
+        _deliveryChosen.value = value
+    }
+
+    fun setOnlyOriginals(value: Boolean) {
+        _onlyOriginals.value = value
+    }
+
+    fun setOnlyNew(value: Boolean) {
+        _onlyNew.value = value
+    }
+
+    fun setOnlyBU(value: Boolean) {
+        _onlyBU.value = value
+    }
+
+    fun setOnlyMarketplaces(value: Boolean) {
+        _onlyMarketplaces.value = value
+    }
+
+    fun setOnlyOfflineShops(value: Boolean) {
+        _onlyOfflineShops.value = value
+    }
+
+    fun setPriceFrom(value: Long) {
+        _priceFrom.value = value
+    }
+
+    fun setPriceTo(value: Long) {
+        _priceTo.value = value
+    }
+
+    fun setPopularDiapasonChosen(value: Int) {
+        _popularDiapasonChosen.value = value
+    }
+
+    fun setCanPayLater(value: Boolean) {
+        _canPayLater.value = value
+    }
+
+    fun makeFilter() {
+
+    }
+
+    fun resetAllFilters() {
+        _isProductChosen.value = true
+        _deliveryChosen.value = 0
+        _onlyOriginals.value = false
+        _onlyNew.value = false
+        _onlyBU.value = false
+        _onlyMarketplaces.value = false
+        _onlyOfflineShops.value = false
+    }
 
     fun onQueryChange(query: String) {
-        val trimmed = query.trim()
+        val trimmedQuery = query.trim()
         _uiState.update { state ->
             when {
-                trimmed.isEmpty() -> {
-                    pollJob?.cancel()
+                trimmedQuery.isEmpty() -> {
+                    searchJob?.cancel()
                     state.copy(
                         query = query,
                         submittedQuery = "",
@@ -43,91 +130,79 @@ class SearchViewModel(
                         pendingSources = emptyList(),
                     )
                 }
-                state.submittedQuery != trimmed -> {
-                    pollJob?.cancel()
-                    state.copy(
-                        query = query,
-                        items = emptyList(),
-                        hasMore = false,
-                        checkedSources = 0,
-                        pendingSources = emptyList(),
-                    )
-                }
+
                 else -> state.copy(query = query)
             }
         }
     }
 
     fun submitSearch() {
-        pollJob?.cancel()
-        pollAttempts = 0
-        val query = _uiState.value.query.trim()
-        if (query.length < 2) {
-            return
-        }
-        viewModelScope.launch {
-            performSearch(query)
+        searchJob?.cancel()
+        searchAttempts = 0
+        viewModelScope.launch(Dispatchers.IO) {
+            searchJob = viewModelScope.launch {
+                resetAllFilters()
+                performSearch(_uiState.value.query.trim())
+            }
         }
     }
 
-    private suspend fun performSearch(query: String) {
-        _uiState.update { it.copy(isLoading = true, submittedQuery = query) }
-        runCatching {
-            repository.search(
-                query = query,
-                limit = defaultLimit,
-                offset = 0,
-                perSource = perSource,
-                partial = partial,
-            )
-        }
-            .onSuccess { result ->
-                val shouldPoll = partial && result.pendingSources.isNotEmpty() && pollAttempts < MAX_POLL_ATTEMPTS
+    fun performSearch(query: String) {
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true, submittedQuery = query) }
+                val result = withContext(Dispatchers.IO) {
+                    repository.search(
+                        query = query,
+                        limit = defaultLimit,
+                        offset = 0,
+                        perSource = true,
+                        partial = true
+                    )
+                }
+                val shouldSearchAgain =
+                    result.pendingSources.isNotEmpty() && searchAttempts < MAX_SEARCH_ATTEMPTS
                 _uiState.update { state ->
                     val checked = result.checkedSources ?: state.checkedSources
-                    val resolvedTotal = when {
+                    _resolvedTotal.value = when {
                         result.totalSources != null && result.totalSources > 0 -> {
                             maxOf(result.totalSources, checked)
                         }
+
                         checked > state.totalSources -> checked
                         else -> state.totalSources
                     }
                     state.copy(
-                        isLoading = shouldPoll,
+                        isLoading = shouldSearchAgain,
                         items = result.items,
                         hasMore = result.hasMore,
                         checkedSources = checked,
-                        totalSources = resolvedTotal,
+                        totalSources = resolvedTotal.value,
                         pendingSources = result.pendingSources,
                     )
                 }
-                Log.d(TAG, "Search '$query' -> ${result.items.size} items")
-                if (shouldPoll) {
-                    schedulePoll(query)
+                if (shouldSearchAgain) {
+                    repeatSearch(query = query)
                 }
+            } catch (exception: Exception) {
+                _uiState.update { state -> state.copy(isError = true) }
             }
-            .onFailure { err ->
-                Log.e(TAG, "Failed to search '$query'", err)
-                _uiState.update { it.copy(isLoading = false, pendingSources = emptyList()) }
-            }
+        }
     }
 
-    private fun schedulePoll(query: String) {
-        pollJob?.cancel()
-        pollJob = viewModelScope.launch {
-            pollAttempts += 1
-            delay(POLL_INTERVAL_MS)
+    fun fixError() {
+        _uiState.update { state -> state.copy(isError = false) }
+    }
+
+    fun repeatSearch(query: String) {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch(Dispatchers.IO) {
+            searchAttempts += 1
+            delay(SEARCH_INTERVAL_MS)
             performSearch(query)
         }
     }
 }
 
-private object SearchDependencies {
-    fun defaultRepository(): SearchRepository {
-        return ApiSearchRepository()
-    }
-}
-
-private const val TAG = "SearchVM"
-private const val POLL_INTERVAL_MS = 1200L
-private const val MAX_POLL_ATTEMPTS = 8
+private const val MAX_SEARCH_ATTEMPTS = 8
+private const val SEARCH_INTERVAL_MS: Long = 1000

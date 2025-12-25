@@ -6,13 +6,11 @@ import com.example.pricewise.core.network.dto.MerchantDto
 import com.example.pricewise.core.network.dto.ProductDto
 import com.example.pricewise.feature.main.domain.model.Merchant
 import com.example.pricewise.feature.main.domain.model.ProductRecommendation
-import com.example.pricewise.feature.search.domain.repository.SearchRepository
-import com.example.pricewise.feature.search.domain.repository.SearchResult
 
-class ApiSearchRepository(
+class RemoteRepository(
     private val api: PricewiseApi = NetworkModule.api,
     private val sources: List<String> = DEFAULT_SOURCES,
-) : SearchRepository {
+) : ApiSearch {
 
     override suspend fun search(
         query: String,
