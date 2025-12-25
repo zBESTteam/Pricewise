@@ -183,13 +183,23 @@ fun SearchScreen(
                 DefaultButton(
                     icon = R.drawable.icon_filter,
                     isSelected = false,
-                    onClick = { showFilters = true })
+                    onClick = {
+                        if (state.items.isNotEmpty()) {
+                            showFilters = true
+                        }
+                    })
             }
             item {
-                DefaultButton(text = stringResource(R.string.only_new), isSelected = false, onClick = {})
+                DefaultButton(
+                    text = stringResource(R.string.only_new),
+                    isSelected = false,
+                    onClick = {})
             }
             item {
-                DefaultButton(text = stringResource(R.string.only_delievery), isSelected = false, onClick = {})
+                DefaultButton(
+                    text = stringResource(R.string.only_delievery),
+                    isSelected = false,
+                    onClick = {})
             }
         }
         if (state.items.isNotEmpty()) {

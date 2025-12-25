@@ -98,54 +98,49 @@ class SearchViewModel(
     }
 
     fun makeFilter() {
-        _uiState.update { currentState ->
-            val filteredItems = when {
-                _onlyBU.value -> {
-                    _allItems.value.filter { it.merchant.name == "avito.ru" }
-                }
-
-                _onlyMarketplaces.value -> {
-                    _allItems.value.filter {
-                        it.merchant.name in listOf(
-                            "market.yandex.ru",
-                            "cdek.shopping",
-                            "aliexpress.ru",
-                        )
-                    }
-                }
-
-                _onlyOfflineShops.value -> {
-                    _allItems.value.filter {
-                        it.merchant.name in listOf(
-                            "mvideo.ru",
-                            "citilink.ru",
-                            "eldorado.ru"
-                        )
-                    }
-                }
-
-                _priceFrom.value != 0L && _priceTo.value != 0L -> {
-                    _allItems.value.filter {
-                        it.price >= _priceFrom.value && it.price <= _priceTo.value
-                    }
-                }
-
-                _popularDiapasonChosen.value == 1 -> {
-                    _allItems.value.filter { it.price <= 80000 }
-                }
-
-                _popularDiapasonChosen.value == 2 -> {
-                    _allItems.value.filter { it.price in 80000..1200000 }
-                }
-
-                _popularDiapasonChosen.value == 3 -> {
-                    _allItems.value.filter { it.price >= 1200000 }
-                }
-
-                else -> _allItems.value
-            }
-
-            currentState.copy(items = filteredItems)
+        if (_onlyBU.value) {
+            _uiState.value =
+                _uiState.value.copy(items = _uiState.value.items.filter { it.merchant.name == "avito.ru" })
+        }
+        if (_onlyMarketplaces.value) {
+            _uiState.value = _uiState.value.copy(items = _uiState.value.items.filter {
+                it.merchant.name in listOf(
+                    "market.yandex.ru",
+                    "cdek.shopping",
+                    "aliexpress.ru",
+                )
+            })
+        }
+        if (_onlyOfflineShops.value) {
+            _uiState.value = _uiState.value.copy(items = _uiState.value.items.filter {
+                it.merchant.name in listOf(
+                    "mvideo.ru",
+                    "citilink.ru",
+                    "eldorado.ru"
+                )
+            })
+        }
+        if (priceFrom.value != 0L && priceTo.value != 0L) {
+            _uiState.value = _uiState.value.copy(items = _uiState.value.items.filter {
+                it.price >= priceFrom.value && it.price <= priceTo.value
+            })
+        }
+        if (popularDiapasonChosen.value == 1) {
+            _uiState.value = _uiState.value.copy(items = _uiState.value.items.filter {
+                it.price <= 80000
+            })
+        }
+        if (popularDiapasonChosen.value == 2) {
+            _uiState.value = _uiState.value.copy(items = _uiState.value.items.filter {
+                it.price in 80000..1200000
+            })
+        }
+        if (popularDiapasonChosen.value == 3) {
+            _uiState.value = _uiState.value.copy(items = _uiState.value.items.filter {
+                it.price >= 1200000
+            })
+        } else {
+            _uiState.value = _uiState.value.copy(items = _allItems.value)
         }
     }
 
