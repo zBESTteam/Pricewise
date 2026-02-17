@@ -1,10 +1,10 @@
 [versions]
-agp = "8.5.2"
-kotlin = "1.9.24"
-ksp = "1.9.24-1.0.20"
-coroutines = "1.8.1"
-room = "2.6.1"
-hilt = "2.51"
+agp = "9.0.1"
+kotlin = "2.2.10"
+ksp = "2.2.10-2.0.2"
+coroutines = "1.10.2"
+room = "2.8.4"
+hilt = "2.59.1"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -17,7 +17,6 @@ hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.re
 
 [plugins]
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
