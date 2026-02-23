@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PriceWise" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/pw_color_primary</item>
+        <item name="colorOnPrimary">@color/pw_color_on_primary</item>
+        <item name="colorSecondary">@color/pw_color_secondary</item>
+        <item name="android:windowBackground">@color/pw_color_background</item>
+    </style>
+</resources>

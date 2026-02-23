@@ -23,6 +23,7 @@ include(
     ":core:network",
     ":core:auth",
     ":core:push",
+    ":core:ui",
 
     ":feature:auth:api",
     ":feature:auth:impl",

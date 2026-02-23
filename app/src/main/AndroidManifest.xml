@@ -3,9 +3,10 @@
 
     <application
         android:name=".PriceWiseApp"
-        android:label="PriceWise"
+        android:label="@string/app_name"
         android:allowBackup="false"
-        android:supportsRtl="true">
+        android:supportsRtl="true"
+        android:theme="@style/Theme.PriceWise">
 
         <activity
             android:name=".MainActivity"
