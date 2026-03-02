@@ -12,6 +12,10 @@ android {
         versionCode = (project.findProperty("versionCode") as String).toInt()
         versionName = project.findProperty("versionName") as String
     }
+
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
@@ -34,5 +38,7 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.hilt.android)
+    implementation(libs.runtime)
+    implementation(libs.compose.ui)
     ksp(libs.hilt.compiler)
 }

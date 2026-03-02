@@ -1,5 +1,6 @@
 package com.pricewise.feature.auth.impl.presentation.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,15 +25,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-
+import com.pricewise.feature.auth.impl.R
+import com.pricewise.feature.auth.impl.presentation.auth.components.AuthorisationButton
+import com.pricewise.feature.auth.impl.presentation.auth.components.EmailInputField
+import com.pricewise.feature.auth.impl.presentation.auth.components.PasswordInputField
+import com.pricewise.feature.auth.impl.presentation.auth.components.VkLoginButton
 
 
 @Composable
@@ -42,20 +48,20 @@ fun AuthorizationScreen(
 ) {
     val viewModel: AuthViewModel = hiltViewModel()
 
-//    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-//    val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
-//    LaunchedEffect(uiState.session) {
-//        if (uiState.session != null) {
-//            onNavigateToMain()
-//        }
-//    }
-//
-//    LaunchedEffect(uiState.error) {
-//        if (uiState.error != null) {
-//            Toast.makeText(context, uiState.error, Toast.LENGTH_LONG).show()
-//        }
-//    }
+    LaunchedEffect(uiState.session) {
+        if (uiState.session != null) {
+            onNavigateToMain()
+        }
+    }
+
+    LaunchedEffect(uiState.error) {
+        if (uiState.error != null) {
+            Toast.makeText(context, uiState.error, Toast.LENGTH_LONG).show()
+        }
+    }
 
     val inter = remember {
         FontFamily(
@@ -96,8 +102,8 @@ fun AuthorizationScreen(
                     style = TextStyle(
                         fontSize = 24.sp,
                         lineHeight = 31.2.sp,
-                        fontFamily = InterFontFamily,
-                        fontWeight = Bold,
+                        fontFamily = inter,
+                        fontWeight = FontWeight(700),
                         color = colorResource(R.color.login_Pricewise_color),
                     )
                 )

@@ -29,9 +29,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.pricewise.feature.auth.impl.R
 
 val inter = FontFamily(
     Font(R.font.inter_regular, weight = FontWeight.W400),
@@ -111,13 +111,6 @@ fun EmailInputField(email: String, onValueChange: (String) -> Unit) {
         }
     }
 }
-
-@Composable
-@Preview
-fun EmailInputFieldPreview() {
-    EmailInputField(email = "Почта", onValueChange = {})
-}
-
 
 @Composable
 fun PasswordInputField(
