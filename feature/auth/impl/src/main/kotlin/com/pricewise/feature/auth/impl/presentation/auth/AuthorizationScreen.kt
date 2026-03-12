@@ -34,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pricewise.feature.auth.impl.R
 import com.pricewise.feature.auth.impl.presentation.auth.components.AuthorisationButton
 import com.pricewise.feature.auth.impl.presentation.auth.components.EmailInputField
