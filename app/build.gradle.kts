@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
@@ -11,6 +12,10 @@ android {
         applicationId = "com.pricewise.app"
         versionCode = (project.findProperty("versionCode") as String).toInt()
         versionName = project.findProperty("versionName") as String
+    }
+
+    buildFeatures {
+        compose = true
     }
 }
 
@@ -35,5 +40,7 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.hilt.android)
+    implementation(libs.runtime)
+    implementation(libs.compose.ui)
     ksp(libs.hilt.compiler)
 }
