@@ -16,4 +16,20 @@
     <string name="week">До 7 дней</string>
     <string name="two_weeks">До 14 дней</string>
     <string name="long_max">99999999999</string>
+    <string name="quality">Качество товара</string>
+    <string name="only_originals">Только оригиналы</string>
+    <string name="only_new">Только новые</string>
+    <string name="only_bu">Только Б/У</string>
+    <string name="shops">Магазины</string>
+    <string name="marketplaces">Маркетплейсы</string>
+    <string name="offline_shops">Оффлайн магазины</string>
+    <string name="apply">Применить</string>
+    <string name="sort_price">Отсортировать по цене</string>
+    <string name="popular_diapasons">Популярные ценовые диапазоны</string>
+    <string name="below_80_000">До 80 000 ₽</string>
+    <string name="in_80_000_120_000">80 000 ₽ - 120 000 ₽</string>
+    <string name="after_120_000">120 000 ₽ и дороже</string>
+    <string name="pay_later">Оплата в рассрочку</string>
+    <string name="show_product_pay_later">Показать товары, которые можно оплатить позже от 0%</string>
+
 </resources>

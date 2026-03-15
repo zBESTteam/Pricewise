@@ -16,6 +16,7 @@ dependencies {
     implementation(project(":core:navigation"))
     implementation(project(":core:network"))
 
+    implementation(libs.core.ktx)
     implementation(libs.ui)
     implementation(libs.ui.graphics)
     implementation(libs.foundation)

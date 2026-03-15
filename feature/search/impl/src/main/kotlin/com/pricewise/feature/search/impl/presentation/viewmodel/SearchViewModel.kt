@@ -9,13 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class SearchViewModel : ViewModel() {
 
-    private val defaultLimit: Int = 20
-    private var searchJob: Job? = null
-    private var searchAttempts = 0
     private val _uiState = MutableStateFlow(SearchUiState())
-    private val _resolvedTotal = MutableStateFlow(0)
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
-    val resolvedTotal: StateFlow<Int> = _resolvedTotal.asStateFlow()
 
     private val _isProductChosen = MutableStateFlow(true)
     private val _deliveryChosen = MutableStateFlow(0)
@@ -86,7 +81,6 @@ class SearchViewModel : ViewModel() {
     }
 
     fun makeFilter() {
-
     }
 
     fun resetAllFilters() {

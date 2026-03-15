@@ -125,18 +125,11 @@ fun SearchBar(
                             modifier = Modifier.size(iconSize)
                         ) {
                             Icon(
-                                ImageVector.vectorResource(R.drawable.ic_search),
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_search),
                                 contentDescription = stringResource(R.string.clear_search_content_description),
                                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
                             )
                         }
-                    } else {
-                        Icon(
-                            ImageVector.vectorResource(R.drawable.ic_search),
-                            contentDescription = stringResource(R.string.search_action_content_description),
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                            modifier = Modifier.size(iconSize)
-                        )
                     }
                 }
             }

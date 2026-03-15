@@ -3,6 +3,7 @@ activity-compose = "1.13.0"
 agp = "9.0.1"
 coil-compose = "2.7.0"
 compose-shimmer = "1.2.0"
+core-ktx = "1.18.0"
 ksp = "2.2.10-2.0.2"
 coroutines = "1.10.2"
 room = "2.8.4"
@@ -21,6 +22,7 @@ activity-compose = { module = "androidx.activity:activity-compose", version.ref 
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
 coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil-compose" }
 compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "compose-shimmer" }
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle-viewmodel-compose" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "compose-ui" }
 ui-graphics = { module = "androidx.compose.ui:ui-graphics", version.ref = "compose-ui" }
