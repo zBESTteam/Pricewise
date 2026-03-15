@@ -1,13 +1,33 @@
 [versions]
+activity-compose = "1.13.0"
 agp = "9.0.1"
-kotlin = "2.2.10"
+coil-compose = "2.7.0"
+compose-shimmer = "1.2.0"
 ksp = "2.2.10-2.0.2"
 coroutines = "1.10.2"
 room = "2.8.4"
-hilt = "2.59.1"
-material = "1.12.0"
+compose-ui = "1.10.5"
+hilt = "2.59.2"
+material = "1.13.0"
+compose-animation = "1.10.5"
+compose-material3 = "1.4.0"
+compose-foundation = "1.10.5"
+lifecycle-viewmodel-compose = "2.10.0"
+ui-tooling-preview = "1.10.5"
+ui-tooling = "1.10.5"
 
 [libraries]
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
+coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil-compose" }
+compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "compose-shimmer" }
+lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle-viewmodel-compose" }
+ui = { module = "androidx.compose.ui:ui", version.ref = "compose-ui" }
+ui-graphics = { module = "androidx.compose.ui:ui-graphics", version.ref = "compose-ui" }
+foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
+material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
+animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
+lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
@@ -16,7 +36,8 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
-
+ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "ui-tooling-preview" }
+ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "ui-tooling" }
 [plugins]
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
