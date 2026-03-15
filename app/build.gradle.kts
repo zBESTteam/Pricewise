@@ -41,5 +41,10 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.runtime)
     implementation(libs.compose.ui)
+    implementation(libs.activity.compose)
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.compose.material3)
     ksp(libs.hilt.compiler)
 }
