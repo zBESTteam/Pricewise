@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pricewise.core.ui.R
+import com.pricewise.feature.search.impl.presentation.ui.Typography.Inter
 import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel
 import kotlin.apply
 
@@ -124,7 +125,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                     style = TextStyle(
                         fontSize = 20.sp,
                         lineHeight = 26.sp,
-                        fontFamily = FontFamily(Font(R.font.inter_bold)),
+                        fontFamily = Inter,
                         fontWeight = FontWeight(700),
                         color = colorResource(R.color.mid_dark),
                         letterSpacing = 0.3.sp
@@ -164,7 +165,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                             style = TextStyle(
                                 fontSize = 16.sp,
                                 lineHeight = 24.sp,
-                                fontFamily = FontFamily(Font(R.font.inter_regular)),
+                                fontFamily = Inter,
                                 fontWeight = FontWeight(600),
                                 color = if (isProductChosen) colorResource(R.color.white) else colorResource(
                                     R.color.disabled_filter_button_text_color
@@ -200,7 +201,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                             style = TextStyle(
                                 fontSize = 16.sp,
                                 lineHeight = 24.sp,
-                                fontFamily = FontFamily(Font(R.font.inter_regular)),
+                                fontFamily = Inter,
                                 fontWeight = FontWeight(600),
                                 color = if (!isProductChosen) colorResource(R.color.white) else colorResource(
                                     R.color.disabled_filter_button_text_color
@@ -216,7 +217,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
-                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontFamily = Inter,
                             fontWeight = FontWeight(600),
                             color = colorResource(R.color.mid_dark),
                             letterSpacing = 0.3.sp,
@@ -228,22 +229,22 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         modifier = Modifier
                             .horizontalScroll(rememberScrollState())
                     ) {
-                        DeliveryDateButton(
+                        FilterDefaultButton(
                             text = stringResource(R.string.today),
                             isSelected = deliveryChosen == 1,
                             onClick = { deliveryChosen = if (deliveryChosen == 1) 0 else 1 }
                         )
-                        DeliveryDateButton(
+                        FilterDefaultButton(
                             text = stringResource(R.string.today_or_tomorrow),
                             isSelected = deliveryChosen == 2,
                             onClick = { deliveryChosen = if (deliveryChosen == 2) 0 else 2 }
                         )
-                        DeliveryDateButton(
+                        FilterDefaultButton(
                             text = stringResource(R.string.week),
                             isSelected = deliveryChosen == 3,
                             onClick = { deliveryChosen = if (deliveryChosen == 3) 0 else 3 }
                         )
-                        DeliveryDateButton(
+                        FilterDefaultButton(
                             text = stringResource(R.string.two_weeks),
                             isSelected = deliveryChosen == 4,
                             onClick = { deliveryChosen = if (deliveryChosen == 4) 0 else 4 }
@@ -254,7 +255,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
-                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontFamily = Inter,
                             fontWeight = FontWeight(600),
                             color = colorResource(R.color.mid_dark),
 
@@ -287,7 +288,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
-                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontFamily = Inter,
                             fontWeight = FontWeight(600),
                             color = colorResource(R.color.mid_dark),
 
@@ -341,7 +342,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                             style = TextStyle(
                                 fontSize = 16.sp,
                                 lineHeight = 21.sp,
-                                fontFamily = FontFamily(Font(R.font.inter_regular)),
+                                fontFamily = Inter,
                                 fontWeight = FontWeight(600),
                                 color = colorResource(R.color.white),
                                 letterSpacing = 0.3.sp,
@@ -354,7 +355,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
-                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontFamily = Inter,
                             fontWeight = FontWeight(600),
                             color = colorResource(R.color.mid_dark),
                             letterSpacing = 0.3.sp,
@@ -477,7 +478,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
-                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontFamily = Inter,
                             fontWeight = FontWeight(600),
                             color = colorResource(R.color.mid_dark),
                             letterSpacing = 0.3.sp,
@@ -490,7 +491,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         ),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        DeliveryDateButton(
+                        FilterDefaultButton(
                             text = stringResource(R.string.below_80_000),
                             isSelected = popularDiapasonChosen == 1,
                             onClick = {
@@ -498,7 +499,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                                 priceFrom = 0
                                 priceTo = 0
                             })
-                        DeliveryDateButton(
+                        FilterDefaultButton(
                             text = stringResource(R.string.in_80_000_120_000),
                             isSelected = popularDiapasonChosen == 2,
                             onClick = {
@@ -507,7 +508,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                                 priceTo = 0
                             })
                     }
-                    DeliveryDateButton(
+                    FilterDefaultButton(
                         text = stringResource(R.string.after_120_000),
                         isSelected = popularDiapasonChosen == 3,
                         onClick = {
@@ -520,7 +521,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
-                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontFamily = Inter,
                             fontWeight = FontWeight(600),
                             color = colorResource(R.color.mid_dark),
 
@@ -564,7 +565,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                             style = TextStyle(
                                 fontSize = 16.sp,
                                 lineHeight = 21.sp,
-                                fontFamily = FontFamily(Font(R.font.inter_regular)),
+                                fontFamily = Inter,
                                 fontWeight = FontWeight(600),
                                 color = colorResource(R.color.white),
                                 letterSpacing = 0.3.sp,
@@ -578,7 +579,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
 }
 
 @Composable
-fun DeliveryDateButton(
+fun FilterDefaultButton(
     text: String,
     isSelected: Boolean,
     onClick: () -> Unit
@@ -601,7 +602,7 @@ fun DeliveryDateButton(
             style = TextStyle(
                 fontSize = 15.sp,
                 lineHeight = 21.sp,
-                fontFamily = FontFamily(Font(R.font.inter_regular)),
+                fontFamily = Inter,
                 fontWeight = FontWeight(600),
                 color = if (!isSelected) colorResource(R.color.disabled_filter_button_text_color) else colorResource(
                     R.color.white
@@ -642,7 +643,7 @@ fun FilterSwitch(
                 style = TextStyle(
                     fontSize = 16.sp,
                     lineHeight = 24.sp,
-                    fontFamily = FontFamily(Font(R.font.inter_regular)),
+                    fontFamily = Inter,
                     fontWeight = FontWeight(500),
                     color = colorResource(R.color.disabled_filter_button_text_color),
                     letterSpacing = 0.3.sp,
