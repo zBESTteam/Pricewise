@@ -16,6 +16,11 @@ compose-foundation = "1.10.5"
 lifecycle-viewmodel-compose = "2.10.0"
 ui-tooling-preview = "1.10.5"
 ui-tooling = "1.10.5"
+hilt = "2.59.1"
+runtime = "1.10.3"
+lifecycle = "2.8.7"
+material3 = "1.2.1"
+activityCompose = "1.9.3"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -40,7 +45,17 @@ hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.re
 material = { module = "com.google.android.material:material", version.ref = "material" }
 ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "ui-tooling-preview" }
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "ui-tooling" }
+runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
+compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "runtime" }
+lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
+lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.2.0" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+
 [plugins]
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 android-application = { id = "com.android.application", version.ref = "agp" }
