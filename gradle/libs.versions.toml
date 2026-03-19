@@ -13,28 +13,24 @@ material = "1.13.0"
 compose-animation = "1.10.5"
 compose-material3 = "1.4.0"
 compose-foundation = "1.10.5"
-lifecycle-viewmodel-compose = "2.10.0"
 ui-tooling-preview = "1.10.5"
 ui-tooling = "1.10.5"
-hilt = "2.59.1"
 runtime = "1.10.3"
 lifecycle = "2.8.7"
 material3 = "1.2.1"
-activityCompose = "1.9.3"
+kotlin = "2.3.20"
+
 
 [libraries]
-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
 coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil-compose" }
 compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "compose-shimmer" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle-viewmodel-compose" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "compose-ui" }
 ui-graphics = { module = "androidx.compose.ui:ui-graphics", version.ref = "compose-ui" }
 foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 animation = { module = "androidx.compose.animation:animation", version.ref = "compose-animation" }
-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
@@ -51,7 +47,7 @@ lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-ru
 lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.2.0" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 
 [plugins]
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
