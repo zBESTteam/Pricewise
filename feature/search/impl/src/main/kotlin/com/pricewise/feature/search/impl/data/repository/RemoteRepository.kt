@@ -2,6 +2,7 @@ package com.pricewise.feature.search.impl.data.repository
 
 import com.pricewise.core.network.PriceWiseApi
 import com.pricewise.core.network.di.NetworkModule
+import com.pricewise.core.network.di.NetworkModule.DEFAULT_SOURCES
 import com.pricewise.core.network.dto.MerchantDto
 import com.pricewise.core.network.dto.ProductDto
 import com.pricewise.feature.search.api.SearchFeatureApi
@@ -98,7 +99,7 @@ class RemoteRepository(
         val id = obj.id.asStringId()
         val name = obj.name?.trim().orEmpty()
         val logoUrl = obj.logoUrl?.trim().orEmpty()
-        val fallbackId = if (id.isNotEmpty()) id else name
+        val fallbackId = id.ifEmpty { name }
         return Merchant(id = fallbackId, name = name, logoUrl = logoUrl)
     }
 
@@ -106,19 +107,6 @@ class RemoteRepository(
         return item.thumbnailUrl?.trim().orEmpty()
             .ifBlank { item.imageUrl?.trim().orEmpty() }
             .ifBlank { item.image?.trim().orEmpty() }
-    }
-
-    private companion object {
-        val DEFAULT_SOURCES = listOf(
-            "market.yandex.ru",
-            "mvideo.ru",
-            "citilink.ru",
-            "eldorado.ru",
-            "avito.ru",
-            "cdek.shopping",
-            "aliexpress.ru",
-            "xcom-shop.ru",
-        )
     }
 }
 

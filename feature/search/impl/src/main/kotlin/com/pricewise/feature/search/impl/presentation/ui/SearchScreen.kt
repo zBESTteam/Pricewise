@@ -38,6 +38,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -71,6 +72,10 @@ fun SearchScreen(
             closeFilters = closeFilters,
             viewModel = viewModel
         )
+    }
+
+    LaunchedEffect(null) { // для теста
+        viewModel.performSearch("Meta Quest 3")
     }
 
     Column(modifier = modifier) {

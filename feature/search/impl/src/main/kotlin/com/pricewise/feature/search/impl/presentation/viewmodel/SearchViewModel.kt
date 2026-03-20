@@ -1,13 +1,30 @@
 package com.pricewise.feature.search.impl.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.pricewise.feature.search.api.SearchFeatureApi
+import com.pricewise.feature.search.api.domain.model.Product
+import com.pricewise.feature.search.impl.data.repository.RemoteRepository
+import com.pricewise.feature.search.impl.presentation.ui.DEFAULT_TOTAL_SOURCES
 import com.pricewise.feature.search.impl.presentation.ui.SearchUiState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel(private val repository: SearchFeatureApi = RemoteRepository()) : ViewModel() {
 
+    private val defaultLimit: Int = 20
+    private var searchJob: Job? = null
+    private var searchAttempts = 0
+    private val _resolvedTotal = MutableStateFlow(0)
+    val resolvedTotal: StateFlow<Int> = _resolvedTotal.asStateFlow()
+    private val _allItems = MutableStateFlow(listOf<Product>())
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
@@ -79,9 +96,6 @@ class SearchViewModel : ViewModel() {
         _canPayLater.value = value
     }
 
-    fun makeFilter() {
-    }
-
     fun resetAllFilters() {
         _isProductChosen.value = true
         _deliveryChosen.value = 0
@@ -93,15 +107,102 @@ class SearchViewModel : ViewModel() {
     }
 
     fun onQueryChange(query: String) {
-        // Сделать
+        val trimmedQuery = query.trim()
+        _uiState.update { state ->
+            when {
+                trimmedQuery.isEmpty() -> {
+                    searchJob?.cancel()
+                    state.copy(
+                        query = query,
+                        submittedQuery = "",
+                        isLoading = false,
+                        items = emptyList(),
+                        hasMore = false,
+                        checkedSources = 0,
+                        totalSources = DEFAULT_TOTAL_SOURCES,
+                        pendingSources = emptyList(),
+                    )
+                }
+
+                else -> state.copy(query = query)
+            }
+        }
     }
 
     fun submitSearch() {
-        // Сделать
+        searchJob?.cancel()
+        searchAttempts = 0
+        viewModelScope.launch(Dispatchers.IO) {
+            searchJob = viewModelScope.launch {
+                resetAllFilters()
+                performSearch(_uiState.value.query.trim())
+            }
+        }
     }
 
     fun performSearch(query: String) {
-        // Сделать
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true, submittedQuery = query) }
+                val result = withContext(Dispatchers.IO) {
+                    repository.search(
+                        query = query,
+                        limit = defaultLimit,
+                        offset = 0,
+                        perSource = true,
+                        partial = true,
+                        sort = "",
+                        priceMin = priceFrom.value,
+                        priceMax = priceTo.value,
+                        delivery = deliveryChosen.value.toString(),
+                        onlyOriginal = onlyOriginals.value,
+                        onlyNew = onlyNew.value,
+                        onlyUsed = onlyUsed.value,
+                        marketplaceOnly = onlyMarketplaces.value,
+                        offlineOnly = onlyOfflineShops.value,
+                        playLaterOnly = canPayLater.value,
+                    )
+                }
+                _allItems.value = result.items
+                val shouldSearchAgain =
+                    result.pendingSources.isNotEmpty() && searchAttempts < MAX_SEARCH_ATTEMPTS
+                _uiState.update { state ->
+                    val checked = result.checkedSources ?: state.checkedSources
+                    _resolvedTotal.value = when {
+                        result.totalSources != null && result.totalSources!! > 0 -> {
+                            maxOf(result.totalSources!!, checked)
+                        }
+                        checked > state.totalSources -> checked
+                        else -> state.totalSources
+                    }
+                    state.copy(
+                        isLoading = shouldSearchAgain,
+                        items = result.items,
+                        hasMore = result.hasMore,
+                        checkedSources = checked,
+                        totalSources = resolvedTotal.value,
+                        pendingSources = result.pendingSources,
+                    )
+                }
+                if (shouldSearchAgain) {
+                    repeatSearch(query = query)
+                }
+            } catch (_: Exception) {
+                _uiState.update { state -> state.copy(isError = true) }
+            }
+        }
+    }
+
+    fun repeatSearch(query: String) {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch(Dispatchers.IO) {
+            searchAttempts += 1
+            delay(SEARCH_INTERVAL_MS)
+            performSearch(query)
+        }
     }
 
 }
+
+private const val MAX_SEARCH_ATTEMPTS = 8
+private const val SEARCH_INTERVAL_MS: Long = 1000

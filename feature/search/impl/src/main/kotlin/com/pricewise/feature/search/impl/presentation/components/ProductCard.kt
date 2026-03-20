@@ -17,9 +17,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -29,20 +31,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
 import com.pricewise.core.ui.R
 import com.pricewise.feature.search.api.domain.model.Merchant
 import com.pricewise.feature.search.api.domain.model.Product
+import com.pricewise.feature.search.impl.presentation.ui.Typography.Inter
 import com.valentinilk.shimmer.shimmer
 
 @Composable
 fun ProductCard(product: Product, addToFavourites: (Product) -> Unit) {
-    val inter = FontFamily(
-        Font(R.font.inter_regular, weight = FontWeight.W400),
-        Font(R.font.inter_medium, weight = FontWeight.W500),
-        Font(R.font.inter_semibold, weight = FontWeight.W600),
-        Font(R.font.inter_bold, weight = FontWeight.W700),
-    )
+
+    val context = LocalContext.current
+    val imageLoader = ImageLoader.Builder(context).components { add(SvgDecoder.Factory()) }.build()
+
     Box(
         modifier = Modifier
             .height(113.dp)
@@ -64,6 +67,7 @@ fun ProductCard(product: Product, addToFavourites: (Product) -> Unit) {
                     .clip(RoundedCornerShape(14.dp)),
                 model = product.thumbnailUrl,
                 contentDescription = null,
+                imageLoader = imageLoader
             )
             Spacer(modifier = Modifier.size(21.dp))
             Column(
@@ -79,7 +83,8 @@ fun ProductCard(product: Product, addToFavourites: (Product) -> Unit) {
                             .width(18.dp)
                             .height(18.dp),
                         model = product.merchant.logoUrl,
-                        contentDescription = null
+                        contentDescription = null,
+                        imageLoader = imageLoader
                     )
                     Spacer(modifier = Modifier.size(6.dp))
                     Text(
@@ -87,7 +92,7 @@ fun ProductCard(product: Product, addToFavourites: (Product) -> Unit) {
                         style = TextStyle(
                             fontSize = 14.sp,
                             lineHeight = 21.sp,
-                            fontFamily = inter,
+                            fontFamily = Inter,
                             fontWeight = FontWeight(600),
                             color = colorResource(R.color.black),
 
@@ -100,7 +105,7 @@ fun ProductCard(product: Product, addToFavourites: (Product) -> Unit) {
                     style = TextStyle(
                         fontSize = 12.sp,
                         lineHeight = 18.sp,
-                        fontFamily = inter,
+                        fontFamily = Inter,
                         fontWeight = FontWeight(400),
                         color = colorResource(R.color.black),
 
@@ -112,7 +117,7 @@ fun ProductCard(product: Product, addToFavourites: (Product) -> Unit) {
                     style = TextStyle(
                         fontSize = 14.sp,
                         lineHeight = 21.sp,
-                        fontFamily = inter,
+                        fontFamily = Inter,
                         fontWeight = FontWeight(700),
                         color = colorResource(R.color.black),
                         letterSpacing = 0.3.sp,

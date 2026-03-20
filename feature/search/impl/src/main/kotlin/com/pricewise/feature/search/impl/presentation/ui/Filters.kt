@@ -332,7 +332,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                                 viewModel.setPriceTo(priceTo)
                                 viewModel.setPopularDiapasonChosen(popularDiapasonChosen)
                                 viewModel.setCanPayLater(canPayLater)
-                                viewModel.makeFilter()
+                                // Добавить начало поиска заново
                                 closeFilters()
                             },
                         contentAlignment = Alignment.Center
@@ -395,12 +395,10 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                             .height(14.dp)
                             .align(Alignment.CenterHorizontally)
                     ) {
-//                        val minPrice =
-//                            state.value.items.minByOrNull { it.price }?.price?.toFloat() ?: 0f
-//                        val maxPrice =
-//                            state.value.items.maxByOrNull { it.price }?.price?.toFloat() ?: 0f
-                        val minPrice = 10000f
-                        val maxPrice = 100000f
+                        val minPrice =
+                            state.value.items.minByOrNull { it.price }?.price?.toFloat() ?: 0f
+                        val maxPrice =
+                            state.value.items.maxByOrNull { it.price }?.price?.toFloat() ?: 0f
                         val priceRange = maxPrice - minPrice
                         val normalizedFrom = if (priceRange > 0) {
                             ((priceFrom - minPrice) / priceRange).coerceIn(0f, 1f)
@@ -555,7 +553,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                                 viewModel.setPriceTo(priceTo)
                                 viewModel.setPopularDiapasonChosen(popularDiapasonChosen)
                                 viewModel.setCanPayLater(canPayLater)
-                                viewModel.makeFilter()
+                                // Добавить начало поиска заново
                                 closeFilters()
                             },
                         contentAlignment = Alignment.Center

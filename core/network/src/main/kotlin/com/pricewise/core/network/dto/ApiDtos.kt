@@ -39,25 +39,25 @@ data class ProductDto(
     val id: Any?,
     val title: String?,
     val price: Long?,
-    @field:Json(name = "thumbnail_url")
+    @Json(name = "thumbnail_url")
     val thumbnailUrl: String?,
-    @field:Json(name = "image_url")
+    @Json(name = "image_url")
     val imageUrl: String?,
-    @field:Json(name = "image")
+    @Json(name = "image")
     val image: String?,
-    @field:Json(name = "product_url")
+    @Json(name = "product_url")
     val productUrl: String?,
     val source: String?,
     val merchant: MerchantDto?,
-    @field:Json(name = "merchant_name")
+    @Json(name = "merchant_name")
     val merchantName: String?,
-    @field:Json(name = "merchant_logo_url")
+    @Json(name = "merchant_logo_url")
     val merchantLogoUrl: String?,
-    @field:Json(name = "logo_url")
+    @Json(name = "logo_url")
     val logoUrl: String?,
-    @field:Json(name = "merchant_id")
+    @Json(name = "merchant_id")
     val merchantId: String?,
-    @field:Json(name = "is_favorite")
+    @Json(name = "is_favorite")
     val isFavorite: Boolean?,
 )
 
