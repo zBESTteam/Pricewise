@@ -2,7 +2,6 @@ package com.pricewise.feature.search.impl.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.pricewise.feature.search.impl.presentation.ui.SearchUiState
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +15,7 @@ class SearchViewModel : ViewModel() {
     private val _deliveryChosen = MutableStateFlow(0)
     private val _onlyOriginals = MutableStateFlow(false)
     private val _onlyNew = MutableStateFlow(false)
-    private val _onlyBU = MutableStateFlow(false)
+    private val _onlyUsed = MutableStateFlow(false)
     private val _onlyMarketplaces = MutableStateFlow(false)
     private val _onlyOfflineShops = MutableStateFlow(false)
     private val _priceFrom = MutableStateFlow(0L)
@@ -27,7 +26,7 @@ class SearchViewModel : ViewModel() {
     val deliveryChosen: StateFlow<Int> = _deliveryChosen.asStateFlow()
     val onlyOriginals: StateFlow<Boolean> = _onlyOriginals.asStateFlow()
     val onlyNew: StateFlow<Boolean> = _onlyNew.asStateFlow()
-    val onlyBU: StateFlow<Boolean> = _onlyBU.asStateFlow()
+    val onlyUsed: StateFlow<Boolean> = _onlyUsed.asStateFlow()
     val onlyMarketplaces: StateFlow<Boolean> = _onlyMarketplaces.asStateFlow()
     val onlyOfflineShops: StateFlow<Boolean> = _onlyOfflineShops.asStateFlow()
     val priceFrom: StateFlow<Long> = _priceFrom.asStateFlow()
@@ -52,8 +51,8 @@ class SearchViewModel : ViewModel() {
         _onlyNew.value = value
     }
 
-    fun setOnlyBU(value: Boolean) {
-        _onlyBU.value = value
+    fun setOnlyUsed(value: Boolean) {
+        _onlyUsed.value = value
     }
 
     fun setOnlyMarketplaces(value: Boolean) {
@@ -88,7 +87,7 @@ class SearchViewModel : ViewModel() {
         _deliveryChosen.value = 0
         _onlyOriginals.value = false
         _onlyNew.value = false
-        _onlyBU.value = false
+        _onlyUsed.value = false
         _onlyMarketplaces.value = false
         _onlyOfflineShops.value = false
     }

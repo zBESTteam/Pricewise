@@ -69,7 +69,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
     var deliveryChosen by rememberSaveable { mutableIntStateOf(0) }
     var onlyOriginals by rememberSaveable { mutableStateOf(false) }
     var onlyNew by rememberSaveable { mutableStateOf(false) }
-    var onlyBU by rememberSaveable { mutableStateOf(false) }
+    var onlyUsed by rememberSaveable { mutableStateOf(false) }
     var onlyMarketplaces by rememberSaveable { mutableStateOf(false) }
     var onlyOfflineShops by rememberSaveable { mutableStateOf(false) }
     var priceFrom by rememberSaveable { mutableLongStateOf(0L) }
@@ -82,7 +82,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
         deliveryChosen = viewModel.deliveryChosen.value
         onlyOriginals = viewModel.onlyOriginals.value
         onlyNew = viewModel.onlyNew.value
-        onlyBU = viewModel.onlyBU.value
+        onlyUsed = viewModel.onlyUsed.value
         onlyMarketplaces = viewModel.onlyMarketplaces.value
         onlyOfflineShops = viewModel.onlyOfflineShops.value
         priceFrom = viewModel.priceFrom.value
@@ -280,8 +280,8 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
 
                         FilterSwitch(
                             title = stringResource(R.string.only_bu),
-                            isChecked = onlyBU,
-                            onCheckedChange = { onlyBU = it })
+                            isChecked = onlyUsed,
+                            onCheckedChange = { onlyUsed = it })
                     }
                     Text(
                         text = stringResource(R.string.shops),
@@ -325,7 +325,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                                 viewModel.setDeliveryChosen(deliveryChosen)
                                 viewModel.setOnlyOriginals(onlyOriginals)
                                 viewModel.setOnlyNew(onlyNew)
-                                viewModel.setOnlyBU(onlyBU)
+                                viewModel.setOnlyUsed(onlyUsed)
                                 viewModel.setOnlyMarketplaces(onlyMarketplaces)
                                 viewModel.setOnlyOfflineShops(onlyOfflineShops)
                                 viewModel.setPriceFrom(priceFrom)
@@ -548,7 +548,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                                 viewModel.setDeliveryChosen(deliveryChosen)
                                 viewModel.setOnlyOriginals(onlyOriginals)
                                 viewModel.setOnlyNew(onlyNew)
-                                viewModel.setOnlyBU(onlyBU)
+                                viewModel.setOnlyUsed(onlyUsed)
                                 viewModel.setOnlyMarketplaces(onlyMarketplaces)
                                 viewModel.setOnlyOfflineShops(onlyOfflineShops)
                                 viewModel.setPriceFrom(priceFrom)

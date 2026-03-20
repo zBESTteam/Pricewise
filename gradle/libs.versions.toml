@@ -31,13 +31,10 @@ ui-tooling-preview = "1.10.5"
 ui-tooling = "1.10.5"
 runtime = "1.10.3"
 compose-foundation = "1.10.5"
-ui-tooling-preview = "1.10.5"
 compose-material3 = "1.4.0"
 
 
 [libraries]
-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
-coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil-compose" }
 compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "compose-shimmer" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "compose-ui" }
@@ -95,4 +92,3 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
