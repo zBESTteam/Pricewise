@@ -1,148 +1,131 @@
 package com.pricewise.core.network.dto
 
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
 
-
-@JsonClass(generateAdapter = true)
 data class MainResponseDto(
-    val banners: List<BannerDto>? = null,
-    val recommendations: List<ProductDto>? = null,
+    val banners: List<BannerDto>?,
+    val recommendations: List<ProductDto>?,
 )
 
-
-@JsonClass(generateAdapter = true)
 data class TrendingResponseDto(
-    val items: List<TrendingItemDto>? = null,
+    val items: List<TrendingItemDto>?,
 )
 
-@JsonClass(generateAdapter = true)
 data class SearchResponseDto(
-    val items: List<ProductDto>? = null,
-    @Json(name = "has_more")
-    val hasMore: Boolean? = null,
-    @Json(name = "checked_sources")
-    val checkedSources: Int? = null,
-    @Json(name = "total_sources")
-    val totalSources: Int? = null,
-    @Json(name = "pending_sources")
-    val pendingSources: List<String>? = null,
+    val items: List<ProductDto>?,
+    @field:Json(name = "has_more")
+    val hasMore: Boolean?,
+    @field:Json(name = "checked_sources")
+    val checkedSources: Int?,
+    @field:Json(name = "total_sources")
+    val totalSources: Int?,
+    @field:Json(name = "pending_sources")
+    val pendingSources: List<String>?,
 )
 
-@JsonClass(generateAdapter = true)
 data class BannerDto(
-    val id: Any? = null,
-    val title: String? = null,
-    @Json(name = "image_url")
-    val imageUrl: String? = null,
+    val id: Any?,
+    val title: String?,
+    @field:Json(name = "image_url")
+    val imageUrl: String?,
 )
 
-@JsonClass(generateAdapter = true)
 data class TrendingItemDto(
-    val query: String? = null,
-    val count: Int? = null,
+    val query: String?,
+    val count: Int?,
 )
 
-@JsonClass(generateAdapter = true)
 data class ProductDto(
-    val id: Any? = null,
-    val title: String? = null,
-    val price: Long? = null,
-    @Json(name = "thumbnail_url")
-    val thumbnailUrl: String? = null,
-    @Json(name = "image_url")
-    val imageUrl: String? = null,
-    @Json(name = "image")
-    val image: String? = null,
-    val source: String? = null,
-    @Json(name = "merchant")
-    val merchant: MerchantDto? = null,
-    @Json(name = "merchant_name")
-    val merchantName: String? = null,
-    @Json(name = "merchant_logo_url")
-    val merchantLogoUrl: String? = null,
-    @Json(name = "logo_url")
-    val logoUrl: String? = null,
-    @Json(name = "merchant_id")
-    val merchantId: String? = null,
-    @Json(name = "is_favorite")
-    val isFavorite: Boolean? = null,
+    val id: Any?,
+    val title: String?,
+    val price: Long?,
+    @field:Json(name = "thumbnail_url")
+    val thumbnailUrl: String?,
+    @field:Json(name = "image_url")
+    val imageUrl: String?,
+    @field:Json(name = "image")
+    val image: String?,
+    @field:Json(name = "product_url")
+    val productUrl: String?,
+    val source: String?,
+    val merchant: MerchantDto?,
+    @field:Json(name = "merchant_name")
+    val merchantName: String?,
+    @field:Json(name = "merchant_logo_url")
+    val merchantLogoUrl: String?,
+    @field:Json(name = "logo_url")
+    val logoUrl: String?,
+    @field:Json(name = "merchant_id")
+    val merchantId: String?,
+    @field:Json(name = "is_favorite")
+    val isFavorite: Boolean?,
 )
 
-@JsonClass(generateAdapter = true)
 data class MerchantDto(
-    val id: Any? = null,
-    val name: String? = null,
-    @Json(name = "logo_url")
-    val logoUrl: String? = null,
+    val id: Any?,
+    val name: String?,
+    @field:Json(name = "logo_url")
+    val logoUrl: String?,
 )
 
-@JsonClass(generateAdapter = true)
 data class AuthResponseDto(
-    @Json(name = "access_token")
-    val accessToken: String? = null,
-    @Json(name = "token_type")
-    val tokenType: String? = null,
-    val user: UserDto? = null,
+    @field:Json(name = "access_token")
+    val accessToken: String?,
+    @field:Json(name = "token_type")
+    val tokenType: String?,
+    val user: UserDto?,
 )
 
-@JsonClass(generateAdapter = true)
 data class UserDto(
-    val id: Long? = null,
-    val email: String? = null,
+    val id: Long?,
+    val email: String?,
 )
 
-@JsonClass(generateAdapter = true)
 data class RegisterRequestDto(
     val email: String,
     val password: String,
-    @Json(name = "password_confirm")
+    @field:Json(name = "password_confirm")
     val passwordConfirm: String,
 )
 
-@JsonClass(generateAdapter = true)
 data class LoginRequestDto(
     val email: String,
     val password: String,
 )
 
-@JsonClass(generateAdapter = true)
 data class FavoritesResponseDto(
-    val items: List<FavoriteDto>? = null,
+    val items: List<FavoriteDto>?,
 )
 
-@JsonClass(generateAdapter = true)
 data class FavoriteDto(
-    val id: Long? = null,
-    @Json(name = "external_id")
-    val externalId: String? = null,
-    val source: String? = null,
-    val title: String? = null,
-    val price: Long? = null,
-    @Json(name = "thumbnail_url")
-    val thumbnailUrl: String? = null,
-    @Json(name = "product_url")
-    val productUrl: String? = null,
-    @Json(name = "merchant_logo_url")
-    val merchantLogoUrl: String? = null,
+    val id: Long?,
+    @field:Json(name = "external_id")
+    val externalId: String?,
+    val source: String?,
+    val title: String?,
+    val price: Long?,
+    @field:Json(name = "thumbnail_url")
+    val thumbnailUrl: String?,
+    @field:Json(name = "product_url")
+    val productUrl: String?,
+    @field:Json(name = "merchant_logo_url")
+    val merchantLogoUrl: String?,
 )
 
-@JsonClass(generateAdapter = true)
 data class FavoriteCreateRequestDto(
-    @Json(name = "external_id")
+    @field:Json(name = "external_id")
     val externalId: String,
     val source: String,
     val title: String,
     val price: Long,
-    @Json(name = "thumbnail_url")
-    val thumbnailUrl: String? = null,
-    @Json(name = "product_url")
-    val productUrl: String? = null,
-    @Json(name = "merchant_logo_url")
-    val merchantLogoUrl: String? = null,
+    @field:Json(name = "thumbnail_url")
+    val thumbnailUrl: String?,
+    @field:Json(name = "product_url")
+    val productUrl: String?,
+    @field:Json(name = "merchant_logo_url")
+    val merchantLogoUrl: String?,
 )
 
-@JsonClass(generateAdapter = true)
 data class ApiStatusDto(
-    val status: String? = null,
+    val status: String?,
 )
