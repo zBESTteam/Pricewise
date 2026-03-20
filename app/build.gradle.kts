@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
@@ -11,6 +12,10 @@ android {
         applicationId = "com.pricewise.app"
         versionCode = (project.findProperty("versionCode") as String).toInt()
         versionName = project.findProperty("versionName") as String
+    }
+
+    buildFeatures {
+        compose = true
     }
 }
 
@@ -33,7 +38,23 @@ dependencies {
     implementation(project(":feature:notifications:impl"))
     implementation(project(":feature:ads:impl"))
 
+    // Удалить / изменить
+    implementation(platform("androidx.compose:compose-bom:2026.03.00"))
+    implementation("androidx.activity:activity-compose:1.13.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.core:core-ktx:1.18.0")
+
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.hilt.android)
+    implementation(libs.runtime)
+    implementation(libs.compose.ui)
+    implementation(libs.activity.compose)
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.compose.material3)
     ksp(libs.hilt.compiler)
 }
