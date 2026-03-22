@@ -1,5 +1,6 @@
 package com.pricewise.feature.search.impl.presentation.ui
 
+import Typography.Inter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,12 +54,6 @@ fun SearchScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel,
 ) {
-    val inter = FontFamily(
-        Font(R.font.inter_regular, weight = FontWeight.W400),
-        Font(R.font.inter_medium, weight = FontWeight.W500),
-        Font(R.font.inter_semibold, weight = FontWeight.W600),
-        Font(R.font.inter_bold, weight = FontWeight.W700),
-    )
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -119,7 +114,7 @@ fun SearchScreen(
             style = TextStyle(
                 fontSize = 20.sp,
                 lineHeight = 26.sp,
-                fontFamily = inter,
+                fontFamily = Inter,
                 fontWeight = FontWeight(700),
                 color = colorResource(R.color.mid_dark),
             )
@@ -133,7 +128,7 @@ fun SearchScreen(
             style = TextStyle(
                 fontSize = 14.sp,
                 lineHeight = 21.sp,
-                fontFamily = inter,
+                fontFamily = Inter,
                 fontWeight = FontWeight(600),
                 color = colorResource(R.color.secondary_text_color),
 
