@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.pricewise.feature.search.api.SearchFeatureApi
 import com.pricewise.feature.search.api.domain.model.Product
 import com.pricewise.feature.search.impl.data.repository.RemoteRepository
-import com.pricewise.feature.search.impl.presentation.ui.DEFAULT_TOTAL_SOURCES
 import com.pricewise.feature.search.impl.presentation.ui.SearchUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
