@@ -108,25 +108,14 @@ class SearchViewModel(private val repository: SearchFeatureApi = RemoteRepositor
 
     fun onQueryChange(query: String) {
         val trimmedQuery = query.trim()
-        _uiState.update { state ->
-            when {
-                trimmedQuery.isEmpty() -> {
-                    searchJob?.cancel()
-                    state.copy(
-                        query = query,
-                        submittedQuery = "",
-                        isLoading = false,
-                        items = emptyList(),
-                        hasMore = false,
-                        checkedSources = 0,
-                        totalSources = DEFAULT_TOTAL_SOURCES,
-                        pendingSources = emptyList(),
-                    )
-                }
-
-                else -> state.copy(query = query)
-            }
+        if (trimmedQuery.isEmpty()) clearQuery()
+        else _uiState.update { state ->
+            state.copy(query = query)
         }
+    }
+
+    fun clearQuery() {
+        _uiState.update { state -> state.copy(query = "") }
     }
 
     fun submitSearch() {
@@ -172,6 +161,7 @@ class SearchViewModel(private val repository: SearchFeatureApi = RemoteRepositor
                         result.totalSources != null && result.totalSources!! > 0 -> {
                             maxOf(result.totalSources!!, checked)
                         }
+
                         checked > state.totalSources -> checked
                         else -> state.totalSources
                     }

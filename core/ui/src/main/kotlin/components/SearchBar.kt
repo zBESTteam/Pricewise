@@ -1,5 +1,6 @@
-package com.pricewise.feature.search.impl.presentation.components
+package components
 
+import Typography.Inter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,12 +19,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
@@ -35,7 +42,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pricewise.core.ui.R
-import com.pricewise.feature.search.impl.presentation.ui.Typography.Inter
 
 @Composable
 fun SearchBar(
@@ -47,10 +53,12 @@ fun SearchBar(
 ) {
     val containerPadding = 16.dp
     val textSpacing = 20.dp
-    val iconSize = 20.dp
+    val searchIconSize = 20.dp
+    val extraIconSize = 25.dp
     val placeholder = stringResource(R.string.search_hint)
     val searchFieldContentDescription = stringResource(R.string.search_field_content_description)
     val focusManager = LocalFocusManager.current
+    var isFocused by remember { mutableStateOf(false) }
 
     Surface(
         modifier = modifier,
@@ -70,7 +78,7 @@ fun SearchBar(
                 color = MaterialTheme.colorScheme.onSurface
             ),
             singleLine = true,
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+            cursorBrush = SolidColor(colorResource(R.color.middle_gradient)),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(
                 onSearch = {
@@ -87,6 +95,9 @@ fun SearchBar(
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(containerPadding)
+                .onFocusChanged { focusState ->
+                    isFocused = focusState.isFocused
+                }
                 .semantics {
                     contentDescription = searchFieldContentDescription
                 },
@@ -98,7 +109,7 @@ fun SearchBar(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_search),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                        modifier = Modifier.size(iconSize)
+                        modifier = Modifier.size(searchIconSize)
                     )
                     Spacer(modifier = Modifier.width(textSpacing))
                     Box(modifier = Modifier.weight(1f)) {
@@ -119,15 +130,27 @@ fun SearchBar(
                         innerTextField()
                     }
                     Spacer(modifier = Modifier.width(textSpacing))
-                    if (value.isNotEmpty()) {
+                    if (value.isNotEmpty() && isFocused) {
                         IconButton(
                             onClick = onClear,
-                            modifier = Modifier.size(iconSize)
+                            modifier = Modifier.size(extraIconSize)
                         ) {
                             Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_search),
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_close),
                                 contentDescription = stringResource(R.string.clear_search_content_description),
                                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                            )
+                        }
+                    } else {
+                        IconButton(
+                            onClick = { /* Логика перехода на камеру */ },
+                            modifier = Modifier.size(extraIconSize)
+                        ) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_camera),
+                                contentDescription = stringResource(R.string.search_action_content_description),
+                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                                modifier = Modifier.size(extraIconSize)
                             )
                         }
                     }

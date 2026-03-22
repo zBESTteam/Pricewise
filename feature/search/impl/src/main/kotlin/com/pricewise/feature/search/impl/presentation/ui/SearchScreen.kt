@@ -45,7 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.pricewise.core.ui.R
 import com.pricewise.feature.search.impl.presentation.components.ProductCardShimmer
-import com.pricewise.feature.search.impl.presentation.components.SearchBar
+import components.SearchBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,8 +74,8 @@ fun SearchScreen(
         )
     }
 
-    LaunchedEffect(null) { // для теста
-        viewModel.performSearch("Meta Quest 3")
+    LaunchedEffect(null) {
+        // Здесь после перехода на экран поиска вызвать submitSearch
     }
 
     Column(modifier = modifier) {
@@ -98,7 +98,7 @@ fun SearchScreen(
             SearchBar(
                 value = state.query,
                 onValueChange = viewModel::onQueryChange,
-                onClear = { viewModel.onQueryChange("") },
+                onClear = { viewModel.clearQuery() },
                 onSearch = viewModel::submitSearch,
                 modifier = Modifier
                     .fillMaxWidth()
