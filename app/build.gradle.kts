@@ -20,14 +20,15 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:navigation-impl"))
     implementation(project(":core:di"))
     implementation(project(":core:ui"))
-    implementation(project(":core:navigation"))
     implementation(project(":core:network"))
     implementation(project(":core:auth"))
     implementation(project(":core:push"))
 
     implementation(project(":feature:auth:impl"))
+    implementation(project(":feature:home:api"))
     implementation(project(":feature:home:impl"))
     implementation(project(":feature:search:impl"))
     implementation(project(":feature:profile:impl"))
