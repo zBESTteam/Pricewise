@@ -15,55 +15,57 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pricewise.feature.home.impl.R
+import com.pricewise.feature.home.impl.presentation.viewmodel.HomeScreenViewModel
 import com.pricewise.feature.home.impl.presentation.ui.components.PopularQueriesRow
 import com.pricewise.feature.home.impl.presentation.ui.components.ProductCard
 import com.pricewise.feature.home.impl.presentation.ui.components.QuickActionCarousel
 import com.pricewise.feature.home.impl.presentation.ui.components.SearchBar
 import com.pricewise.feature.home.impl.presentation.ui.placeholders.LoadingFeedSection
-import com.pricewise.feature.home.impl.presentation.viewmodel.MainScreenViewModel
 import com.pricewise.feature.home.impl.ui.theme.PriceWiseComposeTheme
 
 @Composable
-fun MainScreen(
+fun HomeScreen(
     contentPadding: PaddingValues,
     modifier: Modifier,
+    onSearchRequest: (String) -> Unit,
+    onPhotoSearchRequest: () -> Unit,
 ) {
-    val viewModel: MainScreenViewModel = hiltViewModel()
-    val state = viewModel.uiState.collectAsStateWithLifecycle().value
+    val viewModel: HomeScreenViewModel = hiltViewModel()
+    val state = viewModel.screenState.collectAsStateWithLifecycle().value
 
-    MainContent(
+    HomeScreenContent(
         state = state,
         onSearchQueryChange = viewModel::onSearchQueryChange,
         onPhotoSearchClick = viewModel::onPhotoSearchClick,
         onQuickActionClick = viewModel::onQuickActionClick,
         onPopularQueryClick = viewModel::onPopularQueryClick,
         onProductFavoriteClick = viewModel::onProductFavoriteClick,
+        onSearchRequest = onSearchRequest,
+        onPhotoSearchRequest = onPhotoSearchRequest,
         contentPadding = contentPadding,
         modifier = modifier,
     )
 }
 
 @Composable
-fun MainContent(
-    state: MainScreenState,
+fun HomeScreenContent(
+    state: HomeScreenState,
     onSearchQueryChange: (String) -> Unit,
     onPhotoSearchClick: () -> Unit,
     onQuickActionClick: (String) -> Unit,
     onPopularQueryClick: (String) -> Unit,
     onProductFavoriteClick: (String) -> Unit,
+    onSearchRequest: (String) -> Unit,
+    onPhotoSearchRequest: () -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier,
 ) {
-    val shouldShowLoadingState = state.isLoading &&
-        state.quickActions.isEmpty() &&
-        state.popularQueries.isEmpty() &&
-        state.products.isEmpty()
-
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -73,71 +75,101 @@ fun MainContent(
     ) {
         item {
             HeaderSection(
-                query = state.searchQuery,
+                query = when (state) {
+                    HomeScreenState.Loading -> ""
+                    is HomeScreenState.Error -> ""
+                    is HomeScreenState.Loaded -> state.searchQuery
+                },
                 onQueryChange = onSearchQueryChange,
-                onPhotoSearchClick = onPhotoSearchClick,
+                onSearch = onSearchRequest,
+                onPhotoSearchClick = {
+                    onPhotoSearchClick()
+                    onPhotoSearchRequest()
+                },
                 modifier = Modifier,
             )
         }
 
-        if (shouldShowLoadingState ||
-            state.quickActions.isNotEmpty() ||
-            state.popularQueries.isNotEmpty() ||
-            state.products.isNotEmpty()
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(HomeDimens.SectionContentSpacing))
-            }
-        }
-
-        if (shouldShowLoadingState) {
-            item {
-                LoadingFeedSection(
-                    modifier = Modifier,
-                )
-            }
-        } else {
-            if (state.quickActions.isNotEmpty() || state.popularQueries.isNotEmpty()) {
+        when (state) {
+            HomeScreenState.Loading -> {
                 item {
-                    PopularQueriesSection(
-                        title = androidx.compose.ui.res.stringResource(R.string.home_popular_queries_title),
-                        actions = state.quickActions,
-                        queries = state.popularQueries,
-                        onActionClick = onQuickActionClick,
-                        onQueryClick = onPopularQueryClick,
+                    Spacer(modifier = Modifier.height(HomeDimens.SectionContentSpacing))
+                }
+                item {
+                    LoadingFeedSection(
                         modifier = Modifier,
                     )
                 }
             }
 
-            if ((state.quickActions.isNotEmpty() || state.popularQueries.isNotEmpty()) &&
-                state.products.isNotEmpty()
-            ) {
+            is HomeScreenState.Error -> {
                 item {
                     Spacer(modifier = Modifier.height(HomeDimens.SectionContentSpacing))
                 }
-            }
-
-            if (state.products.isNotEmpty()) {
                 item {
-                    RecommendationsSectionTitle(
-                        title = androidx.compose.ui.res.stringResource(R.string.home_recommendations_title),
+                    ErrorSection(
+                        throwable = state.throwable,
                         modifier = Modifier,
                     )
                 }
-                item {
-                    Spacer(modifier = Modifier.height(HomeDimens.SectionContentSpacing))
+            }
+
+            is HomeScreenState.Loaded -> {
+                val loadedState = state
+
+                if (
+                    loadedState.quickActions.isNotEmpty() ||
+                    loadedState.popularQueries.isNotEmpty() ||
+                    loadedState.products.isNotEmpty()
+                ) {
+                    item {
+                        Spacer(modifier = Modifier.height(HomeDimens.SectionContentSpacing))
+                    }
                 }
-                itemsIndexed(
-                    items = state.products,
-                    key = { _, product -> product.id },
-                    contentType = { _, _ -> "product" },
-                ) { index, product ->
-                    ProductCardListItem(
-                        product = product,
-                        onFavoriteClick = onProductFavoriteClick,
-                        addTopSpacing = index > 0,
-                    )
+
+                if (loadedState.quickActions.isNotEmpty() || loadedState.popularQueries.isNotEmpty()) {
+                    item {
+                        PopularQueriesSection(
+                            title = androidx.compose.ui.res.stringResource(R.string.home_popular_queries_title),
+                            actions = loadedState.quickActions,
+                            queries = loadedState.popularQueries,
+                            onActionClick = onQuickActionClick,
+                            onQueryClick = onPopularQueryClick,
+                            modifier = Modifier,
+                        )
+                    }
+                }
+
+                if (
+                    (loadedState.quickActions.isNotEmpty() || loadedState.popularQueries.isNotEmpty()) &&
+                    loadedState.products.isNotEmpty()
+                ) {
+                    item {
+                        Spacer(modifier = Modifier.height(HomeDimens.SectionContentSpacing))
+                    }
+                }
+
+                if (loadedState.products.isNotEmpty()) {
+                    item {
+                        RecommendationsSectionTitle(
+                            title = androidx.compose.ui.res.stringResource(R.string.home_recommendations_title),
+                            modifier = Modifier,
+                        )
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(HomeDimens.SectionContentSpacing))
+                    }
+                    itemsIndexed(
+                        items = loadedState.products,
+                        key = { _, product -> product.id },
+                        contentType = { _, _ -> "product" },
+                    ) { index, product ->
+                        ProductCardListItem(
+                            product = product,
+                            onFavoriteClick = onProductFavoriteClick,
+                            addTopSpacing = index > 0,
+                        )
+                    }
                 }
             }
         }
@@ -145,9 +177,29 @@ fun MainContent(
 }
 
 @Composable
+private fun ErrorSection(
+    throwable: Throwable,
+    modifier: Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = HomeDimens.ScreenHorizontalPadding),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = throwable.message.orEmpty().ifBlank { "Не удалось загрузить экран" },
+            style = HomeTextStyles.ProductTitle,
+            color = HomeColors.SectionTitle,
+        )
+    }
+}
+
+@Composable
 private fun HeaderSection(
     query: String,
     onQueryChange: (String) -> Unit,
+    onSearch: (String) -> Unit,
     onPhotoSearchClick: () -> Unit,
     modifier: Modifier,
 ) {
@@ -159,6 +211,7 @@ private fun HeaderSection(
         SearchBar(
             query = query,
             onQueryChange = onQueryChange,
+            onSearch = { onSearch(query) },
             onPhotoSearchClick = onPhotoSearchClick,
             modifier = Modifier
                 .fillMaxWidth()
@@ -263,21 +316,17 @@ private fun SectionTitle(
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, widthDp = 375, heightDp = 812)
 @Composable
-private fun MainScreenPreview() {
+private fun HomeScreenPreview() {
     PriceWiseComposeTheme {
-        MainContent(
-            state = MainScreenState(
-                searchQuery = "",
-                isLoading = true,
-                quickActions = emptyList(),
-                popularQueries = emptyList(),
-                products = emptyList(),
-            ),
+        HomeScreenContent(
+            state = HomeScreenState.Loading,
             onSearchQueryChange = {},
             onPhotoSearchClick = {},
             onQuickActionClick = {},
             onPopularQueryClick = {},
             onProductFavoriteClick = {},
+            onSearchRequest = {},
+            onPhotoSearchRequest = {},
             contentPadding = PaddingValues(),
             modifier = Modifier,
         )
