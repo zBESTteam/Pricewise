@@ -8,4 +8,6 @@ android {
 
 dependencies {
     implementation(libs.material)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.timber)
 }

@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":core:di"))
     implementation(project(":core:navigation"))
     implementation(project(":core:network"))
+    implementation(project(":core:ui"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.androidx.compose.foundation)
