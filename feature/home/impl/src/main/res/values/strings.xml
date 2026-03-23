@@ -1,0 +1,9 @@
+<resources>
+    <string name="home_search_placeholder">Введите запрос</string>
+    <string name="home_photo_search_content_description">Открыть поиск по фото</string>
+    <string name="home_popular_queries_title">Популярные запросы</string>
+    <string name="home_recommendations_title">Рекомендации</string>
+    <string name="home_add_favorite_description">Добавить %1$s в избранное</string>
+    <string name="home_remove_favorite_description">Убрать %1$s из избранного</string>
+    <string name="home_marketplace_content_description">Логотип магазина %1$s</string>
+</resources>

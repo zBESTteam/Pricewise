@@ -2,6 +2,7 @@ package com.pricewise.core.network
 
 import com.pricewise.core.network.dto.ApiStatusDto
 import com.pricewise.core.network.dto.AuthResponseDto
+import com.pricewise.core.network.dto.BannersResponseDto
 import com.pricewise.core.network.dto.FavoriteCreateRequestDto
 import com.pricewise.core.network.dto.FavoriteDto
 import com.pricewise.core.network.dto.FavoritesResponseDto
@@ -25,6 +26,9 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface PriceWiseApi {
+    @GET("api/banners")
+    suspend fun getBanners(): BannersResponseDto
+
     @GET("api/main")
     suspend fun getMain(
         @Query("limit") limit: Int,
