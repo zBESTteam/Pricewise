@@ -125,6 +125,9 @@ fun MainContent(
                         modifier = Modifier,
                     )
                 }
+                item {
+                    Spacer(modifier = Modifier.height(HomeDimens.SectionContentSpacing))
+                }
                 itemsIndexed(
                     items = state.products,
                     key = { _, product -> product.id },
