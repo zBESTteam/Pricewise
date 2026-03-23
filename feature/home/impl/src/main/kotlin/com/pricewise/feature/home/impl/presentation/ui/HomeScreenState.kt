@@ -2,7 +2,6 @@ package com.pricewise.feature.home.impl.presentation.ui
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed interface HomeScreenState {
     data object Loading : HomeScreenState
@@ -24,7 +23,6 @@ data class QuickActionUiModel(
     val id: String,
     val title: String,
     val imageUrl: String?,
-    val icon: ImageVector,
     val background: Brush,
 )
 

@@ -1,14 +1,8 @@
 package com.pricewise.feature.home.impl.presentation.mapper
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ManageSearch
-import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.pricewise.feature.home.impl.domain.model.HomeFeed
-import com.pricewise.feature.home.impl.domain.model.HomeQuickActionIconType
 import com.pricewise.feature.home.impl.presentation.ui.HomeScreenState
 import com.pricewise.feature.home.impl.presentation.ui.MarketplaceUiModel
 import com.pricewise.feature.home.impl.presentation.ui.PopularQueryUiModel
@@ -31,13 +25,7 @@ class HomeScreenMapper {
                     id = item.id,
                     title = item.title,
                     imageUrl = item.imageUrl,
-                    icon = when (item.iconType) {
-                        HomeQuickActionIconType.SearchGuide -> Icons.AutoMirrored.Outlined.ManageSearch
-                        HomeQuickActionIconType.SearchSettings -> Icons.Outlined.Tune
-                        HomeQuickActionIconType.AiRecommendations -> Icons.Outlined.AutoAwesome
-                        HomeQuickActionIconType.Favorites -> Icons.Outlined.FavoriteBorder
-                    },
-                    background = Brush.linearGradient(gradientFor(item.iconType)),
+                    background = Brush.linearGradient(quickActionGradient),
                 )
             },
             popularQueries = homeFeed.popularQueries.map { query ->
@@ -70,19 +58,9 @@ class HomeScreenMapper {
         return HomeScreenState.Error(throwable = throwable)
     }
 
-    private fun gradientFor(
-        iconType: HomeQuickActionIconType,
-    ): List<Color> {
-        return when (iconType) {
-            HomeQuickActionIconType.SearchGuide -> listOf(Color(0xFF585858), Color(0xFF121212))
-            HomeQuickActionIconType.SearchSettings -> listOf(Color(0xFFFFAB35), Color(0xFFE62727))
-            HomeQuickActionIconType.AiRecommendations -> listOf(Color(0xFFFFDA74), Color(0xFFCE6A08))
-            HomeQuickActionIconType.Favorites -> listOf(Color(0xFFFF5959), Color(0xFF8B2215))
-        }
-    }
-
     private companion object {
         const val SHORT_NAME_LENGTH = 2
+        val quickActionGradient = listOf(Color(0xFFFFAB35), Color(0xFFFF2424))
         val rubleFormatter: NumberFormat =
             NumberFormat.getIntegerInstance(Locale.forLanguageTag("ru-RU"))
     }

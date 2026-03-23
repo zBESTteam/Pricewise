@@ -10,7 +10,6 @@ data class HomeQuickAction(
     val id: String,
     val title: String,
     val imageUrl: String?,
-    val iconType: HomeQuickActionIconType,
 )
 
 data class HomePopularQuery(
@@ -32,10 +31,3 @@ data class HomeMarketplace(
     val name: String,
     val logoUrl: String?,
 )
-
-enum class HomeQuickActionIconType {
-    SearchGuide,
-    SearchSettings,
-    AiRecommendations,
-    Favorites,
-}
