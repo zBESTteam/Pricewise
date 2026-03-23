@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.material3.Surface
-import com.pricewise.app.navigation.PriceWiseAppNavigation
 import com.pricewise.feature.home.impl.ui.theme.PriceWiseComposeTheme
+import com.pricewise.navigation.impl.PriceWiseAppNavigation
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

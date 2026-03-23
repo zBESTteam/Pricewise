@@ -1,5 +1,7 @@
-package com.pricewise.app.navigation
+package com.pricewise.navigation.impl
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -14,10 +16,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -26,6 +30,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.pricewise.core.ui.R as CoreUiR
+import kotlinx.coroutines.launch
 
 @Composable
 fun PriceWiseBottomBar(
@@ -81,6 +86,8 @@ private fun BottomBarItem(
 ) {
     val contentDescription = stringResource(destination.contentDescriptionRes)
     val interactionSource = remember { MutableInteractionSource() }
+    val scope = rememberCoroutineScope()
+    val iconScale = remember { Animatable(BottomBarTokens.DefaultIconScale) }
     val iconResId = when {
         destination == PriceWiseTopLevelDestination.Home && selected -> CoreUiR.drawable.ic_search_clicked
         destination == PriceWiseTopLevelDestination.Home -> CoreUiR.drawable.ic_search
@@ -105,7 +112,19 @@ private fun BottomBarItem(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = onClick,
+                onClick = {
+                    scope.launch {
+                        iconScale.animateTo(
+                            targetValue = BottomBarTokens.PressedIconScale,
+                            animationSpec = tween(durationMillis = BottomBarTokens.PressInDurationMillis),
+                        )
+                        iconScale.animateTo(
+                            targetValue = BottomBarTokens.DefaultIconScale,
+                            animationSpec = tween(durationMillis = BottomBarTokens.PressOutDurationMillis),
+                        )
+                    }
+                    onClick()
+                },
                 role = Role.Tab,
             )
             .semantics {
@@ -118,6 +137,10 @@ private fun BottomBarItem(
             painter = painterResource(iconResId),
             contentDescription = null,
             modifier = Modifier
+                .graphicsLayer {
+                    scaleX = iconScale.value
+                    scaleY = iconScale.value
+                }
                 .width(iconWidth)
                 .height(iconHeight),
         )
@@ -135,4 +158,8 @@ private object BottomBarTokens {
     val FavoritesIconHeight = 17.dp
     val ProfileIconWidth = 18.dp
     val ProfileIconHeight = 18.dp
+    const val DefaultIconScale = 1f
+    const val PressedIconScale = 0.92f
+    const val PressInDurationMillis = 55
+    const val PressOutDurationMillis = 90
 }
