@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -19,9 +18,6 @@ android {
         versionName = project.findProperty("versionName") as String
     }
 
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
@@ -44,10 +40,6 @@ dependencies {
     implementation(project(":feature:ads:impl"))
 
     implementation(platform(libs.compose.bom))
-    ksp(libs.hilt.compiler) 
-
- 
-
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.hilt.android)
     implementation(libs.runtime)
