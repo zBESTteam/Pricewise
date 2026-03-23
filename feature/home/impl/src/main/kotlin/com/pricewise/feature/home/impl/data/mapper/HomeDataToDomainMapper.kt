@@ -10,8 +10,6 @@ import com.pricewise.feature.home.impl.domain.model.HomeMarketplace
 import com.pricewise.feature.home.impl.domain.model.HomePopularQuery
 import com.pricewise.feature.home.impl.domain.model.HomeProduct
 import com.pricewise.feature.home.impl.domain.model.HomeQuickAction
-import com.pricewise.feature.home.impl.domain.model.HomeQuickActionIconType
-import java.util.Locale
 
 class HomeDataToDomainMapper {
 
@@ -45,7 +43,6 @@ class HomeDataToDomainMapper {
             id = id,
             title = title,
             imageUrl = imageUrl,
-            iconType = resolveQuickActionIconType(title),
         )
     }
 
@@ -81,10 +78,9 @@ class HomeDataToDomainMapper {
         val merchantName = merchant?.name?.trim().orEmpty()
             .ifBlank { item.merchantName?.trim().orEmpty() }
             .ifBlank { item.source?.trim().orEmpty() }
-            .ifBlank { DEFAULT_MARKETPLACE_NAME }
 
         return HomeMarketplace(
-            name = merchantName.ensureMarketplaceDomain(),
+            name = merchantName,
             logoUrl = merchant?.logoUrl.orImageFallback()
                 ?: item.merchantLogoUrl.orImageFallback()
                 ?: item.logoUrl.orImageFallback(),
@@ -110,25 +106,8 @@ class HomeDataToDomainMapper {
         }
     }
 
-    private fun String.ensureMarketplaceDomain(): String {
-        return if (contains(".")) this else "$this.ru"
-    }
-
-    private fun resolveQuickActionIconType(
-        title: String,
-    ): HomeQuickActionIconType {
-        val normalizedTitle = title.lowercase(Locale.ROOT)
-        return when {
-            "настрой" in normalizedTitle -> HomeQuickActionIconType.SearchSettings
-            "ии" in normalizedTitle -> HomeQuickActionIconType.AiRecommendations
-            "избран" in normalizedTitle -> HomeQuickActionIconType.Favorites
-            else -> HomeQuickActionIconType.SearchGuide
-        }
-    }
-
     private companion object {
         const val MAX_QUERIES = 10
         const val MAX_BANNERS = 4
-        const val DEFAULT_MARKETPLACE_NAME = "ozon.ru"
     }
 }
