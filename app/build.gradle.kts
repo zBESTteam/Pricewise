@@ -29,6 +29,7 @@ dependencies {
     implementation(project(":core:push"))
 
     implementation(project(":feature:auth:impl"))
+    implementation(project(":feature:home:api"))
     implementation(project(":feature:home:impl"))
     implementation(project(":feature:search:impl"))
     implementation(project(":feature:profile:impl"))
