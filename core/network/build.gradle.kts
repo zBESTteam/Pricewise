@@ -9,6 +9,10 @@ android {
 }
 
 dependencies {
+    val moshiVersion = "1.15.0"
+    implementation("com.squareup.moshi:moshi:$moshiVersion")
+    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
+
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.hilt.android)
     implementation(libs.okhttp.core)
