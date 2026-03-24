@@ -14,6 +14,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.material)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.timber)
     api(libs.compose.material3)
     implementation(libs.compose.ui)
     implementation("com.google.android.material:material:1.12.0")
