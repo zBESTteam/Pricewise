@@ -13,7 +13,7 @@ dependencies {
     implementation(project(":feature:search:api"))
     implementation(project(":core:di"))
     implementation(project(":core:ui"))
-    implementation(project(":core:navigation"))
+    implementation(project(":core:navigation-api"))
     implementation(project(":core:network"))
 
     implementation(libs.core.ktx)

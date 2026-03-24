@@ -1,3 +1,5 @@
 package com.pricewise.feature.home.api
 
-interface HomeFeatureEntry
+import com.pricewise.navigation.api.NavigationFeatureEntry
+
+interface HomeFeatureEntry : HomeFeatureApi, NavigationFeatureEntry

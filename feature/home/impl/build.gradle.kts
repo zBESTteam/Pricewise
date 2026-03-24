@@ -16,7 +16,7 @@ android {
 dependencies {
     implementation(project(":feature:home:api"))
     implementation(project(":core:di"))
-    implementation(project(":core:navigation"))
+    implementation(project(":core:navigation-api"))
     implementation(project(":core:network"))
     implementation(project(":core:ui"))
 
