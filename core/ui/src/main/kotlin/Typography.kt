@@ -1,5 +1,3 @@
-package com.pricewise.feature.search.impl.presentation.ui
-
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
