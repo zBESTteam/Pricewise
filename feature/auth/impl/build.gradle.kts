@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.pricewise.feature.auth.impl"
-    
+
     buildFeatures {
         compose = true
     }
@@ -21,6 +21,7 @@ dependencies {
     implementation(project(":core:auth"))
 
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     implementation(libs.hilt.android)
@@ -30,6 +31,17 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.hilt.navigation.compose)
+
+    val moshiVersion = "1.15.0"
+    implementation("com.squareup.moshi:moshi:$moshiVersion")
+    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
+
+    implementation(libs.okhttp.core)
+    implementation(libs.okhttp.logging)
+    implementation(libs.moshi.core)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.moshi)
 
     ksp(libs.hilt.compiler)
     ksp(libs.room.compiler)
