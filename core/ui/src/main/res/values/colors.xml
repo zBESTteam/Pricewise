@@ -8,4 +8,18 @@
     <color name="pw_color_surface">#FFFFFF</color>
     <color name="pw_color_on_background">#1F1F1F</color>
     <color name="pw_color_on_surface">#1F1F1F</color>
+    <color name="start_gradient_color">#FFFFAB35</color>
+    <color name="end_gradient_color">#FFFF2424</color>
+    <color name="mid_dark">#FF232323</color>
+    <color name="secondary_text_color">#FF727272</color>
+    <color name="button_color_search_screen">#F8F8F8</color>
+    <color name="disabled_filter_button_color">#F8F8F8</color>
+    <color name="icons_color">#FF727272</color>
+    <color name="disabled_filter_button_text_color">#FF727272</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="card_background_color">#FCFCFC</color>
+    <color name="black">#000000</color>
+    <color name="light_gray">#FFCCCCCC</color>
+    <color name="handle_color">#FF272727</color>
+
 </resources>

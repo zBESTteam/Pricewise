@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
@@ -7,11 +8,16 @@ plugins {
 android {
     namespace = "com.pricewise.app"
 
+    buildFeatures {
+        compose = true
+    }
+
     defaultConfig {
         applicationId = "com.pricewise.app"
         versionCode = (project.findProperty("versionCode") as String).toInt()
         versionName = project.findProperty("versionName") as String
     }
+
 }
 
 dependencies {
@@ -33,7 +39,17 @@ dependencies {
     implementation(project(":feature:notifications:impl"))
     implementation(project(":feature:ads:impl"))
 
+    implementation(platform(libs.compose.bom))
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.hilt.android)
+    implementation(libs.runtime)
+    implementation(libs.compose.ui)
+    implementation(libs.activity.compose)
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.compose.material3)
     ksp(libs.hilt.compiler)
+
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }
