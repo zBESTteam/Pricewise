@@ -23,6 +23,8 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.hilt.navigation.compose)
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
     implementation(libs.compose.shimmer)

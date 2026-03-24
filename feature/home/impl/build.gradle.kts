@@ -15,6 +15,8 @@ android {
 
 dependencies {
     implementation(project(":feature:home:api"))
+    implementation(project(":feature:search:api"))
+    implementation(project(":core:navigation-api"))
     implementation(project(":core:di"))
     implementation(project(":core:network"))
     implementation(project(":core:ui"))
@@ -27,6 +29,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

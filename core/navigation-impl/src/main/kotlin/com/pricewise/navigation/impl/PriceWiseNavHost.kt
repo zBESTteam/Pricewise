@@ -23,6 +23,7 @@ fun PriceWiseNavHost(
     modifier: Modifier,
 ) {
     val homeFeatureEntry = PriceWiseFeatureProvider.homeFeatureEntry
+    val searchFeatureEntry = PriceWiseFeatureProvider.searchFeatureEntry
 
     NavHost(
         navController = appState.navController,
@@ -31,6 +32,13 @@ fun PriceWiseNavHost(
     ) {
         registerFeature(
             featureEntry = homeFeatureEntry,
+            navController = appState.navController,
+            contentPadding = contentPadding,
+            modifier = Modifier,
+        )
+        registerFeature(
+            featureEntry = searchFeatureEntry,
+            navController = appState.navController,
             contentPadding = contentPadding,
             modifier = Modifier,
         )

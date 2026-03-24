@@ -18,7 +18,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @HiltViewModel
-class SearchViewModel @Inject constructor(private val repository: SearchFeatureApi) : ViewModel() {
+class SearchViewModel @Inject constructor(
+    private val repository: SearchFeatureApi,
+) : ViewModel() {
 
     private val defaultLimit: Int = 20
     private var searchJob: Job? = null
@@ -116,16 +118,58 @@ class SearchViewModel @Inject constructor(private val repository: SearchFeatureA
         _onlyOfflineShops.value = false
     }
 
+    fun onProductFavoriteClick(productId: String) {
+        _allItems.update { items ->
+            items.map { product ->
+                if (product.id == productId) {
+                    product.copy(isFavorite = !product.isFavorite)
+                } else {
+                    product
+                }
+            }
+        }
+        _uiState.update { state ->
+            state.copy(
+                items = state.items.map { product ->
+                    if (product.id == productId) {
+                        product.copy(isFavorite = !product.isFavorite)
+                    } else {
+                        product
+                    }
+                },
+            )
+        }
+    }
+
     fun onQueryChange(query: String) {
         val trimmedQuery = query.trim()
         if (trimmedQuery.isEmpty()) clearQuery()
-        else _uiState.update { state ->
-            state.copy(query = query)
+        else {
+            _uiState.update { state ->
+                state.copy(query = query)
+            }
         }
     }
 
     fun clearQuery() {
         _uiState.update { state -> state.copy(query = "") }
+    }
+
+    fun initializeSearch(searchQuery: String) {
+        val trimmedSearchQuery = searchQuery.trim()
+
+        if (trimmedSearchQuery.isEmpty()) {
+            return
+        }
+
+        if (_uiState.value.submittedQuery == trimmedSearchQuery && _uiState.value.query == trimmedSearchQuery) {
+            return
+        }
+
+        _uiState.update { state ->
+            state.copy(query = trimmedSearchQuery)
+        }
+        submitSearch()
     }
 
     fun submitSearch() {
@@ -168,9 +212,10 @@ class SearchViewModel @Inject constructor(private val repository: SearchFeatureA
                     result.pendingSources.isNotEmpty() && searchAttempts < MAX_SEARCH_ATTEMPTS
                 _uiState.update { state ->
                     val checked = result.checkedSources ?: state.checkedSources
+                    val totalSources = result.totalSources
                     _resolvedTotal.value = when {
-                        result.totalSources != null && result.totalSources!! > 0 -> {
-                            maxOf(result.totalSources!!, checked)
+                        totalSources != null && totalSources > 0 -> {
+                            maxOf(totalSources, checked)
                         }
 
                         checked > state.totalSources -> checked
@@ -202,7 +247,6 @@ class SearchViewModel @Inject constructor(private val repository: SearchFeatureA
             performSearch(query)
         }
     }
-
 }
 
 private const val MAX_SEARCH_ATTEMPTS = 8
