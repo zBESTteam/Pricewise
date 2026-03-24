@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pricewise.feature.search.api.SearchFeatureApi
 import com.pricewise.feature.search.api.domain.model.Product
-import com.pricewise.feature.search.impl.data.repository.RemoteRepository
 import com.pricewise.feature.search.impl.presentation.ui.SearchUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -16,7 +17,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SearchViewModel(private val repository: SearchFeatureApi = RemoteRepository()) : ViewModel() {
+@HiltViewModel
+class SearchViewModel @Inject constructor(private val repository: SearchFeatureApi) : ViewModel() {
 
     private val defaultLimit: Int = 20
     private var searchJob: Job? = null
@@ -49,7 +51,16 @@ class SearchViewModel(private val repository: SearchFeatureApi = RemoteRepositor
     val priceTo: StateFlow<Long> = _priceTo.asStateFlow()
     val popularDiapasonChosen: StateFlow<Int> = _popularDiapasonChosen.asStateFlow()
     val canPayLater: StateFlow<Boolean> = _canPayLater.asStateFlow()
-
+    val sources = listOf(
+        "market.yandex.ru",
+        "mvideo.ru",
+        "citilink.ru",
+        "eldorado.ru",
+        "avito.ru",
+        "cdek.shopping",
+        "aliexpress.ru",
+        "xcom-shop.ru",
+    )
 
     fun setIsProductChosen(value: Boolean) {
         _isProductChosen.value = value
@@ -139,6 +150,7 @@ class SearchViewModel(private val repository: SearchFeatureApi = RemoteRepositor
                         offset = 0,
                         perSource = true,
                         partial = true,
+                        sources = sources,
                         sort = "",
                         priceMin = priceFrom.value,
                         priceMax = priceTo.value,

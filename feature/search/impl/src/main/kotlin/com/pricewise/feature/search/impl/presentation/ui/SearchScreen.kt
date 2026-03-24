@@ -44,6 +44,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pricewise.core.ui.R
 import com.pricewise.feature.search.impl.presentation.components.ProductCardShimmer
 import components.SearchBar
@@ -51,9 +52,9 @@ import components.SearchBar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    modifier: Modifier = Modifier,
-    viewModel: SearchViewModel,
+    modifier: Modifier = Modifier
 ) {
+    val viewModel: SearchViewModel = viewModel()
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 

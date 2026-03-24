@@ -9,6 +9,7 @@ interface SearchFeatureApi {
         offset: Int,
         perSource: Boolean,
         partial: Boolean,
+        sources: List<String>,
         sort: String,
         priceMin: Long,
         priceMax: Long,

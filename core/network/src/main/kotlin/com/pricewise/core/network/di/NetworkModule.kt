@@ -62,16 +62,6 @@ object NetworkModule {
 
     private const val CONNECT_TIMEOUT_SECONDS = 15L
     private const val READ_TIMEOUT_SECONDS = 25L
-    val DEFAULT_SOURCES = listOf(
-        "market.yandex.ru",
-        "mvideo.ru",
-        "citilink.ru",
-        "eldorado.ru",
-        "avito.ru",
-        "cdek.shopping",
-        "aliexpress.ru",
-        "xcom-shop.ru",
-    )
 }
 
 private fun String.ensureTrailingSlash(): String {
