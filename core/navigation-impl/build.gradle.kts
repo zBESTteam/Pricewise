@@ -16,6 +16,8 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":feature:home:api"))
     implementation(project(":feature:home:impl"))
+    implementation(project(":feature:search:api"))
+    implementation(project(":feature:search:impl"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.animation)
