@@ -1,99 +1,129 @@
 package com.example.dz_3
 
+import android.content.Context
 import android.os.Bundle
-import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
-import androidx.core.view.WindowCompat
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.CameraAlt
+import androidx.compose.material.icons.outlined.Chat
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.NavBackStackEntry
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import android.content.Context
-import androidx.compose.runtime.saveable.rememberSaveable
 
-val OrangeGradientStart = Color(0xFFFD9700)
-val OrangeGradientEnd = Color(0xFFFF5722)
-val MainOrange = Color(0xFFFF6F00)
-val LightGrayBg = Color(0xFFF5F5F5)
-val GrayText = Color(0xFF757575)
+private val AppBackground = Color(0xFFF7F7F7)
+private val GradientStart = Color(0xFFFF9432)
+private val GradientEnd = Color(0xFFFF3426)
+private val OuterAvatarStroke = Color(0xFFFB9833)
+private val FieldBackground = Color(0xFFF1F1F1)
+private val FieldBorder = Color(0xFFB8B8B8)
+private val PrimaryText = Color(0xFF2E2E2E)
+private val SecondaryText = Color(0xFF8E8E93)
+private val White = Color(0xFFFFFFFF)
+private val HomeIndicator = Color(0xFF111111)
+private val SelectedNav = Color(0xFFFF7A25)
+private val UnselectedNav = Color(0xFF1E1E1E)
+private val AppFont = FontFamily.SansSerif
 
 private const val PREFS_NAME = "profile_prefs"
-private const val KEY_CITY = "selected_city"
+private const val KEY_FIRST_NAME = "first_name"
+private const val KEY_LAST_NAME = "last_name"
+private const val KEY_CITY = "city"
 
-private fun loadCity(context: Context): String {
+data class ProfileData(
+    val firstName: String = "Иван",
+    val lastName: String = "Иванов",
+    val city: String = "Москва"
+)
+
+private fun loadProfile(context: Context): ProfileData {
     val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    return prefs.getString(KEY_CITY, "Москва") ?: "Москва"
-}
-
-private fun saveCity(context: Context, city: String) {
-    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    prefs.edit().putString(KEY_CITY, city).apply()
-}
-
-@Composable
-fun CityPickerDialog(
-    currentCity: String,
-    cities: List<String>,
-    onSelect: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Выберите город") },
-        text = {
-            LazyColumn {
-                items(cities) { city ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onSelect(city) }
-                            .padding(vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = city == currentCity,
-                            onClick = { onSelect(city) }
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(city)
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Закрыть") }
-        }
+    return ProfileData(
+        firstName = prefs.getString(KEY_FIRST_NAME, "Иван") ?: "Иван",
+        lastName = prefs.getString(KEY_LAST_NAME, "Иванов") ?: "Иванов",
+        city = prefs.getString(KEY_CITY, "Москва") ?: "Москва"
     )
+}
+
+private fun saveProfile(context: Context, profile: ProfileData) {
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        .edit()
+        .putString(KEY_FIRST_NAME, profile.firstName)
+        .putString(KEY_LAST_NAME, profile.lastName)
+        .putString(KEY_CITY, profile.city)
+        .apply()
 }
 
 class MainActivity : ComponentActivity() {
@@ -101,372 +131,758 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            MaterialTheme {
-                AppNavigation()
+            MaterialTheme(
+                colorScheme = lightColorScheme(
+                    background = AppBackground,
+                    surface = AppBackground
+                )
+            ) {
+                AppRoot()
             }
         }
     }
 }
 
 @Composable
-fun AppNavigation() {
+fun AppRoot() {
+    val context = LocalContext.current
+    var profile by remember { mutableStateOf(loadProfile(context)) }
     val navController = rememberNavController()
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Scaffold(
+        containerColor = AppBackground,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
-            BottomNavigationBar(navController)
+            if (currentRoute != "edit_profile") {
+                BottomNavigationBar(
+                    currentRoute = currentRoute ?: "profile",
+                    onSelect = { route ->
+                        if (route != currentRoute) {
+                            navController.navigate(route) {
+                                launchSingleTop = true
+                                restoreState = true
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                            }
+                        }
+                    }
+                )
+            }
         }
     ) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = "profile",
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         ) {
-            composable("profile") { ProfileScreen(navController) }
-            composable("edit_profile") { EditProfileScreen(navController) }
-            composable("history") { HistoryScreen() }
+            composable("profile") {
+                ProfileScreen(
+                    profile = profile,
+                    onEditProfileClick = { navController.navigate("edit_profile") }
+                )
+            }
+            composable("edit_profile") {
+                EditProfileScreen(
+                    initialProfile = profile,
+                    onBack = { navController.popBackStack() },
+                    onSave = { updatedProfile ->
+                        profile = updatedProfile
+                        saveProfile(context, updatedProfile)
+                        Toast.makeText(context, "Изменения сохранены", Toast.LENGTH_SHORT).show()
+                        navController.popBackStack()
+                    }
+                )
+            }
+            composable("history") {
+                HistoryScreen()
+            }
         }
     }
 }
 
 @Composable
-fun ProfileScreen(navController: NavController) {
-    val context = LocalContext.current
+fun ProfileScreen(
+    profile: ProfileData,
+    onEditProfileClick: () -> Unit
+) {
+    val statusTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
-    val cities = listOf(
-        "Москва",
-        "Санкт-Петербург",
-        "Казань",
-        "Новосибирск",
-        "Екатеринбург",
-        "Нижний Новгород",
-        "Ростов-на-Дону"
-    )
-
-    var selectedCity by rememberSaveable { mutableStateOf(loadCity(context)) }
-    var cityDialogOpen by remember { mutableStateOf(false) }
     Column(
-        modifier = Modifier.fillMaxSize().background(Color.White),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppBackground)
     ) {
-        val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-        val headerHeight = 200.dp + statusBarTop
-
-        Box(modifier = Modifier.fillMaxWidth().height(headerHeight)) {
-            Box(
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(248.dp + statusTop)
+        ) {
+            ProfileHeaderBackground(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp))
-                    .background(MainOrange)
+                    .fillMaxWidth()
+                    .height(210.dp + statusTop)
             )
 
-            Box(
+            ProfileAvatar(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp))
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color.White.copy(alpha = 0.10f),
-                                Color.Black.copy(alpha = 0.10f)
-                            )
-                        )
-                    )
-            )
-
-            Box(
-                modifier = Modifier
-                    .size(120.dp)
                     .align(Alignment.BottomCenter)
-                    .offset(y = 40.dp)
-                    .background(Color.White, CircleShape)
-                    .padding(4.dp)
-                    .clip(CircleShape)
-                    .background(Color.LightGray)
+                    .offset(y = 10.dp),
+                size = 136.dp,
+                showCamera = false
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(18.dp))
+
+            Text(
+                text = "${profile.lastName} ${profile.firstName}",
+                color = PrimaryText,
+                fontFamily = AppFont,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 18.sp,
+                lineHeight = 21.sp
+            )
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Icon(
-                    Icons.Default.Person,
-                    contentDescription = null,
-                    modifier = Modifier.size(80.dp).align(Alignment.Center),
-                    tint = Color.White
+                ProfileMenuButton(
+                    icon = Icons.Outlined.Edit,
+                    text = "Редактировать профиль",
+                    onClick = onEditProfileClick
+                )
+
+                ProfileMenuButton(
+                    icon = Icons.Outlined.LocationOn,
+                    text = "Регион",
+                    value = profile.city,
+                    onClick = onEditProfileClick
+                )
+
+                ProfileMenuButton(
+                    icon = Icons.Outlined.WbSunny,
+                    text = "Тема",
+                    onClick = {}
+                )
+
+                ProfileMenuButton(
+                    icon = Icons.Outlined.Chat,
+                    text = "Обратиться в поддержку",
+                    onClick = {}
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(50.dp))
-
-        Text(
-            text = "Иванов Иван",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            MenuButton(text = "Редактировать профиль", icon = Icons.Outlined.Edit) {
-                navController.navigate("edit_profile")
-            }
-            MenuButton(
-                text = "Регион",
-                value = selectedCity,
-                icon = Icons.Outlined.LocationOn
-            ) { cityDialogOpen = true }
-            MenuButton(text = "Тема", icon = Icons.Outlined.WbSunny) {}
-            MenuButton(text = "Обратиться в поддержку", icon = Icons.Outlined.Chat) {}
-        }
-        if (cityDialogOpen) {
-            CityPickerDialog(
-                currentCity = selectedCity,
-                cities = cities,
-                onSelect = { city ->
-                    selectedCity = city
-                    saveCity(context, city)
-                    cityDialogOpen = false
-                },
-                onDismiss = { cityDialogOpen = false }
-            )
-        }
         Spacer(modifier = Modifier.weight(1f))
 
-        Text("Выйти из аккаунта?", color = GrayText, modifier = Modifier.padding(bottom = 16.dp))
+        Text(
+            text = "Выйти из аккаунта?",
+            color = Color(0xFFB4B4BA),
+            fontFamily = AppFont,
+            fontWeight = FontWeight.Medium,
+            fontSize = 15.sp,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 20.dp)
+        )
     }
 }
 
 @Composable
-fun MenuButton(text: String, value: String? = null, icon: ImageVector, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = LightGrayBg),
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp).height(56.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp)
+fun EditProfileScreen(
+    initialProfile: ProfileData,
+    onBack: () -> Unit,
+    onSave: (ProfileData) -> Unit
+) {
+    var lastName by rememberSaveable { mutableStateOf(initialProfile.lastName) }
+    var firstName by rememberSaveable { mutableStateOf(initialProfile.firstName) }
+    var city by rememberSaveable { mutableStateOf(initialProfile.city) }
+    var oldPassword by rememberSaveable { mutableStateOf("") }
+    var newPassword by rememberSaveable { mutableStateOf("") }
+    var confirmPassword by rememberSaveable { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppBackground)
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .verticalScroll(rememberScrollState())
+            .imePadding()
+            .padding(horizontal = 16.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Icon(icon, contentDescription = null, tint = GrayText)
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(text, color = GrayText, modifier = Modifier.weight(1f))
-            if (value != null) {
-                Text(value, color = GrayText)
-            }
-        }
-    }
-}
+        Spacer(modifier = Modifier.height(10.dp))
 
-@Composable
-fun EditProfileScreen(navController: NavController) {
-    val context = LocalContext.current
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
-        Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            IconButton(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier.border(1.dp, Color.Black, RoundedCornerShape(12.dp)).size(40.dp).align(Alignment.CenterStart)
-            ) {
-                Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Back", modifier = Modifier.size(16.dp))
-            }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BackGradientButton(onClick = onBack)
+
+            Spacer(modifier = Modifier.width(14.dp))
+
             Text(
-                "Редактировать профиль",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.align(Alignment.Center)
+                text = "Редактировать профиль",
+                color = PrimaryText,
+                fontFamily = AppFont,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 17.sp
             )
         }
 
-        Box(modifier = Modifier.align(Alignment.CenterHorizontally).padding(vertical = 20.dp)) {
-            Box(
-                modifier = Modifier.size(120.dp).clip(CircleShape).background(Color.LightGray)
-                    .border(3.dp, MainOrange, CircleShape)
-            ) {
-                Icon(Icons.Default.Person, null, modifier = Modifier.size(80.dp).align(Alignment.Center), tint = Color.White)
-            }
-            Box(
-                modifier = Modifier.align(Alignment.BottomEnd).background(Color.White, CircleShape).padding(4.dp)
-            ) {
-                Icon(Icons.Outlined.CameraAlt, contentDescription = null, tint = MainOrange)
-            }
-        }
+        Spacer(modifier = Modifier.height(18.dp))
 
-        Column(modifier = Modifier.padding(horizontal = 16.dp).weight(1f)) {
-            SimpleTextField(label = "Фамилия", initialValue = "Иванов")
-            Spacer(modifier = Modifier.height(12.dp))
-            SimpleTextField(label = "Имя", initialValue = "Иван")
-
-            Spacer(modifier = Modifier.height(24.dp))
-            Text("Пароль", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(12.dp))
-
-            PasswordTextField(placeholder = "Старый пароль")
-            Spacer(modifier = Modifier.height(12.dp))
-            PasswordTextField(placeholder = "Новый пароль")
-            Spacer(modifier = Modifier.height(12.dp))
-            PasswordTextField(placeholder = "Подтвердите новый пароль")
-        }
-
-        Button(
-            onClick = {
-                Toast.makeText(
-                    context,
-                    "Изменения успешно сохранены",
-                    Toast.LENGTH_SHORT
-                ).show()
-                navController.popBackStack()
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = MainOrange),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier.fillMaxWidth().padding(16.dp).height(56.dp)
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
         ) {
-            Text("Сохранить", fontSize = 18.sp)
+            ProfileAvatar(
+                size = 144.dp,
+                showCamera = true
+            )
         }
+
+        Spacer(modifier = Modifier.height(22.dp))
+
+        Text(
+            text = "Фамилия",
+            color = PrimaryText,
+            fontFamily = AppFont,
+            fontWeight = FontWeight.Bold,
+            fontSize = 15.sp
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        ProfileTextField(
+            value = lastName,
+            onValueChange = { lastName = it },
+            placeholder = "Фамилия"
+        )
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        Text(
+            text = "Имя",
+            color = PrimaryText,
+            fontFamily = AppFont,
+            fontWeight = FontWeight.Bold,
+            fontSize = 15.sp
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        ProfileTextField(
+            value = firstName,
+            onValueChange = { firstName = it },
+            placeholder = "Имя"
+        )
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        Text(
+            text = "Город",
+            color = PrimaryText,
+            fontFamily = AppFont,
+            fontWeight = FontWeight.Bold,
+            fontSize = 15.sp
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        ProfileTextField(
+            value = city,
+            onValueChange = { city = it },
+            placeholder = "Город"
+        )
+
+        Spacer(modifier = Modifier.height(18.dp))
+
+        Text(
+            text = "Пароль",
+            color = PrimaryText,
+            fontFamily = AppFont,
+            fontWeight = FontWeight.Bold,
+            fontSize = 15.sp
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        PasswordField(
+            value = oldPassword,
+            onValueChange = { oldPassword = it },
+            placeholder = "Старый пароль"
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        PasswordField(
+            value = newPassword,
+            onValueChange = { newPassword = it },
+            placeholder = "Новый пароль"
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        PasswordField(
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
+            placeholder = "Подтвердите новый пароль"
+        )
+
+        Spacer(modifier = Modifier.height(26.dp))
+
+        GradientSaveButton(
+            text = "Сохранить",
+            onClick = {
+                onSave(
+                    ProfileData(
+                        firstName = firstName.trim().ifEmpty { initialProfile.firstName },
+                        lastName = lastName.trim().ifEmpty { initialProfile.lastName },
+                        city = city.trim().ifEmpty { initialProfile.city }
+                    )
+                )
+            }
+        )
+
+        Spacer(modifier = Modifier.height(18.dp))
     }
 }
 
 @Composable
-fun SimpleTextField(label: String, initialValue: String) {
-    Column {
-        Text(label, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(bottom = 8.dp))
-        OutlinedTextField(
-            value = initialValue,
-            onValueChange = {},
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = LightGrayBg,
-                focusedContainerColor = LightGrayBg,
-                unfocusedBorderColor = Color.Transparent,
-                focusedBorderColor = MainOrange
+fun ProfileHeaderBackground(
+    modifier: Modifier = Modifier
+) {
+    Canvas(
+        modifier = modifier
+    ) {
+        val path = Path().apply {
+            moveTo(0f, 0f)
+            lineTo(size.width, 0f)
+            lineTo(size.width, size.height * 0.72f)
+            cubicTo(
+                size.width * 0.82f,
+                size.height * 0.77f,
+                size.width * 0.74f,
+                size.height * 0.46f,
+                size.width * 0.50f,
+                size.height * 0.49f
+            )
+            cubicTo(
+                size.width * 0.26f,
+                size.height * 0.46f,
+                size.width * 0.18f,
+                size.height * 0.77f,
+                0f,
+                size.height * 0.72f
+            )
+            close()
+        }
+
+        drawPath(
+            path = path,
+            brush = Brush.linearGradient(
+                colors = listOf(GradientStart, GradientEnd),
+                start = Offset.Zero,
+                end = Offset(size.width, size.height)
             )
         )
     }
 }
 
 @Composable
-fun PasswordTextField(placeholder: String) {
-    var passwordVisible by remember { mutableStateOf(false) }
-    OutlinedTextField(
-        value = "",
-        onValueChange = {},
-        placeholder = { Text(placeholder, color = GrayText) },
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null, tint = GrayText) },
-        trailingIcon = {
-            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                Icon(if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff, contentDescription = null, tint = GrayText)
+fun ProfileAvatar(
+    modifier: Modifier = Modifier,
+    size: androidx.compose.ui.unit.Dp,
+    showCamera: Boolean
+) {
+    Box(
+        modifier = modifier.size(size),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .border(3.5.dp, OuterAvatarStroke, CircleShape)
+                .padding(5.dp)
+                .background(White, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape)
+                    .background(Color(0xFFE9E9E9)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Person,
+                    contentDescription = null,
+                    tint = Color(0xFFC5C5C8),
+                    modifier = Modifier.size(size * 0.44f)
+                )
             }
+        }
+
+        if (showCamera) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(x = (-2).dp, y = (-2).dp)
+                    .size(38.dp)
+                    .background(White, CircleShape)
+                    .border(2.dp, GradientEnd, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.CameraAlt,
+                    contentDescription = null,
+                    tint = GradientStart,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ProfileMenuButton(
+    icon: ImageVector,
+    text: String,
+    value: String? = null,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(55.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .background(White)
+            .border(1.dp, FieldBorder, RoundedCornerShape(15.dp))
+            .clickable { onClick() }
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = SecondaryText,
+            modifier = Modifier.size(22.dp)
+        )
+
+        Spacer(modifier = Modifier.width(14.dp))
+
+        Text(
+            text = text,
+            color = SecondaryText,
+            fontFamily = AppFont,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            modifier = Modifier.weight(1f)
+        )
+
+        if (value != null) {
+            Text(
+                text = value,
+                color = SecondaryText,
+                fontFamily = AppFont,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp
+            )
+        }
+    }
+}
+
+@Composable
+fun ProfileTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        singleLine = true,
+        textStyle = TextStyle(
+            color = SecondaryText,
+            fontFamily = AppFont,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp
+        ),
+        placeholder = {
+            Text(
+                text = placeholder,
+                color = Color(0xFFB0B0B4),
+                fontFamily = AppFont,
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp
+            )
         },
+        shape = RoundedCornerShape(14.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 58.dp),
+        keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Words
+        ),
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedContainerColor = LightGrayBg,
-            focusedContainerColor = LightGrayBg,
-            unfocusedBorderColor = Color.Transparent,
-            focusedBorderColor = MainOrange
+            focusedContainerColor = FieldBackground,
+            unfocusedContainerColor = FieldBackground,
+            disabledContainerColor = FieldBackground,
+            focusedBorderColor = Color(0xFFD7D7DA),
+            unfocusedBorderColor = Color(0xFFD7D7DA),
+            cursorColor = GradientEnd
         )
     )
 }
 
 @Composable
-fun HistoryScreen() {
-    val historyItems = List(20) { index ->
-        HistoryItemData(
-            title = "Заказ №100$index",
-            date = "25 дек 2023, 14:30",
-            price = "${(index + 1) * 1500} ₽",
-            status = if (index % 2 == 0) "Доставлен" else "В пути"
-        )
-    }
+fun PasswordField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String
+) {
+    var visible by rememberSaveable { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
-        Text(
-            "История заказов",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(16.dp)
-        )
-
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(historyItems) { item ->
-                HistoryItemCard(item)
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        singleLine = true,
+        visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
+        textStyle = TextStyle(
+            color = SecondaryText,
+            fontFamily = AppFont,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp
+        ),
+        placeholder = {
+            Text(
+                text = placeholder,
+                color = Color(0xFFB0B0B4),
+                fontFamily = AppFont,
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Outlined.Lock,
+                contentDescription = null,
+                tint = Color(0xFFA7A7AC)
+            )
+        },
+        trailingIcon = {
+            IconButton(onClick = { visible = !visible }) {
+                Icon(
+                    imageVector = if (visible) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                    contentDescription = null,
+                    tint = Color(0xFFA7A7AC),
+                    modifier = Modifier.size(20.dp)
+                )
             }
-        }
-    }
+        },
+        shape = RoundedCornerShape(14.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 58.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = FieldBackground,
+            unfocusedContainerColor = FieldBackground,
+            disabledContainerColor = FieldBackground,
+            focusedBorderColor = Color(0xFFD7D7DA),
+            unfocusedBorderColor = Color(0xFFD7D7DA),
+            cursorColor = GradientEnd
+        )
+    )
 }
 
-data class HistoryItemData(val title: String, val date: String, val price: String, val status: String)
-
 @Composable
-fun HistoryItemCard(item: HistoryItemData) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth()
+fun GradientSaveButton(
+    text: String,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .clip(RoundedCornerShape(9.dp))
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(GradientStart, GradientEnd),
+                    start = Offset.Zero,
+                    end = Offset(1200f, 1200f)
+                )
+            )
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
     ) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = text,
+            color = White,
+            fontFamily = AppFont,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp
+        )
+    }
+}
+
+@Composable
+fun BackGradientButton(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(34.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(GradientStart, GradientEnd),
+                    start = Offset.Zero,
+                    end = Offset(300f, 300f)
+                )
+            )
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Filled.ArrowBackIosNew,
+            contentDescription = null,
+            tint = White,
+            modifier = Modifier.size(16.dp)
+        )
+    }
+}
+
+@Composable
+fun HistoryScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppBackground)
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .padding(horizontal = 18.dp)
+    ) {
+        Spacer(modifier = Modifier.height(18.dp))
+
+        Text(
+            text = "История",
+            color = PrimaryText,
+            fontFamily = AppFont,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 24.sp
+        )
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        repeat(8) { index ->
             Box(
-                modifier = Modifier.size(60.dp).background(LightGrayBg, RoundedCornerShape(8.dp)),
-                contentAlignment = Alignment.Center
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 6.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(White)
+                    .border(1.dp, Color(0xFFE7E7E7), RoundedCornerShape(18.dp))
+                    .padding(16.dp)
             ) {
-                Icon(Icons.Outlined.ShoppingBag, null, tint = MainOrange)
+                Column {
+                    Text(
+                        text = "Заказ №10${index + 1}",
+                        color = PrimaryText,
+                        fontFamily = AppFont,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "25 дек 2023, 14:30",
+                        color = SecondaryText,
+                        fontFamily = AppFont,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 13.sp
+                    )
+                }
             }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(item.title, fontWeight = FontWeight.Bold)
-                Text(item.date, fontSize = 12.sp, color = GrayText)
-                Spacer(modifier = Modifier.height(4.dp))
-
-                val statusColor = if (item.status == "Доставлен") Color(0xFF4CAF50) else Color(0xFFFF9800)
-                Text(item.status, fontSize = 12.sp, color = statusColor, fontWeight = FontWeight.Bold)
-            }
-
-            Text(item.price, fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
     }
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
-    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-
-    if (currentRoute != "edit_profile") {
-        NavigationBar(containerColor = Color.White) {
-            NavigationBarItem(
-                icon = { Icon(Icons.Outlined.Search, null) },
-                selected = false,
-                onClick = { }
+fun BottomNavigationBar(
+    currentRoute: String,
+    onSelect: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(White)
+            .navigationBarsPadding()
+            .padding(top = 4.dp, bottom = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 28.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BottomNavIcon(
+                icon = Icons.Filled.Search,
+                selected = currentRoute == "search",
+                onClick = {}
             )
-            NavigationBarItem(
-                icon = { Icon(Icons.Outlined.FavoriteBorder, null) },
-                label = { Text("История") },
+
+            BottomNavIcon(
+                icon = Icons.Filled.FavoriteBorder,
                 selected = currentRoute == "history",
-                onClick = { navController.navigate("history") }
+                onClick = { onSelect("history") }
             )
-            NavigationBarItem(
-                icon = { Icon(Icons.Outlined.Person, null) },
-                label = { Text("Профиль") },
+
+            BottomNavIcon(
+                icon = Icons.Filled.Person,
                 selected = currentRoute == "profile",
-                onClick = { navController.navigate("profile") }
+                onClick = { onSelect("profile") }
             )
         }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Box(
+            modifier = Modifier
+                .width(128.dp)
+                .height(5.dp)
+                .clip(RoundedCornerShape(100.dp))
+                .background(HomeIndicator)
+        )
     }
 }
 
 @Composable
-fun NavController.currentBackStackEntryAsState(): State<NavBackStackEntry?> {
-    val currentBackStackEntry = remember { mutableStateOf(currentBackStackEntry) }
-    DisposableEffect(this) {
-        val listener = NavController.OnDestinationChangedListener { controller, _, _ ->
-            currentBackStackEntry.value = controller.currentBackStackEntry
-        }
-        addOnDestinationChangedListener(listener)
-        onDispose {
-            removeOnDestinationChangedListener(listener)
-        }
+fun BottomNavIcon(
+    icon: ImageVector,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = if (selected) SelectedNav else UnselectedNav,
+            modifier = Modifier.size(28.dp)
+        )
     }
-    return currentBackStackEntry
 }
