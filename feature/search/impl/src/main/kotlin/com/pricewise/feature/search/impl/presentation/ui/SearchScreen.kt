@@ -27,8 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,9 +45,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pricewise.core.ui.components.PriceWiseSearchHeaderTokens
-import com.pricewise.core.ui.components.SearchBar
 import com.pricewise.core.ui.R
 import com.pricewise.feature.search.impl.presentation.components.ProductCardShimmer
+import components.SearchBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,6 +88,7 @@ fun SearchScreen(
             query = state.query,
             onQueryChange = viewModel::onQueryChange,
             onSearch = viewModel::submitSearch,
+            onClear = { viewModel.clearQuery() },
             onPhotoSearchClick = {},
             modifier = Modifier,
         )
@@ -221,6 +220,7 @@ fun SearchScreen(
 private fun SearchHeaderSection(
     query: String,
     onQueryChange: (String) -> Unit,
+    onClear: () -> Unit,
     onSearch: () -> Unit,
     onPhotoSearchClick: () -> Unit,
     modifier: Modifier,
@@ -240,8 +240,9 @@ private fun SearchHeaderSection(
         contentAlignment = Alignment.TopCenter,
     ) {
         SearchBar(
-            query = query,
-            onQueryChange = onQueryChange,
+            value = query,
+            onValueChange = onQueryChange,
+            onClear = onClear,
             onSearch = onSearch,
             onPhotoSearchClick = onPhotoSearchClick,
             modifier = Modifier

@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.pricewise.core.ui.components.SearchBar
 import com.pricewise.core.ui.components.PriceWiseSearchHeaderTokens
 import com.pricewise.feature.home.impl.R
 import com.pricewise.feature.home.impl.presentation.viewmodel.HomeScreenViewModel
@@ -29,6 +28,7 @@ import com.pricewise.feature.home.impl.presentation.ui.components.ProductCard
 import com.pricewise.feature.home.impl.presentation.ui.components.QuickActionCarousel
 import com.pricewise.feature.home.impl.presentation.ui.placeholders.LoadingFeedSection
 import com.pricewise.feature.home.impl.ui.theme.PriceWiseComposeTheme
+import components.SearchBar
 
 @Composable
 fun HomeScreen(
@@ -210,8 +210,8 @@ private fun HeaderSection(
             .background(HomeColors.HeaderGradient, PriceWiseSearchHeaderTokens.Shape),
     ) {
         SearchBar(
-            query = query,
-            onQueryChange = onQueryChange,
+            value = query,
+            onValueChange = onQueryChange,
             onSearch = { onSearch(query) },
             onPhotoSearchClick = onPhotoSearchClick,
             modifier = Modifier
