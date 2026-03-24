@@ -19,7 +19,8 @@ rootProject.name = "PriceWise"
 include(
     ":app",
     ":core:di",
-    ":core:navigation",
+    ":core:navigation-api",
+    ":core:navigation-impl",
     ":core:network",
     ":core:auth",
     ":core:push",
@@ -46,3 +47,6 @@ include(
     ":feature:ads:api",
     ":feature:ads:impl",
 )
+
+project(":core:navigation-api").projectDir = file("core/navigation-api")
+project(":core:navigation-impl").projectDir = file("core/navigation-impl")

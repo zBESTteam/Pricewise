@@ -1,3 +1,9 @@
 package com.pricewise.feature.search.api
 
-interface SearchFeatureEntry
+import com.pricewise.navigation.api.NavigationFeatureEntry
+
+interface SearchFeatureEntry : NavigationFeatureEntry {
+    val searchRoute: String
+
+    fun createRoute(searchQuery: String): String
+}

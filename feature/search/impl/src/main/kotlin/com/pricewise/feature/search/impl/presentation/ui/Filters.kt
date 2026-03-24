@@ -1,5 +1,6 @@
 package com.pricewise.feature.search.impl.presentation.ui
 
+import Typography.Inter
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,8 +46,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -58,9 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pricewise.core.ui.R
-import com.pricewise.feature.search.impl.presentation.ui.Typography.Inter
 import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel
-import kotlin.apply
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +66,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
     var deliveryChosen by rememberSaveable { mutableIntStateOf(0) }
     var onlyOriginals by rememberSaveable { mutableStateOf(false) }
     var onlyNew by rememberSaveable { mutableStateOf(false) }
-    var onlyBU by rememberSaveable { mutableStateOf(false) }
+    var onlyUsed by rememberSaveable { mutableStateOf(false) }
     var onlyMarketplaces by rememberSaveable { mutableStateOf(false) }
     var onlyOfflineShops by rememberSaveable { mutableStateOf(false) }
     var priceFrom by rememberSaveable { mutableLongStateOf(0L) }
@@ -82,7 +79,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
         deliveryChosen = viewModel.deliveryChosen.value
         onlyOriginals = viewModel.onlyOriginals.value
         onlyNew = viewModel.onlyNew.value
-        onlyBU = viewModel.onlyBU.value
+        onlyUsed = viewModel.onlyUsed.value
         onlyMarketplaces = viewModel.onlyMarketplaces.value
         onlyOfflineShops = viewModel.onlyOfflineShops.value
         priceFrom = viewModel.priceFrom.value
@@ -280,8 +277,8 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
 
                         FilterSwitch(
                             title = stringResource(R.string.only_bu),
-                            isChecked = onlyBU,
-                            onCheckedChange = { onlyBU = it })
+                            isChecked = onlyUsed,
+                            onCheckedChange = { onlyUsed = it })
                     }
                     Text(
                         text = stringResource(R.string.shops),
@@ -325,14 +322,14 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                                 viewModel.setDeliveryChosen(deliveryChosen)
                                 viewModel.setOnlyOriginals(onlyOriginals)
                                 viewModel.setOnlyNew(onlyNew)
-                                viewModel.setOnlyBU(onlyBU)
+                                viewModel.setOnlyUsed(onlyUsed)
                                 viewModel.setOnlyMarketplaces(onlyMarketplaces)
                                 viewModel.setOnlyOfflineShops(onlyOfflineShops)
                                 viewModel.setPriceFrom(priceFrom)
                                 viewModel.setPriceTo(priceTo)
                                 viewModel.setPopularDiapasonChosen(popularDiapasonChosen)
                                 viewModel.setCanPayLater(canPayLater)
-                                viewModel.makeFilter()
+                                // Добавить начало поиска заново
                                 closeFilters()
                             },
                         contentAlignment = Alignment.Center
@@ -395,12 +392,10 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                             .height(14.dp)
                             .align(Alignment.CenterHorizontally)
                     ) {
-//                        val minPrice =
-//                            state.value.items.minByOrNull { it.price }?.price?.toFloat() ?: 0f
-//                        val maxPrice =
-//                            state.value.items.maxByOrNull { it.price }?.price?.toFloat() ?: 0f
-                        val minPrice = 10000f
-                        val maxPrice = 100000f
+                        val minPrice =
+                            state.value.items.minByOrNull { it.price }?.price?.toFloat() ?: 0f
+                        val maxPrice =
+                            state.value.items.maxByOrNull { it.price }?.price?.toFloat() ?: 0f
                         val priceRange = maxPrice - minPrice
                         val normalizedFrom = if (priceRange > 0) {
                             ((priceFrom - minPrice) / priceRange).coerceIn(0f, 1f)
@@ -548,14 +543,14 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                                 viewModel.setDeliveryChosen(deliveryChosen)
                                 viewModel.setOnlyOriginals(onlyOriginals)
                                 viewModel.setOnlyNew(onlyNew)
-                                viewModel.setOnlyBU(onlyBU)
+                                viewModel.setOnlyUsed(onlyUsed)
                                 viewModel.setOnlyMarketplaces(onlyMarketplaces)
                                 viewModel.setOnlyOfflineShops(onlyOfflineShops)
                                 viewModel.setPriceFrom(priceFrom)
                                 viewModel.setPriceTo(priceTo)
                                 viewModel.setPopularDiapasonChosen(popularDiapasonChosen)
                                 viewModel.setCanPayLater(canPayLater)
-                                viewModel.makeFilter()
+                                // Добавить начало поиска заново
                                 closeFilters()
                             },
                         contentAlignment = Alignment.Center

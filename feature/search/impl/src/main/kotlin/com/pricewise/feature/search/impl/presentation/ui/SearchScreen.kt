@@ -1,6 +1,8 @@
 package com.pricewise.feature.search.impl.presentation.ui
 
+import Typography.Inter
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,26 +40,25 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.pricewise.core.ui.components.PriceWiseSearchHeaderTokens
+import com.pricewise.core.ui.components.SearchBar
 import com.pricewise.core.ui.R
 import com.pricewise.feature.search.impl.presentation.components.ProductCardShimmer
-import com.pricewise.feature.search.impl.presentation.components.SearchBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    modifier: Modifier = Modifier,
-    viewModel: SearchViewModel,
+    contentPadding: PaddingValues,
+    modifier: Modifier,
+    initialQuery: String,
 ) {
-    val inter = FontFamily(
-        Font(R.font.inter_regular, weight = FontWeight.W400),
-        Font(R.font.inter_medium, weight = FontWeight.W500),
-        Font(R.font.inter_semibold, weight = FontWeight.W600),
-        Font(R.font.inter_bold, weight = FontWeight.W700),
-    )
+    val viewModel: SearchViewModel = hiltViewModel()
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -73,38 +74,25 @@ fun SearchScreen(
         )
     }
 
-    Column(modifier = modifier) {
+    LaunchedEffect(initialQuery) {
+        viewModel.initializeSearch(searchQuery = initialQuery)
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(contentPadding),
+    ) {
         val total = state.totalSources.coerceAtLeast(1)
         val checked = state.checkedSources.coerceAtLeast(0)
         val safeChecked = if (!state.isLoading && checked < total) total else checked
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            colorResource(R.color.start_gradient_color),
-                            colorResource(R.color.end_gradient_color)
-                        )
-                    ), shape = RoundedCornerShape(bottomStart = 22.dp, bottomEnd = 22.dp)
-                ),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            SearchBar(
-                value = state.query,
-                onValueChange = viewModel::onQueryChange,
-                onClear = { viewModel.onQueryChange("") },
-                onSearch = viewModel::submitSearch,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = 15.dp,
-                        end = 15.dp,
-                        top = 32.dp,
-                        bottom = 28.dp
-                    )
-            )
-        }
+        SearchHeaderSection(
+            query = state.query,
+            onQueryChange = viewModel::onQueryChange,
+            onSearch = viewModel::submitSearch,
+            onPhotoSearchClick = {},
+            modifier = Modifier,
+        )
         Text(
             modifier = Modifier.padding(
                 start = 15.dp,
@@ -114,7 +102,7 @@ fun SearchScreen(
             style = TextStyle(
                 fontSize = 20.sp,
                 lineHeight = 26.sp,
-                fontFamily = inter,
+                fontFamily = Inter,
                 fontWeight = FontWeight(700),
                 color = colorResource(R.color.mid_dark),
             )
@@ -128,7 +116,7 @@ fun SearchScreen(
             style = TextStyle(
                 fontSize = 14.sp,
                 lineHeight = 21.sp,
-                fontFamily = inter,
+                fontFamily = Inter,
                 fontWeight = FontWeight(600),
                 color = colorResource(R.color.secondary_text_color),
 
@@ -202,7 +190,12 @@ fun SearchScreen(
                     items = state.items,
                     key = { it.id }
                 ) { item ->
-                    ProductCard(item, {})
+                    ProductCard(
+                        product = item,
+                        addToFavourites = { product ->
+                            viewModel.onProductFavoriteClick(productId = product.id)
+                        },
+                    )
                 }
             }
         }
@@ -221,6 +214,45 @@ fun SearchScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun SearchHeaderSection(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit,
+    onPhotoSearchClick: () -> Unit,
+    modifier: Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        colorResource(R.color.start_gradient_color),
+                        colorResource(R.color.end_gradient_color),
+                    ),
+                ),
+                shape = PriceWiseSearchHeaderTokens.Shape,
+            ),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        SearchBar(
+            query = query,
+            onQueryChange = onQueryChange,
+            onSearch = onSearch,
+            onPhotoSearchClick = onPhotoSearchClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = PriceWiseSearchHeaderTokens.HorizontalPadding,
+                    end = PriceWiseSearchHeaderTokens.HorizontalPadding,
+                    top = PriceWiseSearchHeaderTokens.TopPadding,
+                    bottom = PriceWiseSearchHeaderTokens.BottomPadding,
+                ),
+        )
     }
 }
 
@@ -259,7 +291,7 @@ fun DefaultButton(
                 style = TextStyle(
                     fontSize = 15.sp,
                     lineHeight = 21.sp,
-                    fontFamily = FontFamily(Font(R.font.inter_regular)),
+                    fontFamily = Inter,
                     fontWeight = FontWeight(600),
                     color = if (!isSelected) colorResource(R.color.disabled_filter_button_text_color) else colorResource(
                         R.color.white

@@ -1,3 +1,7 @@
 package com.pricewise.feature.home.api
 
-interface HomeFeatureEntry
+import com.pricewise.navigation.api.NavigationFeatureEntry
+
+interface HomeFeatureEntry : NavigationFeatureEntry {
+    val homeRoute: String
+}

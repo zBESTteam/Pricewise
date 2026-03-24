@@ -2,7 +2,6 @@ package com.pricewise.feature.home.impl.presentation.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -56,14 +55,14 @@ internal fun QuickActionCard(
     modifier: Modifier,
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier
             .size(HomeDimens.QuickActionCardSize)
             .border(
                 width = HomeDimens.BannerBorderWidth,
                 color = HomeColors.QuickActionBorder,
                 shape = HomeShapes.QuickAction,
-            )
-            .clickable(onClick = onClick),
+            ),
         shape = HomeShapes.QuickAction,
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(defaultElevation = HomeDimens.ZeroElevation),

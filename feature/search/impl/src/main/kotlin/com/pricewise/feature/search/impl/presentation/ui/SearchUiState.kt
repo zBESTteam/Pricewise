@@ -6,6 +6,7 @@ data class SearchUiState(
     val query: String = "",
     val submittedQuery: String = "",
     val isLoading: Boolean = false,
+    val isError: Boolean = false,
     val items: List<Product> = emptyList(),
     val hasMore: Boolean = false,
     val checkedSources: Int = 0,

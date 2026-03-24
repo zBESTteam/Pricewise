@@ -7,6 +7,9 @@
     <string name="search_field_content_description">Поле ввода поискового запроса</string>
     <string name="clear_search_content_description">Очистить поиск</string>
     <string name="search_action_content_description">Открыть сканер или камеру для поиска</string>
+    <string name="product_add_favorite_description">Добавить %1$s в избранное</string>
+    <string name="product_remove_favorite_description">Убрать %1$s из избранного</string>
+    <string name="product_marketplace_content_description">Логотип магазина %1$s</string>
     <string name="filtration">Фильтрация</string>
     <string name="product">Товар</string>
     <string name="price">Цена</string>
