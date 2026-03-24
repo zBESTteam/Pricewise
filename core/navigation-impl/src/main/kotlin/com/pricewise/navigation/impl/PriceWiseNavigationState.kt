@@ -38,7 +38,10 @@ class PriceWiseAppState internal constructor(
         @Composable get() = currentTopLevelDestination == PriceWiseTopLevelDestination.Home
 
     fun navigateToTopLevelDestination(destination: PriceWiseTopLevelDestination) {
-        if (navController.currentDestination.isRouteInHierarchy(destination)) {
+        if (navController.currentDestination.isExactTopLevelDestination(destination)) {
+            return
+        }
+        if (navController.popBackStack(route = destination.route, inclusive = false)) {
             return
         }
         navController.navigate(destination.route) {
@@ -65,6 +68,14 @@ fun PriceWiseSystemBars(
 }
 
 private fun NavDestination?.isRouteInHierarchy(
+    destination: PriceWiseTopLevelDestination,
+): Boolean {
+    return this?.hierarchy?.any { navDestination ->
+        navDestination.route in destination.hierarchyRoutes
+    } == true
+}
+
+private fun NavDestination?.isExactTopLevelDestination(
     destination: PriceWiseTopLevelDestination,
 ): Boolean {
     return this?.hierarchy?.any { navDestination ->

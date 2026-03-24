@@ -20,12 +20,13 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.pricewise.core.ui.components.SearchBar
+import com.pricewise.core.ui.components.PriceWiseSearchHeaderTokens
 import com.pricewise.feature.home.impl.R
 import com.pricewise.feature.home.impl.presentation.viewmodel.HomeScreenViewModel
 import com.pricewise.feature.home.impl.presentation.ui.components.PopularQueriesRow
 import com.pricewise.feature.home.impl.presentation.ui.components.ProductCard
 import com.pricewise.feature.home.impl.presentation.ui.components.QuickActionCarousel
-import com.pricewise.feature.home.impl.presentation.ui.components.SearchBar
 import com.pricewise.feature.home.impl.presentation.ui.placeholders.LoadingFeedSection
 import com.pricewise.feature.home.impl.ui.theme.PriceWiseComposeTheme
 
@@ -206,7 +207,7 @@ private fun HeaderSection(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(HomeColors.HeaderGradient, HomeShapes.Header),
+            .background(HomeColors.HeaderGradient, PriceWiseSearchHeaderTokens.Shape),
     ) {
         SearchBar(
             query = query,
@@ -216,10 +217,10 @@ private fun HeaderSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    start = HomeDimens.ScreenHorizontalPadding,
-                    end = HomeDimens.ScreenHorizontalPadding,
-                    top = HomeDimens.HeaderTopPadding,
-                    bottom = HomeDimens.HeaderBottomPadding,
+                    start = PriceWiseSearchHeaderTokens.HorizontalPadding,
+                    end = PriceWiseSearchHeaderTokens.HorizontalPadding,
+                    top = PriceWiseSearchHeaderTokens.TopPadding,
+                    bottom = PriceWiseSearchHeaderTokens.BottomPadding,
                 ),
         )
     }
