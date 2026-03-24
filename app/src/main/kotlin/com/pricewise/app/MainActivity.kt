@@ -4,25 +4,25 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.pricewise.feature.home.impl.presentation.ui.MainScreen
-import com.pricewise.feature.home.impl.ui.theme.PriceWiseComposeTheme
+import com.pricewise.feature.home.api.HomeScreenApi
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var homeScreenApi: HomeScreenApi
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PriceWiseComposeTheme {
-                Surface {
-                    MainScreen(
-                        contentPadding = PaddingValues(),
-                        modifier = Modifier,
-                    )
-                }
-            }
+            homeScreenApi.HomeScreen(
+                contentPadding = PaddingValues(),
+                modifier = Modifier,
+                onSearchRequest = {},
+                onPhotoSearchRequest = {},
+            )
         }
     }
 }

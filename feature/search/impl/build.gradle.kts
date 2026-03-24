@@ -13,7 +13,7 @@ dependencies {
     implementation(project(":feature:search:api"))
     implementation(project(":core:di"))
     implementation(project(":core:ui"))
-    implementation(project(":core:navigation"))
+    implementation(project(":core:navigation-api"))
     implementation(project(":core:network"))
 
     implementation(libs.core.ktx)
@@ -27,6 +27,13 @@ dependencies {
     implementation(libs.coil.svg)
     implementation(libs.compose.shimmer)
     implementation(libs.activity.compose)
+
+    implementation(libs.okhttp.core)
+    implementation(libs.okhttp.logging)
+    implementation(libs.moshi.core)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.moshi)
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.room.runtime)

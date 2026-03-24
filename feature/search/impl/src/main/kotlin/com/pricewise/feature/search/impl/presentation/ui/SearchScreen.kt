@@ -1,5 +1,6 @@
 package com.pricewise.feature.search.impl.presentation.ui
 
+import Typography.Inter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,26 +39,22 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pricewise.core.ui.R
 import com.pricewise.feature.search.impl.presentation.components.ProductCardShimmer
-import com.pricewise.feature.search.impl.presentation.components.SearchBar
+import components.SearchBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    modifier: Modifier = Modifier,
-    viewModel: SearchViewModel,
+    modifier: Modifier = Modifier
 ) {
-    val inter = FontFamily(
-        Font(R.font.inter_regular, weight = FontWeight.W400),
-        Font(R.font.inter_medium, weight = FontWeight.W500),
-        Font(R.font.inter_semibold, weight = FontWeight.W600),
-        Font(R.font.inter_bold, weight = FontWeight.W700),
-    )
+    val viewModel: SearchViewModel = viewModel()
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -71,6 +68,10 @@ fun SearchScreen(
             closeFilters = closeFilters,
             viewModel = viewModel
         )
+    }
+
+    LaunchedEffect(null) {
+        // Здесь после перехода на экран поиска вызвать submitSearch
     }
 
     Column(modifier = modifier) {
@@ -93,7 +94,7 @@ fun SearchScreen(
             SearchBar(
                 value = state.query,
                 onValueChange = viewModel::onQueryChange,
-                onClear = { viewModel.onQueryChange("") },
+                onClear = { viewModel.clearQuery() },
                 onSearch = viewModel::submitSearch,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -114,7 +115,7 @@ fun SearchScreen(
             style = TextStyle(
                 fontSize = 20.sp,
                 lineHeight = 26.sp,
-                fontFamily = inter,
+                fontFamily = Inter,
                 fontWeight = FontWeight(700),
                 color = colorResource(R.color.mid_dark),
             )
@@ -128,7 +129,7 @@ fun SearchScreen(
             style = TextStyle(
                 fontSize = 14.sp,
                 lineHeight = 21.sp,
-                fontFamily = inter,
+                fontFamily = Inter,
                 fontWeight = FontWeight(600),
                 color = colorResource(R.color.secondary_text_color),
 
