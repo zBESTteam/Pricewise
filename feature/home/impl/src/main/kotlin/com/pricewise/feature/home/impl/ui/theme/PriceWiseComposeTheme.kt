@@ -10,13 +10,13 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.pricewise.core.ui.R as CoreUiR
+import com.pricewise.feature.home.impl.R
 
 private val PriceWiseFontFamily = FontFamily(
-    Font(resId = CoreUiR.font.inter_regular, weight = FontWeight.Normal),
-    Font(resId = CoreUiR.font.inter_medium, weight = FontWeight.Medium),
-    Font(resId = CoreUiR.font.inter_semibold, weight = FontWeight.SemiBold),
-    Font(resId = CoreUiR.font.inter_bold, weight = FontWeight.Bold),
+    Font(resId = R.font.inter_regular, weight = FontWeight.Normal),
+    Font(resId = R.font.inter_regular, weight = FontWeight.Medium),
+    Font(resId = R.font.inter_semibold, weight = FontWeight.SemiBold),
+    Font(resId = R.font.inter_semibold, weight = FontWeight.Bold),
 )
 
 private val PriceWiseColorScheme = lightColorScheme(

@@ -11,7 +11,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.pricewise.core.ui.R as CoreUiR
+import com.pricewise.feature.home.impl.R
 
 internal object HomeColors {
     val ScreenBackground = Color(0xFFFEFEFE)
@@ -43,10 +43,10 @@ internal object HomeShapes {
 
 internal object HomeTextStyles {
     private val priceWiseFontFamily = FontFamily(
-        Font(resId = CoreUiR.font.inter_regular, weight = FontWeight.Normal),
-        Font(resId = CoreUiR.font.inter_medium, weight = FontWeight.Medium),
-        Font(resId = CoreUiR.font.inter_semibold, weight = FontWeight.SemiBold),
-        Font(resId = CoreUiR.font.inter_bold, weight = FontWeight.Bold),
+        Font(resId = R.font.inter_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.inter_regular, weight = FontWeight.Medium),
+        Font(resId = R.font.inter_semibold, weight = FontWeight.SemiBold),
+        Font(resId = R.font.inter_semibold, weight = FontWeight.Bold),
     )
 
     val SearchField

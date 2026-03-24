@@ -16,6 +16,7 @@ android {
 dependencies {
     implementation(project(":feature:home:api"))
     implementation(project(":core:di"))
+    implementation(project(":core:navigation-api"))
     implementation(project(":core:network"))
     implementation(project(":core:ui"))
 
@@ -31,7 +32,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.coil.compose)
-    implementation(libs.coil.svg)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)

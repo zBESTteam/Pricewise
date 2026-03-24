@@ -17,7 +17,6 @@ internal object HomeDimens {
     val ListBottomPadding = 20.dp
 
     val SearchFieldHeight = 48.dp
-    val SearchTrailingIconEndPadding = 11.dp
     val TouchTargetSize = 48.dp
     val MarketplaceLogoSize = 16.dp
     val FavoriteIconWidth = 19.dp

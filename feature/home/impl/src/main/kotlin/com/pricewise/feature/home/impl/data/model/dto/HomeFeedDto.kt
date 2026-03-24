@@ -1,52 +1,52 @@
-package com.pricewise.feature.home.impl.domain.model
+package com.pricewise.feature.home.impl.data.model.dto
 
-data class HomeFeed(
+data class HomeFeedDto(
     val searchQuery: String,
-    val quickActions: List<HomeQuickAction>,
-    val popularQueries: List<HomePopularQuery>,
-    val products: List<HomeProduct>,
+    val quickActions: List<QuickActionDto>,
+    val popularQueries: List<PopularQueryDto>,
+    val products: List<ProductDto>,
 )
 
-data class HomeQuickAction(
+data class QuickActionDto(
     val id: String,
     val title: String,
     val imageUrl: String?,
-    val iconType: HomeQuickActionIconType,
+    val iconType: QuickActionIconTypeDto,
     val gradientColors: List<Long>,
 )
 
-data class HomePopularQuery(
+data class PopularQueryDto(
     val id: String,
     val title: String,
 )
 
-data class HomeProduct(
+data class ProductDto(
     val id: String,
     val title: String,
     val price: String,
     val isFavorite: Boolean,
     val thumbnailUrl: String?,
     val productUrl: String?,
-    val marketplace: HomeMarketplace,
-    val thumbnailStyle: HomeProductThumbnailStyle,
+    val marketplace: MarketplaceDto,
+    val thumbnailStyle: ProductThumbnailStyleDto,
     val thumbnailColors: List<Long>,
 )
 
-data class HomeMarketplace(
+data class MarketplaceDto(
     val name: String,
     val shortName: String,
     val logoUrl: String?,
     val badgeColors: List<Long>,
 )
 
-enum class HomeQuickActionIconType {
+enum class QuickActionIconTypeDto {
     SearchGuide,
     SearchSettings,
     AiRecommendations,
     Favorites,
 }
 
-enum class HomeProductThumbnailStyle {
+enum class ProductThumbnailStyleDto {
     Phone,
     Keyboard,
 }

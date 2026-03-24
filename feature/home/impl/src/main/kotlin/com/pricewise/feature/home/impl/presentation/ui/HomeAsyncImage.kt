@@ -13,7 +13,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpSize
 import coil.compose.AsyncImage
-import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.pricewise.feature.home.impl.presentation.ui.placeholders.PlaceholderBox
 
@@ -38,18 +37,12 @@ internal fun RemoteImage(
             with(density) { height.roundToPx() }
         }
     }
-    val isSvgImage = remember(imageUrl) {
-        imageUrl.substringBefore('?').endsWith(".svg", ignoreCase = true)
-    }
     val imageRequest = remember(context, imageUrl, requestWidthPx, requestHeightPx) {
         ImageRequest.Builder(context)
             .data(imageUrl)
             .apply {
                 if (requestWidthPx != null && requestHeightPx != null) {
                     size(requestWidthPx, requestHeightPx)
-                }
-                if (isSvgImage) {
-                    decoderFactory(SvgDecoder.Factory())
                 }
             }
             .crossfade(false)

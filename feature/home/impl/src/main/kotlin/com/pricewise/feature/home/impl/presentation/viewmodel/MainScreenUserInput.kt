@@ -1,6 +1,5 @@
 package com.pricewise.feature.home.impl.presentation.viewmodel
 
-data class HomeScreenUserInput(
+data class MainScreenUserInput(
     val searchQuery: String,
-    val favoriteProductIds: Set<String>,
 )
