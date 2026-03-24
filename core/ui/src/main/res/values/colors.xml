@@ -10,6 +10,7 @@
     <color name="pw_color_on_surface">#1F1F1F</color>
     <color name="start_gradient_color">#FFFFAB35</color>
     <color name="end_gradient_color">#FFFF2424</color>
+    <color name="middle_gradient">#FFFF682D</color>
     <color name="mid_dark">#FF232323</color>
     <color name="secondary_text_color">#FF727272</color>
     <color name="button_color_search_screen">#F8F8F8</color>

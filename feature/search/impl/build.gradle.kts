@@ -28,6 +28,13 @@ dependencies {
     implementation(libs.compose.shimmer)
     implementation(libs.activity.compose)
 
+    implementation(libs.okhttp.core)
+    implementation(libs.okhttp.logging)
+    implementation(libs.moshi.core)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.moshi)
+
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
