@@ -3,7 +3,6 @@ package com.pricewise.feature.search.impl.presentation.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.pricewise.core.ui.components.PriceWiseProductCard
-import com.pricewise.core.ui.components.PriceWiseProductCardModel
 import com.pricewise.feature.search.api.domain.model.Product
 import com.valentinilk.shimmer.shimmer
 import androidx.compose.foundation.background
@@ -24,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.pricewise.core.ui.R
+import com.pricewise.core.ui.components.PriceWiseProductCardModel
 
 @Composable
 fun ProductCard(product: Product, addToFavourites: (Product) -> Unit) {
@@ -45,7 +45,7 @@ fun ProductCard(product: Product, addToFavourites: (Product) -> Unit) {
 }
 
 private fun Long.toRubles(): String {
-    return "%,d ₽".format(this).replace(',', ' ')
+    return "%,d в‚Ѕ".format(this).replace(',', ' ')
 }
 
 @Composable

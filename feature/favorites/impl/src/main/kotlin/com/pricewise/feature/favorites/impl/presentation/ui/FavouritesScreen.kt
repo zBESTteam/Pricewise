@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,11 +35,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.pricewise.core.ui.components.PriceWiseProductCard
 import com.pricewise.feature.favorites.impl.R
 import com.pricewise.feature.favorites.impl.presentation.ui.components.DefaultButton
-import com.pricewise.feature.search.impl.presentation.ui.components.ProductCard
 import com.pricewise.feature.favorites.impl.presentation.viewmodel.FavouritesViewModel
-import com.pricewise.feature.search.impl.presentation.components.ProductCard
 
 @Composable
 fun FavoritesScreen() {
@@ -135,9 +135,11 @@ fun FavoritesScreen() {
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(uiState.items, key = { it.id }) { product ->
-                            ProductCard(
+                            PriceWiseProductCard(
                                 product = product,
-                                addToFavorites = { viewModel.removeFavorite(it) }
+                                onFavoriteClick = { viewModel.removeFavorite(product) },
+                                onClick = {TODO()},
+                                modifier = Modifier
                             )
                         }
                     }

@@ -15,14 +15,14 @@ class FavoritesRepositoryImpl @Inject constructor(
     private val tokenManager: TokenManager
 ) : FavoritesRepository {
 
-    override suspend fun list(token: String): List<FavoriteItem> {
-        val response = api.listFavorites(authorization = token.asBearer())
+    override suspend fun list(): List<FavoriteItem> {
+        val response = api.listFavorites(authorization = tokenManager.getToken().asBearer())
         return response.items.orEmpty().mapNotNull { it.toDomainOrNull() }
     }
 
-    override suspend fun add(token: String, favorite: FavoriteCreate): FavoriteItem {
+    override suspend fun add(favorite: FavoriteCreate): FavoriteItem {
         val response = api.addFavorite(
-            authorization = token.asBearer(),
+            authorization = tokenManager.getToken().asBearer(),
             request = FavoriteCreateRequestDto(
                 externalId = favorite.externalId,
                 source = favorite.source,
@@ -36,29 +36,32 @@ class FavoritesRepositoryImpl @Inject constructor(
         return response.toDomainOrNull() ?: throw IllegalStateException("Invalid favorite response")
     }
 
-    override suspend fun remove(token: String, externalId: String, source: String): Boolean {
+    override suspend fun remove(externalId: String, source: String): Boolean {
         val response = api.removeFavorite(
-            authorization = token.asBearer(),
+            authorization = tokenManager.getToken().asBearer(),
             externalId = externalId,
             source = source,
         )
         return response.isOk()
     }
 
-    override suspend fun favoriteRecommendation(token: String, recommendationId: Long): FavoriteItem {
+    override suspend fun favoriteRecommendation(recommendationId: Long): FavoriteItem {
         val response = api.favoriteRecommendation(
-            authorization = token.asBearer(),
+            authorization = tokenManager.getToken().asBearer(),
             recommendationId = recommendationId,
         )
         return response.toDomainOrNull() ?: throw IllegalStateException("Invalid favorite response")
     }
 
-    override suspend fun unfavoriteRecommendation(token: String, recommendationId: Long): Boolean {
+    override suspend fun unfavoriteRecommendation(recommendationId: Long): Boolean {
         val response = api.unfavoriteRecommendation(
-            authorization = token.asBearer(),
+            authorization = tokenManager.getToken().asBearer(),
             recommendationId = recommendationId,
         )
         return response.isOk()
+    }
+    override suspend fun getAuthHeader(): String {
+        return tokenManager.getToken()?.asBearer().toString()
     }
 }
 
@@ -86,8 +89,8 @@ private fun ApiStatusDto.isOk(): Boolean {
     return status?.trim().equals("ok", ignoreCase = true)
 }
 
-private fun String.asBearer(): String {
-    val trimmed = trim()
+private fun String?.asBearer(): String {
+    val trimmed = this?.trim() ?: ""
     return if (trimmed.startsWith("Bearer ", ignoreCase = true)) {
         trimmed
     } else {

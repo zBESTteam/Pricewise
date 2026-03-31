@@ -20,7 +20,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pricewise.R
+import com.pricewise.core.ui.R
+
 
 val inter = FontFamily(
     Font(R.font.inter_regular, weight = FontWeight.W400),
