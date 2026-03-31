@@ -7,8 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.pricewise.feature.auth.api.AuthFeatureEntry
 import com.pricewise.feature.auth.api.AuthRoutes
-import com.pricewise.feature.auth.impl.presentation.auth.AuthorizationScreen
-import com.pricewise.feature.auth.impl.presentation.auth.RegistrationScreen
+import com.pricewise.feature.auth.impl.presentation.ui.AuthorizationScreen
+import com.pricewise.feature.auth.impl.presentation.ui.RegistrationScreen
 import javax.inject.Inject
 
 class AuthFeatureEntryImpl @Inject constructor() : AuthFeatureEntry {

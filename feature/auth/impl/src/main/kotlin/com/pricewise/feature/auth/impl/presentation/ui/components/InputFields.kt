@@ -1,4 +1,4 @@
-package com.pricewise.feature.auth.impl.presentation.auth.components
+package com.pricewise.feature.auth.impl.presentation.ui.components
 
 
 import androidx.compose.foundation.Image
