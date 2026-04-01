@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
@@ -56,8 +57,8 @@ fun ProductCardShimmer() {
             .height(113.dp)
             .fillMaxWidth()
             .background(
-                color = LocalCustomColors.current.cardBackgroundColor,
-                shape = RoundedCornerShape(4.dp)
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(14.dp)
             )
             .shimmer(),
     ) {

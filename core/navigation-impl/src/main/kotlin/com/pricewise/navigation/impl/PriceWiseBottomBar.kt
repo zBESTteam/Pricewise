@@ -1,5 +1,6 @@
 package com.pricewise.navigation.impl
 
+import LocalCustomColors
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -136,6 +138,7 @@ private fun BottomBarItem(
     ) {
         Image(
             painter = painterResource(iconResId),
+            colorFilter = if (!selected) ColorFilter.tint(LocalCustomColors.current.iconTint) else null,
             contentDescription = null,
             modifier = Modifier
                 .graphicsLayer {

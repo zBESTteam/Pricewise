@@ -82,7 +82,7 @@ fun SearchScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(contentPadding)
-            .background(MaterialTheme.colorScheme.surface),
+            .background(MaterialTheme.colorScheme.background),
     ) {
         val total = state.totalSources.coerceAtLeast(1)
         val checked = state.checkedSources.coerceAtLeast(0)
@@ -132,7 +132,7 @@ fun SearchScreen(
                 .padding(horizontal = 15.dp)
                 .padding(top = 7.dp)
                 .background(
-                    color = LocalCustomColors.current.buttonColorSearchScreen,
+                    color = LocalCustomColors.current.buttonColor,
                     shape = RoundedCornerShape(5.dp)
                 )
         ) {

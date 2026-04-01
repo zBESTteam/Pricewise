@@ -1,5 +1,6 @@
 package com.pricewise.feature.home.impl.presentation.ui.components
 
+import LocalCustomColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.draw.clip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -49,13 +51,13 @@ private fun QueryChip(
         modifier = modifier
             .clip(HomeShapes.Chip)
             .clickable(onClick = onClick),
-        color = HomeColors.ChipBackground,
+        color = LocalCustomColors.current.buttonColor,
         shape = HomeShapes.Chip,
     ) {
         Text(
             text = query.title,
             style = HomeTextStyles.Chip,
-            color = HomeColors.SecondaryText,
+            color = LocalCustomColors.current.secondaryText,
             modifier = Modifier.padding(
                 horizontal = HomeDimens.MediumSpacing,
                 vertical = HomeDimens.ChipVerticalPadding,

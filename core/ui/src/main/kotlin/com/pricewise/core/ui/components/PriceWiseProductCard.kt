@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -268,6 +269,7 @@ private fun FavoriteButton(
                     R.drawable.heart
                 },
             ),
+            colorFilter = if (!isFavorite) ColorFilter.tint(LocalCustomColors.current.iconTint) else null,
             contentDescription = null,
             modifier = Modifier.size(ProductCardTokens.FavoriteIconSize),
             contentScale = ContentScale.Fit,
