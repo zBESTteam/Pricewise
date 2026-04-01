@@ -1,5 +1,6 @@
 package com.pricewise.feature.search.impl.presentation.components
 
+import LocalCustomColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.pricewise.core.ui.components.PriceWiseProductCard
@@ -55,7 +56,7 @@ fun ProductCardShimmer() {
             .height(113.dp)
             .fillMaxWidth()
             .background(
-                color = colorResource(R.color.card_background_color),
+                color = LocalCustomColors.current.cardBackgroundColor,
                 shape = RoundedCornerShape(4.dp)
             )
             .shimmer(),
@@ -70,7 +71,7 @@ fun ProductCardShimmer() {
                     .aspectRatio(1.05f)
                     .fillMaxSize()
                     .background(
-                        colorResource(R.color.light_gray).copy(alpha = 0.6f),
+                        LocalCustomColors.current.lightGray.copy(alpha = 0.6f),
                         shape = RoundedCornerShape(4.dp)
                     )
             )
@@ -90,7 +91,7 @@ fun ProductCardShimmer() {
                             .width(18.dp)
                             .height(18.dp)
                             .background(
-                                colorResource(R.color.light_gray).copy(alpha = 0.6f),
+                                LocalCustomColors.current.lightGray.copy(alpha = 0.6f),
                                 shape = RoundedCornerShape(4.dp)
                             )
                     )
@@ -100,7 +101,7 @@ fun ProductCardShimmer() {
                             .width(80.dp)
                             .height(14.dp)
                             .background(
-                                colorResource(R.color.light_gray).copy(alpha = 0.6f),
+                                LocalCustomColors.current.lightGray.copy(alpha = 0.6f),
                                 shape = RoundedCornerShape(4.dp)
                             )
                     )
@@ -113,7 +114,7 @@ fun ProductCardShimmer() {
                                 .fillMaxWidth()
                                 .height(12.dp)
                                 .background(
-                                    colorResource(R.color.light_gray).copy(alpha = 0.6f),
+                                    LocalCustomColors.current.lightGray.copy(alpha = 0.6f),
                                     shape = RoundedCornerShape(4.dp)
                                 )
                         )
@@ -126,7 +127,7 @@ fun ProductCardShimmer() {
                         .width(60.dp)
                         .height(14.dp)
                         .background(
-                            colorResource(R.color.light_gray).copy(alpha = 0.6f),
+                            LocalCustomColors.current.lightGray.copy(alpha = 0.6f),
                             shape = RoundedCornerShape(4.dp)
                         )
                 )
@@ -136,7 +137,7 @@ fun ProductCardShimmer() {
                     .padding(vertical = 48.dp)
                     .padding(end = 15.dp)
                     .background(
-                        colorResource(R.color.light_gray).copy(alpha = 0.6f),
+                        LocalCustomColors.current.lightGray.copy(alpha = 0.6f),
                         shape = RoundedCornerShape(4.dp)
                     )
             )
@@ -147,7 +148,7 @@ fun ProductCardShimmer() {
                 .padding(end = 15.dp)
                 .size(30.dp)
                 .background(
-                    colorResource(R.color.light_gray).copy(alpha = 0.6f),
+                    LocalCustomColors.current.lightGray.copy(alpha = 0.6f),
                     shape = RoundedCornerShape(100.dp)
                 )
         )

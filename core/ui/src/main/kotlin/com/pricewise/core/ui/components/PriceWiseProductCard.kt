@@ -1,5 +1,6 @@
 package com.pricewise.core.ui.components
 
+import LocalCustomColors
 import Typography.Inter
 import androidx.compose.foundation.Image as FoundationImage
 import androidx.compose.foundation.background
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -47,6 +49,8 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import com.pricewise.core.ui.components.ProductCardTokens.PrimaryTextColor
+import com.pricewise.core.ui.components.ProductCardTokens.SecondaryTextColor
 
 data class PriceWiseProductCardModel(
     val id: String,
@@ -70,13 +74,13 @@ fun PriceWiseProductCard(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = ProductCardTokens.CardShape,
-        colors = CardDefaults.cardColors(containerColor = ProductCardTokens.SurfaceColor),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = ProductCardTokens.ZeroElevation),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(ProductCardTokens.SurfaceColor)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(
                     horizontal = ProductCardTokens.ContentPadding,
                     vertical = ProductCardTokens.ContentPadding,
@@ -100,13 +104,25 @@ fun PriceWiseProductCard(
                 )
                 Text(
                     text = product.title,
-                    style = ProductCardTokens.TitleTextStyle,
+                    style = TextStyle(
+                        fontFamily = Inter,
+                        fontWeight = FontWeight.W400,
+                        fontSize = 12.sp,
+                        lineHeight = 18.sp,
+                        color = LocalCustomColors.current.primaryText,
+                    ),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = product.price,
-                    style = ProductCardTokens.PriceTextStyle,
+                    style = TextStyle(
+                        fontFamily = Inter,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 14.sp,
+                        lineHeight = 21.sp,
+                        color = LocalCustomColors.current.primaryText,
+                    ),
                 )
             }
             FavoriteButton(
@@ -141,7 +157,7 @@ private fun ProductThumbnail(
                 Icon(
                     imageVector = Icons.Outlined.Image,
                     contentDescription = null,
-                    tint = ProductCardTokens.PlaceholderIconTint,
+                    tint = LocalCustomColors.current.secondaryText,
                     modifier = Modifier.size(ProductCardTokens.PlaceholderIconSize),
                 )
             }
@@ -179,7 +195,13 @@ private fun MarketplaceBadge(
         if (product.marketplaceLogoUrl.isNullOrBlank()) {
             Text(
                 text = product.marketplaceShortName,
-                style = ProductCardTokens.MarketplaceShortNameTextStyle,
+                style = TextStyle(
+                    fontFamily = Inter,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 11.sp,
+                    lineHeight = 13.sp,
+                    color = LocalCustomColors.current.secondaryText,
+                ),
                 modifier = Modifier.semantics {
                     contentDescription = marketplaceContentDescription
                 },
@@ -199,7 +221,13 @@ private fun MarketplaceBadge(
         }
         Text(
             text = product.marketplaceName,
-            style = ProductCardTokens.MarketplaceNameTextStyle,
+            style = TextStyle(
+                fontFamily = Inter,
+                fontWeight = FontWeight.W600,
+                fontSize = 14.sp,
+                lineHeight = 21.sp,
+                color = LocalCustomColors.current.primaryText,
+            ),
         )
     }
 }
