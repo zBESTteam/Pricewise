@@ -3,7 +3,6 @@ package com.pricewise.feature.favorites.impl.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import retrofit2.HttpException
-import com.pricewise.core.auth.TokenManager
 import com.pricewise.core.ui.components.PriceWiseProductCardModel
 import com.pricewise.feature.favorites.impl.domain.model.FavoriteItem
 import com.pricewise.feature.favorites.impl.domain.repository.FavoritesRepository
@@ -17,9 +16,6 @@ import kotlin.collections.filter
 
 @HiltViewModel
 class FavouritesViewModel @Inject constructor (
-    val items: List<PriceWiseProductCardModel>,
-    val isLoading: Boolean,
-    val error: String?,
     private val repository: FavoritesRepository
 ) : ViewModel() {
 

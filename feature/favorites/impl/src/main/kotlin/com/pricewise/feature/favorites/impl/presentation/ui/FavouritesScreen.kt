@@ -41,7 +41,9 @@ import com.pricewise.feature.favorites.impl.presentation.ui.components.DefaultBu
 import com.pricewise.feature.favorites.impl.presentation.viewmodel.FavouritesViewModel
 
 @Composable
-fun FavoritesScreen() {
+fun FavoritesScreen(
+    contentPadding: PaddingValues = PaddingValues(),
+) {
     val inter = remember {
         FontFamily(
             Font(R.font.inter_regular, weight = FontWeight.W400),
@@ -58,7 +60,7 @@ fun FavoritesScreen() {
         viewModel.loadFavorites()
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
         val orangeStart = colorResource(id = R.color.orange_gradient_start)
         val orangeEnd = colorResource(id = R.color.orange_gradient_end)
 

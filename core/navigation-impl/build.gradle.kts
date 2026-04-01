@@ -20,6 +20,8 @@ dependencies {
     implementation(project(":feature:search:impl"))
     implementation(project(":feature:auth:api"))
     implementation(project(":feature:auth:impl"))
+    implementation(project(":feature:favorites:api"))
+    implementation(project(":feature:favorites:impl"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.animation)
