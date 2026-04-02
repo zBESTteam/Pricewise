@@ -5,8 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.pricewise.core.ui.viewmodel.ThemeViewModel
+import androidx.compose.ui.platform.LocalContext
+import com.pricewise.core.ui.ThemeManager
 import com.pricewise.navigation.impl.PriceWiseAppNavigation
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -15,8 +15,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val themeViewModel: ThemeViewModel = hiltViewModel()
-            PriceWiseTheme(themeViewModel.isDarkTheme) {
+            ThemeManager.loadTheme(LocalContext.current)
+            PriceWiseTheme(ThemeManager.isDarkTheme) {
                 PriceWiseAppNavigation(
                     window = window,
                     modifier = Modifier,

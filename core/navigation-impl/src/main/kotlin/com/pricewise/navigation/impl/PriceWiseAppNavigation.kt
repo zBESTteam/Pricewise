@@ -16,7 +16,7 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun PriceWiseAppNavigation(
     window: Window,
-    modifier: Modifier,
+    modifier: Modifier
 ) {
     val appState = rememberPriceWiseAppState(
         navController = rememberNavController(),
