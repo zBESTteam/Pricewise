@@ -42,6 +42,7 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
     implementation(libs.runtime)
     implementation(libs.compose.ui)
     implementation(libs.activity.compose)
@@ -49,7 +50,6 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.compose.material3)
-    ksp(libs.hilt.compiler)
     implementation(libs.coil.core)
     implementation(libs.coil.svg)
 

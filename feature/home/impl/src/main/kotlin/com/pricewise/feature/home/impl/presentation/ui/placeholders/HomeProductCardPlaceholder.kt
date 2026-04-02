@@ -11,11 +11,10 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import com.pricewise.feature.home.impl.presentation.ui.HomeDimens
 import com.pricewise.feature.home.impl.presentation.ui.HomeLoadingDefaults
 import com.pricewise.feature.home.impl.presentation.ui.HomeShapes
@@ -28,7 +27,7 @@ internal fun LoadingProductCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = HomeShapes.ProductCard,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = HomeDimens.ZeroElevation),
     ) {
         Row(

@@ -22,7 +22,9 @@ data class CustomColors(
     val primaryText: Color,
     val thumbnailPlaceholder: Color,
     val iconTint: Color,
-    val quickActionBorder: Color
+    val quickActionBorder: Color,
+    val shimmer1: Color,
+    val shimmer2: Color
 )
 
 val LocalCustomColors = staticCompositionLocalOf<CustomColors> {
@@ -66,7 +68,9 @@ private val LightCustomColors = CustomColors(
     secondaryText = Color(0xFF8D9094),
     thumbnailPlaceholder = Color(0xFFF5F5F5),
     iconTint = Color(0xFF292929),
-    quickActionBorder = Color(0xFF2B2B2B)
+    quickActionBorder = Color(0xFF2B2B2B),
+    shimmer1 = Color(0xFFE9E9E9),
+    shimmer2 = Color(0xFFF5F5F5)
 )
 
 private val DarkCustomColors = CustomColors(
@@ -86,6 +90,8 @@ private val DarkCustomColors = CustomColors(
     thumbnailPlaceholder = Color(0xFF3A3A3A),
     iconTint = Color(0xFF9A9A9A),
     quickActionBorder = Color(0xFFB0B0B0),
+    shimmer1 = Color(0xFF232323),
+    shimmer2 = Color(0xFF303030)
 )
 
 @Composable
