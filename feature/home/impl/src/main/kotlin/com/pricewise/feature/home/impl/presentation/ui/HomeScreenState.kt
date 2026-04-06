@@ -35,6 +35,7 @@ data class PopularQueryUiModel(
 @Immutable
 data class ProductUiModel(
     val id: String,
+    val source: String,
     val title: String,
     val price: String,
     val isFavorite: Boolean,

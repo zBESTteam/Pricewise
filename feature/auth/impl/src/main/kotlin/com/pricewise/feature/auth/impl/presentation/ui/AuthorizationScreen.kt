@@ -58,6 +58,12 @@ fun AuthorizationScreen(
         }
     }
 
+    LaunchedEffect(uiState.hasSavedSession) {
+        if (uiState.hasSavedSession) {
+            onNavigateToMain()
+        }
+    }
+
     LaunchedEffect(uiState.error) {
         if (uiState.error != null) {
             Toast.makeText(context, uiState.error, Toast.LENGTH_LONG).show()

@@ -24,6 +24,8 @@ class ProductMapper @Inject constructor() {
                 title = title,
                 price = item.price ?: 0L,
                 merchant = merchant,
+                source = item.source?.trim().orEmpty().ifBlank { merchant.name },
+                productUrl = item.productUrl?.trim().orEmpty(),
                 thumbnailUrl = resolveImageUrl(item),
                 isFavorite = item.isFavorite ?: false,
             )

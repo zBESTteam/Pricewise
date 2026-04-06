@@ -1,5 +1,6 @@
-package com.pricewise.feature.favorites.impl.presentation.ui.components
+package com.pricewise.core.ui.components
 
+import Typography.Inter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,63 +16,64 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pricewise.core.ui.R
 
-
-val inter = FontFamily(
-    Font(R.font.inter_regular, weight = FontWeight.W400),
-    Font(R.font.inter_medium, weight = FontWeight.W500),
-    Font(R.font.inter_semibold, weight = FontWeight.W600),
-    Font(R.font.inter_bold, weight = FontWeight.W700),
-)
-
 @Composable
-fun DefaultButton(
+fun FilterActionButton(
     text: String? = null,
     icon: Int? = null,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
-    var modifier = Modifier
+    var buttonModifier = Modifier
         .height(41.dp)
         .background(
-            color = if (!isSelected) colorResource(R.color.disabled_filter_button_color) else colorResource(
-                R.color.mid_dark
-            ),
-            shape = RoundedCornerShape(size = 14.dp)
+            color = if (isSelected) {
+                colorResource(R.color.mid_dark)
+            } else {
+                colorResource(R.color.disabled_filter_button_color)
+            },
+            shape = RoundedCornerShape(size = 14.dp),
         )
-        .clickable { onClick() }
-    if (icon != null && text == null) modifier = modifier.width(41.dp)
+        .clickable(onClick = onClick)
+
+    if (icon != null && text == null) {
+        buttonModifier = buttonModifier.width(41.dp)
+    }
+
     Row(
-        modifier = modifier,
+        modifier = buttonModifier,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        if (icon != null)
+        if (icon != null) {
             Icon(
                 modifier = Modifier.padding(all = 10.dp),
                 painter = painterResource(icon),
                 tint = colorResource(R.color.icons_color),
-                contentDescription = null
+                contentDescription = null,
             )
-        if (text != null)
+        }
+        if (text != null) {
             Text(
                 modifier = Modifier.padding(all = 10.dp),
                 text = text,
                 style = TextStyle(
                     fontSize = 15.sp,
                     lineHeight = 21.sp,
-                    fontFamily = FontFamily(Font(R.font.inter_regular)),
-                    fontWeight = FontWeight(600),
-                    color = if (!isSelected) colorResource(R.color.disabled_filter_button_text_color) else colorResource(
-                        R.color.white
-                    ),
+                    fontFamily = Inter,
+                    fontWeight = FontWeight.W600,
+                    color = if (isSelected) {
+                        colorResource(R.color.white)
+                    } else {
+                        colorResource(R.color.disabled_filter_button_text_color)
+                    },
                     letterSpacing = 0.3.sp,
-                )
+                ),
             )
+        }
     }
 }
+

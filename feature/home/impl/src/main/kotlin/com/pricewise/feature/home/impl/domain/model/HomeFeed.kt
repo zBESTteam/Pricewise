@@ -19,6 +19,7 @@ data class HomePopularQuery(
 
 data class HomeProduct(
     val id: String,
+    val source: String,
     val title: String,
     val price: Long,
     val isFavorite: Boolean,

@@ -1,7 +1,7 @@
 package com.pricewise.feature.favorites.impl.presentation.ui
 
-
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,9 +14,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -25,39 +33,66 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.pricewise.core.ui.components.FilterActionButton
 import com.pricewise.core.ui.components.PriceWiseProductCard
 import com.pricewise.feature.favorites.impl.R
-import com.pricewise.feature.favorites.impl.presentation.ui.components.DefaultButton
+import com.pricewise.feature.favorites.impl.presentation.viewmodel.FavoritesSortOption
 import com.pricewise.feature.favorites.impl.presentation.viewmodel.FavouritesViewModel
+import com.pricewise.feature.search.impl.presentation.ui.Filters
+import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreen(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
-    val inter = remember {
-        FontFamily(
-            Font(R.font.inter_regular, weight = FontWeight.W400),
-            Font(R.font.inter_medium, weight = FontWeight.W500),
-            Font(R.font.inter_semibold, weight = FontWeight.W600),
-            Font(R.font.inter_bold, weight = FontWeight.W700),
+    val viewModel: FavouritesViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showSortSheet by rememberSaveable { mutableStateOf(false) }
+    var showFilterSheet by rememberSaveable { mutableStateOf(false) }
+
+    if (showSortSheet) {
+        SortBottomSheet(
+            selectedSort = uiState.sortOption,
+            onSelect = { option ->
+                viewModel.setSortOption(option)
+                showSortSheet = false
+            },
+            onDismiss = { showSortSheet = false },
         )
     }
 
-    val viewModel: FavouritesViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        viewModel.loadFavorites()
+    if (showFilterSheet) {
+        val searchFilterViewModel: SearchViewModel = hiltViewModel()
+        LaunchedEffect(
+            uiState.onlyMarketplaces,
+            uiState.onlyOfflineShops,
+            uiState.priceFrom,
+            uiState.priceTo,
+        ) {
+            searchFilterViewModel.setIsProductChosen(true)
+            searchFilterViewModel.setOnlyMarketplaces(uiState.onlyMarketplaces)
+            searchFilterViewModel.setOnlyOfflineShops(uiState.onlyOfflineShops)
+            searchFilterViewModel.setPriceFrom(uiState.priceFrom)
+            searchFilterViewModel.setPriceTo(uiState.priceTo)
+        }
+        Filters(
+            closeFilters = {
+                viewModel.setOnlyMarketplaces(searchFilterViewModel.onlyMarketplaces.value)
+                viewModel.setOnlyOfflineShops(searchFilterViewModel.onlyOfflineShops.value)
+                viewModel.setPriceRange(
+                    from = searchFilterViewModel.priceFrom.value,
+                    to = searchFilterViewModel.priceTo.value,
+                )
+                showFilterSheet = false
+            },
+            viewModel = searchFilterViewModel,
+        )
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
@@ -95,21 +130,39 @@ fun FavoritesScreen(
             style = TextStyle(
                 fontSize = 20.sp,
                 lineHeight = 26.sp,
-                fontFamily = inter,
                 fontWeight = FontWeight(700),
                 color = colorResource(R.color.mid_dark),
             )
         )
 
         Row(modifier = Modifier.padding(horizontal = 15.dp)) {
-            DefaultButton(icon = R.drawable.icon_sort, isSelected = false, onClick = {})
-
-            DefaultButton(icon = R.drawable.icon_filter, isSelected = false, onClick = {})
-
-            DefaultButton(
-                text = stringResource(R.string.sort_by_brand),
+            FilterActionButton(
+                icon = com.pricewise.core.ui.R.drawable.ic_sort,
                 isSelected = false,
-                onClick = {})
+                onClick = { showSortSheet = true },
+            )
+
+            FilterActionButton(
+                icon = com.pricewise.core.ui.R.drawable.ic_filter,
+                isSelected = uiState.onlyMarketplaces || uiState.onlyOfflineShops || uiState.priceFrom > 0 || uiState.priceTo > 0,
+                onClick = {
+                    showFilterSheet = true
+                },
+            )
+
+            FilterActionButton(
+                text = stringResource(R.string.sort_by_brand),
+                isSelected = uiState.sortOption == FavoritesSortOption.BRAND_ASC,
+                onClick = {
+                    viewModel.setSortOption(
+                        if (uiState.sortOption == FavoritesSortOption.BRAND_ASC) {
+                            FavoritesSortOption.NONE
+                        } else {
+                            FavoritesSortOption.BRAND_ASC
+                        },
+                    )
+                },
+            )
         }
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -136,11 +189,11 @@ fun FavoritesScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        items(uiState.items, key = { it.id }) { product ->
+                        items(uiState.items) { product ->
                             PriceWiseProductCard(
                                 product = product,
                                 onFavoriteClick = { viewModel.removeFavorite(product) },
-                                onClick = {TODO()},
+                                onClick = {},
                                 modifier = Modifier
                             )
                         }
@@ -150,3 +203,67 @@ fun FavoritesScreen(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SortBottomSheet(
+    selectedSort: FavoritesSortOption,
+    onSelect: (FavoritesSortOption) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Text(text = stringResource(R.string.sort_by_price))
+            SortOptionRow(
+                title = stringResource(R.string.sort_by_price_asc),
+                selected = selectedSort == FavoritesSortOption.PRICE_ASC,
+                onClick = { onSelect(FavoritesSortOption.PRICE_ASC) },
+            )
+            SortOptionRow(
+                title = stringResource(R.string.sort_by_price_desc),
+                selected = selectedSort == FavoritesSortOption.PRICE_DESC,
+                onClick = { onSelect(FavoritesSortOption.PRICE_DESC) },
+            )
+            SortOptionRow(
+                title = stringResource(R.string.sort_by_brand),
+                selected = selectedSort == FavoritesSortOption.BRAND_ASC,
+                onClick = { onSelect(FavoritesSortOption.BRAND_ASC) },
+            )
+            SortOptionRow(
+                title = stringResource(R.string.sort_reset),
+                selected = selectedSort == FavoritesSortOption.NONE,
+                onClick = { onSelect(FavoritesSortOption.NONE) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun SortOptionRow(
+    title: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    FilterOptionRow(title = title, selected = selected, onClick = onClick)
+}
+
+@Composable
+private fun FilterOptionRow(
+    title: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    val backgroundColor = if (selected) colorResource(R.color.disabled_filter_button_color) else Color.Transparent
+    Text(
+        text = title,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(backgroundColor, shape = RoundedCornerShape(10.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+    )
+}
+

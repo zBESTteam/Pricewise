@@ -49,6 +49,10 @@
     <string name="no_account_question">Нет аккаунта?</string>
     <string name="register_suggestion">Зарегистрируйтесь</string>
     <string name="sort_by_brand">По бренду</string>
+    <string name="sort_by_price_asc">Сначала дешевле</string>
+    <string name="sort_by_price_desc">Сначала дороже</string>
+    <string name="sort_reset">Сбросить</string>
     <string name="favorites">Избранное</string>
     <string name="favorites_list_is_empty">Список избранного пуст</string>
+    <string name="error">Ошибка</string>
 </resources>
