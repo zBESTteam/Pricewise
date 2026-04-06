@@ -61,7 +61,7 @@ fun HomeScreenContent(
     onPhotoSearchClick: () -> Unit,
     onQuickActionClick: (String) -> Unit,
     onPopularQueryClick: (String) -> Unit,
-    onProductFavoriteClick: (String) -> Unit,
+    onProductFavoriteClick: (String, String) -> Unit,
     onSearchRequest: (String) -> Unit,
     onPhotoSearchRequest: () -> Unit,
     contentPadding: PaddingValues,
@@ -277,7 +277,7 @@ private fun RecommendationsSectionTitle(
 @Composable
 private fun ProductCardListItem(
     product: ProductUiModel,
-    onFavoriteClick: (String) -> Unit,
+    onFavoriteClick: (String, String) -> Unit,
     addTopSpacing: Boolean,
 ) {
     val uriHandler = LocalUriHandler.current
@@ -296,7 +296,7 @@ private fun ProductCardListItem(
                     uriHandler.openUri(productUrl)
                 }
             },
-            onFavoriteClick = { onFavoriteClick(product.id) },
+            onFavoriteClick = { onFavoriteClick(product.id, product.source) },
             modifier = Modifier.padding(horizontal = HomeDimens.ScreenHorizontalPadding),
         )
     }
@@ -325,7 +325,7 @@ private fun HomeScreenPreview() {
             onPhotoSearchClick = {},
             onQuickActionClick = {},
             onPopularQueryClick = {},
-            onProductFavoriteClick = {},
+            onProductFavoriteClick = { _, _ -> },
             onSearchRequest = {},
             onPhotoSearchRequest = {},
             contentPadding = PaddingValues(),

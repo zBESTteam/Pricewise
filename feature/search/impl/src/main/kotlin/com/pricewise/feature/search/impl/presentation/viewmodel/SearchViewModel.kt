@@ -2,6 +2,8 @@ package com.pricewise.feature.search.impl.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pricewise.feature.favorites.api.FavoriteMutationRequest
+import com.pricewise.feature.favorites.api.FavoritesFeatureApi
 import com.pricewise.feature.search.api.SearchFeatureApi
 import com.pricewise.feature.search.api.domain.model.Product
 import com.pricewise.feature.search.impl.presentation.ui.SearchUiState
@@ -11,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,7 +23,20 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val repository: SearchFeatureApi,
+    private val favoritesFeatureApi: FavoritesFeatureApi,
 ) : ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            favoritesFeatureApi.favoriteMutations.collect { event ->
+                updateProductFavoriteState(
+                    productId = event.externalId,
+                    source = event.source,
+                    isFavorite = event.isFavorite,
+                )
+            }
+        }
+    }
 
     private val defaultLimit: Int = 20
     private var searchJob: Job? = null
@@ -119,10 +135,50 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onProductFavoriteClick(productId: String) {
+        val product = _allItems.value.firstOrNull { it.id == productId } ?: return
+        val updatedFavoriteState = !product.isFavorite
+        updateProductFavoriteState(
+            productId = productId,
+            source = product.source,
+            isFavorite = updatedFavoriteState,
+        )
+
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                if (updatedFavoriteState) {
+                    favoritesFeatureApi.addToFavorites(
+                        request = FavoriteMutationRequest(
+                            externalId = product.id,
+                            source = product.source,
+                            title = product.title,
+                            price = product.price,
+                            thumbnailUrl = product.thumbnailUrl,
+                            productUrl = product.productUrl,
+                            merchantLogoUrl = product.merchant.logoUrl,
+                        ),
+                    )
+                } else {
+                    favoritesFeatureApi.removeFromFavorites(
+                        externalId = product.id,
+                        source = product.source,
+                    )
+                }
+            }.onFailure {
+                updateProductFavoriteState(
+                    productId = productId,
+                    source = product.source,
+                    isFavorite = product.isFavorite,
+                )
+                _uiState.update { state -> state.copy(isError = true) }
+            }
+        }
+    }
+
+    private fun updateProductFavoriteState(productId: String, source: String?, isFavorite: Boolean) {
         _allItems.update { items ->
             items.map { product ->
-                if (product.id == productId) {
-                    product.copy(isFavorite = !product.isFavorite)
+                if (product.id == productId && (source == null || product.source == source)) {
+                    product.copy(isFavorite = isFavorite)
                 } else {
                     product
                 }
@@ -131,8 +187,8 @@ class SearchViewModel @Inject constructor(
         _uiState.update { state ->
             state.copy(
                 items = state.items.map { product ->
-                    if (product.id == productId) {
-                        product.copy(isFavorite = !product.isFavorite)
+                    if (product.id == productId && (source == null || product.source == source)) {
+                        product.copy(isFavorite = isFavorite)
                     } else {
                         product
                     }

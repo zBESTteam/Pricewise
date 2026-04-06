@@ -2,6 +2,7 @@ package com.pricewise.feature.auth.impl.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pricewise.core.auth.TokenManager
 import com.pricewise.feature.auth.impl.domain.model.LoginInput
 import com.pricewise.feature.auth.impl.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,10 +14,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repo: AuthRepository
+    private val repo: AuthRepository,
+    tokenManager: TokenManager,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(LoginUIState())
     val uiState = _uiState.asStateFlow()
+
+    init {
+        val hasSavedSession = !tokenManager.getToken().isNullOrBlank()
+        if (hasSavedSession) {
+            _uiState.update { state -> state.copy(hasSavedSession = true) }
+        }
+    }
 
     fun onEmailChange(value: String) = _uiState.update { it.copy(email = value) }
     fun onPasswordChange(value: String) = _uiState.update { it.copy(password = value) }

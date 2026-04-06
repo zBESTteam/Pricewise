@@ -1,4 +1,4 @@
-package com.pricewise.feature.auth.impl.presentation.auth
+package com.pricewise.feature.auth.impl.presentation.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -36,10 +36,10 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pricewise.feature.auth.impl.R
-import com.pricewise.feature.auth.impl.presentation.auth.components.AuthorisationButton
-import com.pricewise.feature.auth.impl.presentation.auth.components.EmailInputField
-import com.pricewise.feature.auth.impl.presentation.auth.components.PasswordInputField
-import com.pricewise.feature.auth.impl.presentation.auth.components.VkLoginButton
+import com.pricewise.feature.auth.impl.presentation.ui.components.AuthorisationButton
+import com.pricewise.feature.auth.impl.presentation.ui.components.EmailInputField
+import com.pricewise.feature.auth.impl.presentation.ui.components.PasswordInputField
+import com.pricewise.feature.auth.impl.presentation.ui.components.VkLoginButton
 
 
 @Composable
@@ -54,6 +54,12 @@ fun AuthorizationScreen(
 
     LaunchedEffect(uiState.session) {
         if (uiState.session != null) {
+            onNavigateToMain()
+        }
+    }
+
+    LaunchedEffect(uiState.hasSavedSession) {
+        if (uiState.hasSavedSession) {
             onNavigateToMain()
         }
     }

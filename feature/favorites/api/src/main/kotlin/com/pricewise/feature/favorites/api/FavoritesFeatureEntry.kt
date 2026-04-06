@@ -1,3 +1,7 @@
 package com.pricewise.feature.favorites.api
 
-interface FavoritesFeatureEntry
+import com.pricewise.navigation.api.NavigationFeatureEntry
+
+interface FavoritesFeatureEntry : NavigationFeatureEntry {
+    val favoritesRoute: String
+}

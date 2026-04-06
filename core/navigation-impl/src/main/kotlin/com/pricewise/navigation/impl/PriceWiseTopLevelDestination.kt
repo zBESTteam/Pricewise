@@ -16,8 +16,8 @@ enum class PriceWiseTopLevelDestination(
         contentDescriptionRes = R.string.nav_home,
     ),
     Favorites(
-        route = "favorites",
-        hierarchyRoutes = setOf("favorites"),
+        route = PriceWiseFeatureProvider.favoritesFeatureEntry.favoritesRoute,
+        hierarchyRoutes = setOf(PriceWiseFeatureProvider.favoritesFeatureEntry.favoritesRoute),
         contentDescriptionRes = R.string.nav_favorites,
     ),
     Profile(

@@ -57,8 +57,10 @@ class HomeDataToDomainMapper {
         val price = item.price
         if (id.isEmpty() || title.isEmpty() || price == null) return null
 
+        val marketplace = mapMarketplace(item)
         return HomeProduct(
             id = id,
+            source = item.source?.trim().orEmpty().ifBlank { marketplace.name },
             title = title,
             price = price,
             isFavorite = item.isFavorite == true,
@@ -67,7 +69,7 @@ class HomeDataToDomainMapper {
                 ?: item.imageUrl.orImageFallback()
                 ?: item.image.orImageFallback(),
             productUrl = item.productUrl,
-            marketplace = mapMarketplace(item),
+            marketplace = marketplace,
         )
     }
 

@@ -37,7 +37,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalConfiguration
@@ -60,13 +59,11 @@ fun SearchScreen(
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showFilters by rememberSaveable { mutableStateOf(false) }
     val closeFilters = { showFilters = false }
 
     if (showFilters) {
         Filters(
-            sheetState = sheetState,
             closeFilters = closeFilters,
             viewModel = viewModel
         )
