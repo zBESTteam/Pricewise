@@ -18,6 +18,8 @@ dependencies {
     implementation(project(":feature:home:impl"))
     implementation(project(":feature:search:api"))
     implementation(project(":feature:search:impl"))
+    implementation(project(":feature:auth:api"))
+    implementation(project(":feature:auth:impl"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.animation)
