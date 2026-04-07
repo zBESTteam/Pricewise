@@ -1,4 +1,4 @@
-package com.pricewise.feature.auth.impl.presentation.auth
+package com.pricewise.feature.auth.impl.presentation.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -37,17 +37,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.pricewise.feature.auth.impl.presentation.viewmodel.AuthViewModel
+import com.pricewise.feature.auth.impl.presentation.viewmodel.RegistrationViewModel
 import com.pricewise.feature.auth.impl.R
-import com.pricewise.feature.auth.impl.presentation.auth.components.AuthorisationButton
-import com.pricewise.feature.auth.impl.presentation.auth.components.EmailInputField
-import com.pricewise.feature.auth.impl.presentation.auth.components.PasswordInputField
+import com.pricewise.feature.auth.impl.presentation.ui.components.AuthorisationButton
+import com.pricewise.feature.auth.impl.presentation.ui.components.EmailInputField
+import com.pricewise.feature.auth.impl.presentation.ui.components.PasswordInputField
 
 @Composable
 fun RegistrationScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToMain: () -> Unit,
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: RegistrationViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current

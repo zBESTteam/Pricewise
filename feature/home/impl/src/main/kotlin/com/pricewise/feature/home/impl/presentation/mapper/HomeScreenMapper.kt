@@ -35,11 +35,14 @@ class HomeScreenMapper {
                 )
             },
             products = homeFeed.products.map { product ->
+                val normalizedSource = product.source.ifBlank { product.marketplace.name.ifBlank { "unknown" } }
+                val favoriteKey = "${product.id}|$normalizedSource"
                 ProductUiModel(
                     id = product.id,
+                    source = normalizedSource,
                     title = product.title,
                     price = rubleFormatter.format(product.price) + " ₽",
-                    isFavorite = product.isFavorite || userInput.favoriteProductIds.contains(product.id),
+                    isFavorite = userInput.favoriteProductIds[favoriteKey] ?: product.isFavorite,
                     thumbnailUrl = product.thumbnailUrl,
                     productUrl = product.productUrl,
                     marketplace = MarketplaceUiModel(

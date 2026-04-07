@@ -25,14 +25,22 @@ fun PriceWiseNavHost(
     contentPadding: PaddingValues,
     modifier: Modifier,
 ) {
+    val authFeatureEntry = PriceWiseFeatureProvider.authFeatureEntry
     val homeFeatureEntry = PriceWiseFeatureProvider.homeFeatureEntry
     val searchFeatureEntry = PriceWiseFeatureProvider.searchFeatureEntry
+    val favoritesFeatureEntry = PriceWiseFeatureProvider.favoritesFeatureEntry
 
     NavHost(
         navController = appState.navController,
-        startDestination = homeFeatureEntry.homeRoute,
+        startDestination = authFeatureEntry.loginRoute,
         modifier = modifier.fillMaxSize(),
     ) {
+        registerFeature(
+            featureEntry = authFeatureEntry,
+            navController = appState.navController,
+            contentPadding = contentPadding,
+            modifier = Modifier,
+        )
         registerFeature(
             featureEntry = homeFeatureEntry,
             navController = appState.navController,
@@ -45,13 +53,12 @@ fun PriceWiseNavHost(
             contentPadding = contentPadding,
             modifier = Modifier,
         )
-        composable(PriceWiseTopLevelDestination.Favorites.route) {
-            PlaceholderScreen(
-                title = stringResource(R.string.nav_favorites),
-                contentPadding = contentPadding,
-                modifier = Modifier,
-            )
-        }
+        registerFeature(
+            featureEntry = favoritesFeatureEntry,
+            navController = appState.navController,
+            contentPadding = contentPadding,
+            modifier = Modifier,
+        )
         composable(PriceWiseTopLevelDestination.Profile.route) {
             PlaceholderScreen(
                 title = stringResource(R.string.nav_profile),

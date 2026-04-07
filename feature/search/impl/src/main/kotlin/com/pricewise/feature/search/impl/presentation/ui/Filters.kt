@@ -24,11 +24,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -63,7 +61,7 @@ import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchViewModel) {
+fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
     var isProductChosen by rememberSaveable { mutableStateOf(true) }
     var deliveryChosen by rememberSaveable { mutableIntStateOf(0) }
     var onlyOriginals by rememberSaveable { mutableStateOf(false) }

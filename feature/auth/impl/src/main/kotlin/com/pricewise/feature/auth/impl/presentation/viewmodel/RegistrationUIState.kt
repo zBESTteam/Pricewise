@@ -2,7 +2,7 @@ package com.pricewise.feature.auth.impl.presentation.viewmodel
 
 import com.pricewise.feature.auth.impl.domain.model.AuthSession
 
-data class AuthUIState(
+data class RegistrationUIState(
     val email: String = "",
     val password: String = "",
     val passwordConfirm: String = "",

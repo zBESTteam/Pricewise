@@ -7,5 +7,6 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:navigation-api"))
     implementation(libs.kotlinx.coroutines.core)
 }

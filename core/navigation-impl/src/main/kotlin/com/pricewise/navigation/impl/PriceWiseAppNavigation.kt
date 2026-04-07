@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
+import com.pricewise.feature.auth.api.AuthRoutes
 
 @Composable
 fun PriceWiseAppNavigation(
@@ -27,6 +28,12 @@ fun PriceWiseAppNavigation(
         useLightStatusIcons = appState.shouldUseLightStatusIcons,
     )
 
+    val currentRoute = appState.currentDestination?.route
+    val shouldShowBottomBar = currentRoute != null && currentRoute !in setOf(
+        AuthRoutes.Login,
+        AuthRoutes.Register,
+    )
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -34,14 +41,16 @@ fun PriceWiseAppNavigation(
             WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
         ),
         bottomBar = {
-            PriceWiseBottomBar(
-                destinations = PriceWiseTopLevelDestination.entries,
-                currentDestination = appState.currentTopLevelDestination,
-                onDestinationSelected = { destination ->
-                    appState.navigateToTopLevelDestination(destination)
-                },
-                modifier = Modifier,
-            )
+            if (shouldShowBottomBar) {
+                PriceWiseBottomBar(
+                    destinations = PriceWiseTopLevelDestination.entries,
+                    currentDestination = appState.currentTopLevelDestination,
+                    onDestinationSelected = { destination ->
+                        appState.navigateToTopLevelDestination(destination)
+                    },
+                    modifier = Modifier,
+                )
+            }
         },
     ) { innerPadding ->
         PriceWiseNavHost(

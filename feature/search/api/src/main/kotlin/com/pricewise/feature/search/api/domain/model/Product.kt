@@ -5,6 +5,8 @@ data class Product(
     val title: String,
     val price: Long,
     val merchant: Merchant,
+    val source: String,
+    val productUrl: String,
     val thumbnailUrl: String,
     val isFavorite: Boolean = false,
 )
