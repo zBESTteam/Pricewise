@@ -27,6 +27,7 @@ lifecycle = "2.8.7"
 material3 = "1.2.1"
 
 kotlin = "2.2.10"
+detekt = "2.0.0-alpha.2"
 
 ui-tooling-preview = "1.10.5"
 ui-tooling = "1.10.5"
@@ -77,6 +78,7 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 coil-core = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+detekt-ktlint-wrapper = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
 
 ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "ui-tooling-preview" }
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "ui-tooling" }
@@ -98,3 +100,4 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }

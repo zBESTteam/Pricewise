@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>BinaryExpressionWrapping:FavouritesScreen.kt:uiState.onlyMarketplaces || uiState.onlyOfflineShops || uiState.priceFrom &gt; 0 || uiState.priceTo &gt; 0</ID>
+    <ID>BinaryExpressionWrapping:FavouritesScreen.kt:uiState.priceTo &gt; 0</ID>
+    <ID>ClassSignature:FavoritesFeatureApiImpl.kt:FavoritesFeatureApiImpl : FavoritesFeatureApi</ID>
+    <ID>Filename:FavouritesRepositoryImpl.kt:com.pricewise.feature.favorites.impl.data.repository.FavouritesRepositoryImpl.kt</ID>
+    <ID>FinalNewline:FavouriteModels.kt:com.pricewise.feature.favorites.impl.domain.model.FavouriteModels.kt</ID>
+    <ID>FunctionExpressionBody:FavouritesRepositoryImpl.kt:FavoritesRepositoryImpl${ return tokenManager.getToken()?.asBearer().toString() }</ID>
+    <ID>FunctionExpressionBody:FavouritesRepositoryImpl.kt:{ return status?.trim().equals("ok", ignoreCase = true) }</ID>
+    <ID>FunctionExpressionBody:FavouritesViewModel.kt:{ return PriceWiseProductCardModel( id = this.externalId, title = this.title, price = rubleFormatter.format(this.price) + " ₽", thumbnailUrl = this.thumbnailUrl, marketplaceName = this.source, marketplaceShortName = this.source, marketplaceLogoUrl = this.merchantLogoUrl, isFavorite = true ) }</ID>
+    <ID>FunctionExpressionBody:FavouritesViewModel.kt:{ return this.filter { symbol -&gt; symbol.isDigit() }.toLongOrNull() ?: 0L }</ID>
+    <ID>FunctionNaming:FavouritesScreen.kt:@Composable private fun FilterOptionRow</ID>
+    <ID>FunctionNaming:FavouritesScreen.kt:@Composable private fun SortOptionRow</ID>
+    <ID>FunctionNaming:FavouritesScreen.kt:@OptIn(ExperimentalMaterial3Api::class) @Composable fun FavoritesScreen</ID>
+    <ID>FunctionNaming:FavouritesScreen.kt:@OptIn(ExperimentalMaterial3Api::class) @Composable private fun SortBottomSheet</ID>
+    <ID>FunctionSignature:FavouritesScreen.kt:@Composable private fun FilterOptionRow</ID>
+    <ID>FunctionSignature:FavouritesScreen.kt:@Composable private fun SortOptionRow</ID>
+    <ID>FunctionSignature:FavouritesScreen.kt:@OptIn(ExperimentalMaterial3Api::class) @Composable fun FavoritesScreen</ID>
+    <ID>ImportOrdering:FavoritesFeatureApiImpl.kt:import com.pricewise.feature.favorites.api.FavoriteMutationRequest import com.pricewise.feature.favorites.api.FavoriteMutationEvent import com.pricewise.feature.favorites.api.FavoritesFeatureApi import com.pricewise.feature.favorites.impl.domain.model.FavoriteCreate import com.pricewise.feature.favorites.impl.domain.repository.FavoritesRepository import javax.inject.Inject import kotlinx.coroutines.flow.MutableSharedFlow import kotlinx.coroutines.flow.SharedFlow import kotlinx.coroutines.flow.asSharedFlow</ID>
+    <ID>ImportOrdering:FavouritesScreen.kt:import androidx.compose.foundation.background import androidx.compose.foundation.clickable import androidx.compose.foundation.layout.Arrangement import androidx.compose.foundation.layout.Box import androidx.compose.foundation.layout.Column import androidx.compose.foundation.layout.PaddingValues import androidx.compose.foundation.layout.Row import androidx.compose.foundation.layout.fillMaxSize import androidx.compose.foundation.layout.fillMaxWidth import androidx.compose.foundation.layout.height import androidx.compose.foundation.layout.padding import androidx.compose.foundation.lazy.LazyColumn import androidx.compose.foundation.lazy.items import androidx.compose.foundation.shape.RoundedCornerShape import androidx.compose.material3.CircularProgressIndicator import androidx.compose.material3.ExperimentalMaterial3Api import androidx.compose.material3.ModalBottomSheet import androidx.compose.material3.Text import androidx.compose.runtime.Composable import androidx.compose.runtime.LaunchedEffect import androidx.compose.runtime.getValue import androidx.compose.runtime.mutableStateOf import androidx.compose.runtime.remember import androidx.compose.runtime.saveable.rememberSaveable import androidx.compose.runtime.setValue import androidx.compose.ui.Alignment import androidx.compose.ui.Modifier import androidx.compose.ui.res.colorResource import androidx.compose.ui.res.stringResource import androidx.compose.ui.text.TextStyle import androidx.compose.ui.text.font.FontWeight import androidx.compose.ui.unit.dp import androidx.compose.ui.unit.sp import androidx.compose.ui.geometry.Offset import androidx.compose.ui.graphics.Brush import androidx.compose.ui.graphics.Color import androidx.hilt.navigation.compose.hiltViewModel import androidx.lifecycle.compose.collectAsStateWithLifecycle import com.pricewise.core.ui.components.FilterActionButton import com.pricewise.core.ui.components.PriceWiseProductCard import com.pricewise.feature.favorites.impl.R import com.pricewise.feature.favorites.impl.presentation.viewmodel.FavoritesSortOption import com.pricewise.feature.favorites.impl.presentation.viewmodel.FavouritesViewModel import com.pricewise.feature.search.impl.presentation.ui.Filters import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel</ID>
+    <ID>LongMethod:FavouritesScreen.kt:@OptIn(ExperimentalMaterial3Api::class) @Composable fun FavoritesScreen</ID>
+    <ID>MatchingDeclarationName:FavouritesRepositoryImpl.kt:FavoritesRepositoryImpl : FavoritesRepository</ID>
+    <ID>MaximumLineLength:FavouritesScreen.kt:,</ID>
+    <ID>NewLineAtEndOfFile:FavouriteModels.kt:com.pricewise.feature.favorites.impl.domain.model.FavouriteModels.kt</ID>
+    <ID>NoConsecutiveBlankLines:FavoritesFeatureApiImpl.kt: </ID>
+    <ID>NoConsecutiveBlankLines:FavouritesScreen.kt: </ID>
+    <ID>NoConsecutiveBlankLines:FavouritesViewModel.kt: </ID>
+    <ID>SpacingAroundParens:FavouritesViewModel.kt:FavouritesViewModel$(</ID>
+    <ID>TrailingCommaOnCallSite:FavouritesScreen.kt:( bottomStart = 22.dp, bottomEnd = 22.dp )</ID>
+    <ID>TrailingCommaOnCallSite:FavouritesScreen.kt:( colors = listOf(orangeStart, orangeEnd), start = Offset.Zero, end = Offset(900f, 260f) )</ID>
+    <ID>TrailingCommaOnCallSite:FavouritesScreen.kt:( contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxSize() )</ID>
+    <ID>TrailingCommaOnCallSite:FavouritesScreen.kt:( modifier = Modifier .fillMaxWidth() .height(30.dp) .background(brush = gradient, shape = heroShape), contentAlignment = Alignment.Center )</ID>
+    <ID>TrailingCommaOnCallSite:FavouritesScreen.kt:( modifier = Modifier.padding( start = 15.dp, top = 15.dp, bottom = 15.dp ), text = stringResource(R.string.favorites), style = TextStyle( fontSize = 20.sp, lineHeight = 26.sp, fontWeight = FontWeight(700), color = colorResource(R.color.mid_dark), ) )</ID>
+    <ID>TrailingCommaOnCallSite:FavouritesScreen.kt:( product = product, onFavoriteClick = { viewModel.removeFavorite(product) }, onClick = {}, modifier = Modifier )</ID>
+    <ID>TrailingCommaOnCallSite:FavouritesScreen.kt:( start = 15.dp, top = 15.dp, bottom = 15.dp )</ID>
+    <ID>TrailingCommaOnCallSite:FavouritesScreen.kt:( text = stringResource(R.string.favorites_list_is_empty), fontSize = 16.sp, color = Color.Gray )</ID>
+    <ID>TrailingCommaOnCallSite:FavouritesViewModel.kt:( id = this.externalId, title = this.title, price = rubleFormatter.format(this.price) + " ₽", thumbnailUrl = this.thumbnailUrl, marketplaceName = this.source, marketplaceShortName = this.source, marketplaceLogoUrl = this.merchantLogoUrl, isFavorite = true )</ID>
+    <ID>TrailingCommaOnDeclarationSite:FavouritesRepositoryImpl.kt:FavoritesRepositoryImpl$( private val api: PriceWiseApi, private val tokenManager: TokenManager )</ID>
+  </CurrentIssues>
+</SmellBaseline>

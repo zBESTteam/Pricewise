@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ClassSignature:FavoritesFeatureApi.kt:FavoriteMutationEvent</ID>
+    <ID>FinalNewline:AuthRoutes.kt:com.pricewise.feature.favorites.api.AuthRoutes.kt</ID>
+    <ID>Indentation:FavoritesFeatureApi.kt:FavoriteMutationEvent$ </ID>
+    <ID>Indentation:FavoritesFeatureApi.kt:FavoriteMutationRequest$ </ID>
+    <ID>Indentation:FavoritesFeatureApi.kt:FavoritesFeatureApi$ </ID>
+    <ID>NewLineAtEndOfFile:AuthRoutes.kt:com.pricewise.feature.favorites.api.AuthRoutes.kt</ID>
+    <ID>PropertyName:AuthRoutes.kt:AuthRoutes$const val Favourites = "favourites"</ID>
+  </CurrentIssues>
+</SmellBaseline>

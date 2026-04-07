@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ClassSignature:Merchant.kt:Merchant</ID>
+    <ID>FinalNewline:Merchant.kt:com.pricewise.feature.search.api.domain.model.Merchant.kt</ID>
+    <ID>FinalNewline:SearchResult.kt:com.pricewise.feature.search.api.domain.model.SearchResult.kt</ID>
+    <ID>NewLineAtEndOfFile:Merchant.kt:com.pricewise.feature.search.api.domain.model.Merchant.kt</ID>
+    <ID>NewLineAtEndOfFile:SearchResult.kt:com.pricewise.feature.search.api.domain.model.SearchResult.kt</ID>
+    <ID>PropertyName:SearchRoutes.kt:SearchRoutes$const val searchBaseRoute: String = "search"</ID>
+    <ID>PropertyName:SearchRoutes.kt:SearchRoutes$const val searchQueryArgument: String = "query"</ID>
+    <ID>PropertyName:SearchRoutes.kt:SearchRoutes$const val searchRoute: String = "$searchBaseRoute?$searchQueryArgument={$searchQueryArgument}"</ID>
+    <ID>TrailingCommaOnDeclarationSite:SearchFeatureApi.kt:SearchFeatureApi$( query: String, limit: Int, offset: Int, perSource: Boolean, partial: Boolean, sources: List&lt;String&gt;, sort: String, priceMin: Long, priceMax: Long, delivery: String, onlyOriginal: Boolean, onlyNew: Boolean, onlyUsed: Boolean, marketplaceOnly: Boolean, offlineOnly: Boolean, playLaterOnly: Boolean )</ID>
+  </CurrentIssues>
+</SmellBaseline>

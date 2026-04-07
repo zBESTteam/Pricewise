@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>PackageName:PhotoSearchFeatureApi.kt:package com.pricewise.feature.photo_search.api</ID>
+    <ID>PackageName:PhotoSearchFeatureEntry.kt:package com.pricewise.feature.photo_search.api</ID>
+    <ID>PackageNaming:PhotoSearchFeatureApi.kt:package com.pricewise.feature.photo_search.api</ID>
+    <ID>PackageNaming:PhotoSearchFeatureEntry.kt:package com.pricewise.feature.photo_search.api</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -1,0 +1,22 @@
+config:
+  validation: true
+  warningsAsErrors: true
+
+complexity:
+  LongParameterList:
+    active: false
+  TooManyFunctions:
+    active: false
+
+style:
+  MagicNumber:
+    active: false
+  MaxLineLength:
+    active: false
+  ReturnCount:
+    active: false
+  ThrowsCount:
+    active: false
+
+ktlint:
+  code_style: intellij_idea

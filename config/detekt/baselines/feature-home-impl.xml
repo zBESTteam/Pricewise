@@ -1,0 +1,104 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ClassSignature:GetHomeFeedUseCaseImpl.kt:GetHomeFeedUseCaseImpl : GetHomeFeedUseCase</ID>
+    <ID>ClassSignature:HomeFeatureEntryImpl.kt:HomeFeatureEntryImpl : HomeFeatureEntry</ID>
+    <ID>ClassSignature:HomeFeed.kt:HomeMarketplace</ID>
+    <ID>ClassSignature:HomeFeed.kt:HomePopularQuery</ID>
+    <ID>ClassSignature:HomeFeed.kt:HomeQuickAction</ID>
+    <ID>ClassSignature:HomeRemoteDataSource.kt:HomeRemoteDataSource</ID>
+    <ID>ClassSignature:HomeScreenState.kt:HomeScreenState$Error : HomeScreenState</ID>
+    <ID>ClassSignature:HomeScreenState.kt:MarketplaceUiModel</ID>
+    <ID>ClassSignature:HomeScreenState.kt:PopularQueryUiModel</ID>
+    <ID>ClassSignature:HomeScreenState.kt:QuickActionUiModel</ID>
+    <ID>ClassSignature:HomeScreenUserInput.kt:HomeScreenUserInput</ID>
+    <ID>CyclomaticComplexMethod:HomeScreen.kt:@Composable fun HomeScreenContent</ID>
+    <ID>FunctionExpressionBody:HomeDataToDomainMapper.kt:HomeDataToDomainMapper${ return HomeFeed( quickActions = main.banners.orEmpty() .mapIndexedNotNull(::mapQuickAction) .take(MAX_BANNERS), popularQueries = trending.items.orEmpty() .mapNotNull { item -&gt; val query = item.query?.trim().orEmpty() if (query.isEmpty()) null else HomePopularQuery(id = query, title = query) } .take(MAX_QUERIES), products = main.recommendations.orEmpty() .mapIndexedNotNull(::mapProduct), ) }</ID>
+    <ID>FunctionExpressionBody:HomeDataToDomainMapper.kt:HomeDataToDomainMapper${ return when (this) { null -&gt; "" is Number -&gt; toLong().toString() else -&gt; toString() } }</ID>
+    <ID>FunctionExpressionBody:HomeFeatureModule.kt:HomeFeatureModule.Companion${ return GetHomeFeedUseCaseImpl(repository = repository) }</ID>
+    <ID>FunctionExpressionBody:HomeFeatureModule.kt:HomeFeatureModule.Companion${ return HomeDataToDomainMapper() }</ID>
+    <ID>FunctionExpressionBody:HomeFeatureModule.kt:HomeFeatureModule.Companion${ return HomeScreenMapper() }</ID>
+    <ID>FunctionExpressionBody:HomeRemoteDataSource.kt:HomeRemoteDataSource${ return api.getMain( limit = DEFAULT_LIMIT, offset = DEFAULT_OFFSET, ) }</ID>
+    <ID>FunctionExpressionBody:HomeRemoteDataSource.kt:HomeRemoteDataSource${ return api.getTrending( limit = TRENDING_LIMIT, days = TRENDING_DAYS, ) }</ID>
+    <ID>FunctionExpressionBody:HomeScreenMapper.kt:HomeScreenMapper${ return HomeScreenState.Error(throwable = throwable) }</ID>
+    <ID>FunctionExpressionBody:HomeScreenMapper.kt:HomeScreenMapper${ return HomeScreenState.Loaded( searchQuery = userInput.searchQuery, quickActions = homeFeed.quickActions.map { item -&gt; QuickActionUiModel( id = item.id, title = item.title, imageUrl = item.imageUrl, background = Brush.linearGradient(quickActionGradient), ) }, popularQueries = homeFeed.popularQueries.map { query -&gt; PopularQueryUiModel( id = query.id, title = query.title, ) }, products = homeFeed.products.map { product -&gt; val normalizedSource = product.source.ifBlank { product.marketplace.name.ifBlank { "unknown" } } val favoriteKey = "${product.id}|$normalizedSource" ProductUiModel( id = product.id, source = normalizedSource, title = product.title, price = rubleFormatter.format(product.price) + " ₽", isFavorite = userInput.favoriteProductIds[favoriteKey] ?: product.isFavorite, thumbnailUrl = product.thumbnailUrl, productUrl = product.productUrl, marketplace = MarketplaceUiModel( name = product.marketplace.name, shortName = product.marketplace.name.take(SHORT_NAME_LENGTH).lowercase(Locale.ROOT), logoUrl = product.marketplace.logoUrl, ), ) }, ) }</ID>
+    <ID>FunctionExpressionBody:HomeScreenViewModel.kt:HomeScreenViewModel${ return "$productId|$source" }</ID>
+    <ID>FunctionExpressionBody:HomeScreenViewModel.kt:HomeScreenViewModel${ return source.trim().ifBlank { "unknown" } }</ID>
+    <ID>FunctionExpressionBody:HomeScreenViewModel.kt:HomeScreenViewModel${ return this.filter { symbol -&gt; symbol.isDigit() }.toLongOrNull() ?: 0L }</ID>
+    <ID>FunctionNaming:HomeAsyncImage.kt:@Composable internal fun RemoteImage</ID>
+    <ID>FunctionNaming:HomeBannerCarousel.kt:@Composable internal fun QuickActionCard</ID>
+    <ID>FunctionNaming:HomeBannerCarousel.kt:@Composable internal fun QuickActionCarousel</ID>
+    <ID>FunctionNaming:HomeBannerCarouselPlaceholder.kt:@Composable internal fun QuickActionCarouselSkeleton</ID>
+    <ID>FunctionNaming:HomeLoadingSections.kt:@Composable internal fun LoadingFeedSection</ID>
+    <ID>FunctionNaming:HomeLoadingSections.kt:@Composable private fun LoadingPopularQueriesSection</ID>
+    <ID>FunctionNaming:HomeLoadingSections.kt:@Composable private fun LoadingRecommendationsSection</ID>
+    <ID>FunctionNaming:HomeLoadingSections.kt:@Composable private fun LoadingSectionTitlePlaceholder</ID>
+    <ID>FunctionNaming:HomePopularQueriesRow.kt:@Composable internal fun PopularQueriesRow</ID>
+    <ID>FunctionNaming:HomePopularQueriesRow.kt:@Composable private fun QueryChip</ID>
+    <ID>FunctionNaming:HomeProductCard.kt:@Composable internal fun ProductCard</ID>
+    <ID>FunctionNaming:HomeProductCardPlaceholder.kt:@Composable internal fun LoadingProductCard</ID>
+    <ID>FunctionNaming:HomeScreen.kt:@Composable fun HomeScreen</ID>
+    <ID>FunctionNaming:HomeScreen.kt:@Composable fun HomeScreenContent</ID>
+    <ID>FunctionNaming:HomeScreen.kt:@Composable private fun ErrorSection</ID>
+    <ID>FunctionNaming:HomeScreen.kt:@Composable private fun HeaderSection</ID>
+    <ID>FunctionNaming:HomeScreen.kt:@Composable private fun PopularQueriesSection</ID>
+    <ID>FunctionNaming:HomeScreen.kt:@Composable private fun ProductCardListItem</ID>
+    <ID>FunctionNaming:HomeScreen.kt:@Composable private fun RecommendationsSectionTitle</ID>
+    <ID>FunctionNaming:HomeScreen.kt:@Composable private fun SectionTitle</ID>
+    <ID>FunctionNaming:HomeScreen.kt:@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, widthDp = 375, heightDp = 812) @Composable private fun HomeScreenPreview</ID>
+    <ID>FunctionNaming:PlaceholderBox.kt:@Composable internal fun PlaceholderBox</ID>
+    <ID>FunctionNaming:PriceWiseComposeTheme.kt:@Composable fun PriceWiseComposeTheme</ID>
+    <ID>FunctionSignature:HomeBannerCarousel.kt:@Composable internal fun QuickActionCard</ID>
+    <ID>FunctionSignature:HomeBannerCarouselPlaceholder.kt:@Composable internal fun QuickActionCarouselSkeleton</ID>
+    <ID>FunctionSignature:HomeDataToDomainMapper.kt:HomeDataToDomainMapper$fun map: HomeFeed</ID>
+    <ID>FunctionSignature:HomeDataToDomainMapper.kt:HomeDataToDomainMapper$private fun mapMarketplace: HomeMarketplace</ID>
+    <ID>FunctionSignature:HomeDataToDomainMapper.kt:HomeDataToDomainMapper$private fun mapProduct: HomeProduct?</ID>
+    <ID>FunctionSignature:HomeDataToDomainMapper.kt:HomeDataToDomainMapper$private fun mapQuickAction: HomeQuickAction?</ID>
+    <ID>FunctionSignature:HomeFeatureModule.kt:HomeFeatureModule$@Binds @Singleton abstract fun bindHomeRepository: HomeRepository</ID>
+    <ID>FunctionSignature:HomeFeatureModule.kt:HomeFeatureModule$@Binds @Singleton abstract fun bindHomeScreenApi: HomeScreenApi</ID>
+    <ID>FunctionSignature:HomeFeatureModule.kt:HomeFeatureModule.Companion$@Provides @Singleton fun provideGetHomeFeedUseCase: GetHomeFeedUseCase</ID>
+    <ID>FunctionSignature:HomeLoadingSections.kt:@Composable internal fun LoadingFeedSection</ID>
+    <ID>FunctionSignature:HomeLoadingSections.kt:@Composable private fun LoadingPopularQueriesSection</ID>
+    <ID>FunctionSignature:HomeLoadingSections.kt:@Composable private fun LoadingRecommendationsSection</ID>
+    <ID>FunctionSignature:HomeLoadingSections.kt:@Composable private fun LoadingSectionTitlePlaceholder</ID>
+    <ID>FunctionSignature:HomePopularQueriesRow.kt:@Composable private fun QueryChip</ID>
+    <ID>FunctionSignature:HomeProductCardPlaceholder.kt:@Composable internal fun LoadingProductCard</ID>
+    <ID>FunctionSignature:HomeScreen.kt:@Composable private fun ErrorSection</ID>
+    <ID>FunctionSignature:HomeScreen.kt:@Composable private fun RecommendationsSectionTitle</ID>
+    <ID>FunctionSignature:HomeScreen.kt:@Composable private fun SectionTitle</ID>
+    <ID>FunctionSignature:HomeScreenMapper.kt:HomeScreenMapper$fun getScreenState: HomeScreenState</ID>
+    <ID>FunctionSignature:PlaceholderBox.kt:@Composable internal fun PlaceholderBox</ID>
+    <ID>FunctionSignature:PlaceholderBox.kt:private fun Modifier.shimmerLoading: Modifier</ID>
+    <ID>FunctionSignature:PriceWiseComposeTheme.kt:@Composable fun PriceWiseComposeTheme</ID>
+    <ID>ImportOrdering:HomeFeatureModule.kt:import com.pricewise.feature.home.api.HomeScreenApi import com.pricewise.feature.home.impl.data.mapper.HomeDataToDomainMapper import com.pricewise.feature.home.impl.data.repository.HomeRepositoryImpl import com.pricewise.feature.home.impl.domain.repository.HomeRepository import com.pricewise.feature.home.impl.domain.usecase.GetHomeFeedUseCase import com.pricewise.feature.home.impl.domain.usecase.GetHomeFeedUseCaseImpl import com.pricewise.feature.home.impl.presentation.mapper.HomeScreenMapper import com.pricewise.feature.home.impl.presentation.HomeScreenApiImpl import dagger.Binds import dagger.Module import dagger.Provides import dagger.hilt.InstallIn import dagger.hilt.components.SingletonComponent import javax.inject.Singleton</ID>
+    <ID>ImportOrdering:HomePopularQueriesRow.kt:import LocalCustomColors import androidx.compose.foundation.clickable import androidx.compose.foundation.layout.Arrangement import androidx.compose.foundation.layout.PaddingValues import androidx.compose.foundation.layout.fillMaxWidth import androidx.compose.foundation.layout.padding import androidx.compose.foundation.lazy.LazyRow import androidx.compose.foundation.lazy.items import androidx.compose.material3.MaterialTheme import androidx.compose.ui.draw.clip import androidx.compose.material3.Surface import androidx.compose.material3.Text import androidx.compose.runtime.Composable import androidx.compose.ui.Modifier import com.pricewise.feature.home.impl.presentation.ui.HomeColors import com.pricewise.feature.home.impl.presentation.ui.HomeDimens import com.pricewise.feature.home.impl.presentation.ui.HomeShapes import com.pricewise.feature.home.impl.presentation.ui.HomeTextStyles import com.pricewise.feature.home.impl.presentation.ui.PopularQueryUiModel</ID>
+    <ID>ImportOrdering:HomeProductCard.kt:import androidx.compose.runtime.Composable import androidx.compose.ui.Modifier import com.pricewise.feature.home.impl.presentation.ui.ProductUiModel import com.pricewise.core.ui.components.PriceWiseProductCard import com.pricewise.core.ui.components.PriceWiseProductCardModel</ID>
+    <ID>ImportOrdering:HomeRepositoryImpl.kt:import com.pricewise.feature.home.impl.data.mapper.HomeDataToDomainMapper import com.pricewise.feature.home.impl.data.source.remote.HomeRemoteDataSource import com.pricewise.feature.home.impl.domain.model.HomeFeed import com.pricewise.feature.home.impl.domain.repository.HomeRepository import javax.inject.Inject import javax.inject.Singleton import kotlinx.coroutines.withContext</ID>
+    <ID>ImportOrdering:HomeScreen.kt:import LocalCustomColors import androidx.compose.foundation.background import androidx.compose.foundation.layout.Arrangement import androidx.compose.foundation.layout.Box import androidx.compose.foundation.layout.Column import androidx.compose.foundation.layout.PaddingValues import androidx.compose.foundation.layout.Spacer import androidx.compose.foundation.layout.fillMaxSize import androidx.compose.foundation.layout.fillMaxWidth import androidx.compose.foundation.layout.height import androidx.compose.foundation.layout.padding import androidx.compose.foundation.lazy.LazyColumn import androidx.compose.foundation.lazy.itemsIndexed import androidx.compose.material3.MaterialTheme import androidx.compose.material3.Text import androidx.compose.runtime.Composable import androidx.compose.ui.Modifier import androidx.compose.ui.Alignment import androidx.compose.ui.graphics.Brush import androidx.compose.ui.graphics.Color import androidx.compose.ui.platform.LocalUriHandler import androidx.compose.ui.tooling.preview.Preview import androidx.hilt.navigation.compose.hiltViewModel import androidx.lifecycle.compose.collectAsStateWithLifecycle import com.pricewise.core.ui.components.PriceWiseSearchHeaderTokens import com.pricewise.feature.home.impl.R import com.pricewise.feature.home.impl.presentation.viewmodel.HomeScreenViewModel import com.pricewise.feature.home.impl.presentation.ui.components.PopularQueriesRow import com.pricewise.feature.home.impl.presentation.ui.components.ProductCard import com.pricewise.feature.home.impl.presentation.ui.components.QuickActionCarousel import com.pricewise.feature.home.impl.presentation.ui.placeholders.LoadingFeedSection import com.pricewise.feature.home.impl.ui.theme.PriceWiseComposeTheme import components.SearchBar</ID>
+    <ID>ImportOrdering:HomeScreenApiImpl.kt:import androidx.compose.foundation.layout.PaddingValues import androidx.compose.material3.Surface import androidx.compose.runtime.Composable import androidx.compose.ui.Modifier import com.pricewise.feature.home.api.HomeScreenApi import com.pricewise.feature.home.impl.presentation.ui.HomeScreen as HomeScreenContent import com.pricewise.feature.home.impl.ui.theme.PriceWiseComposeTheme import javax.inject.Inject</ID>
+    <ID>ImportOrdering:HomeScreenViewModel.kt:import com.pricewise.core.ui.viewmodel.BaseViewModel import com.pricewise.feature.favorites.api.FavoriteMutationRequest import com.pricewise.feature.favorites.api.FavoritesFeatureApi import com.pricewise.feature.home.impl.domain.model.HomeFeed import com.pricewise.feature.home.impl.domain.usecase.GetHomeFeedUseCase import com.pricewise.feature.home.impl.presentation.mapper.HomeScreenMapper import com.pricewise.feature.home.impl.presentation.ui.HomeScreenState import dagger.hilt.android.lifecycle.HiltViewModel import javax.inject.Inject import kotlinx.coroutines.Dispatchers import kotlinx.coroutines.async import kotlinx.coroutines.flow.MutableStateFlow import kotlinx.coroutines.flow.catch import kotlinx.coroutines.flow.SharingStarted import kotlinx.coroutines.flow.StateFlow import kotlinx.coroutines.flow.collect import kotlinx.coroutines.flow.map import kotlinx.coroutines.flow.stateIn import kotlinx.coroutines.flow.update import kotlinx.coroutines.launch</ID>
+    <ID>Indentation:HomeBannerCarousel.kt: </ID>
+    <ID>LongMethod:HomeAsyncImage.kt:@Composable internal fun RemoteImage</ID>
+    <ID>LongMethod:HomeProductCardPlaceholder.kt:@Composable internal fun LoadingProductCard</ID>
+    <ID>LongMethod:HomeScreen.kt:@Composable fun HomeScreenContent</ID>
+    <ID>NoUnusedImports:HomeBannerCarousel.kt:com.pricewise.feature.home.impl.presentation.ui.components.HomeBannerCarousel.kt</ID>
+    <ID>NoUnusedImports:HomePopularQueriesRow.kt:com.pricewise.feature.home.impl.presentation.ui.components.HomePopularQueriesRow.kt</ID>
+    <ID>NoUnusedImports:HomeScreenApiImpl.kt:com.pricewise.feature.home.impl.presentation.HomeScreenApiImpl.kt</ID>
+    <ID>PropertyName:HomeTheme.kt:HomeLoadingDefaults$const val BannerSkeletonCount = 4</ID>
+    <ID>PropertyName:HomeTheme.kt:HomeLoadingDefaults$const val NoDelayMillis = 0</ID>
+    <ID>PropertyName:HomeTheme.kt:HomeLoadingDefaults$const val PopularQueriesChipDelayStepMillis = 90</ID>
+    <ID>PropertyName:HomeTheme.kt:HomeLoadingDefaults$const val PopularQuerySkeletonCount = 4</ID>
+    <ID>PropertyName:HomeTheme.kt:HomeLoadingDefaults$const val ProductTextDelayStepMillis = 70</ID>
+    <ID>PropertyName:HomeTheme.kt:HomeLoadingDefaults$const val RecommendationSkeletonCount = 3</ID>
+    <ID>PropertyName:HomeTheme.kt:HomeLoadingDefaults$const val ShimmerDelayStepMillis = 120</ID>
+    <ID>PropertyName:HomeTheme.kt:HomeLoadingDefaults$const val ShimmerDurationMillis = 850</ID>
+    <ID>PropertyName:HomeTheme.kt:HomeLoadingDefaults$const val ShimmerHighlightSize = 320f</ID>
+    <ID>PropertyName:HomeTheme.kt:HomeLoadingDefaults$const val ShimmerStartOffset = -420f</ID>
+    <ID>PropertyName:HomeTheme.kt:HomeLoadingDefaults$const val ShimmerTargetOffset = 920f</ID>
+    <ID>TrailingCommaOnCallSite:PlaceholderBox.kt:( LocalCustomColors.current.shimmer1, LocalCustomColors.current.shimmer2, LocalCustomColors.current.shimmer1 )</ID>
+    <ID>UnusedParameter:HomeScreenViewModel.kt:HomeScreenViewModel$actionId: String</ID>
+    <ID>Wrapping:HomeScreen.kt:(</ID>
+    <ID>Wrapping:HomeScreen.kt:(Brush.linearGradient( colors = listOf(Color(0xFFFFAB35), Color(0xFFFF2424)), ), PriceWiseSearchHeaderTokens.Shape)</ID>
+  </CurrentIssues>
+</SmellBaseline>

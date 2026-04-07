@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ClassSignature:ApiDtos.kt:ApiStatusDto</ID>
+    <ID>ClassSignature:ApiDtos.kt:BannersResponseDto</ID>
+    <ID>ClassSignature:ApiDtos.kt:FavoritesResponseDto</ID>
+    <ID>ClassSignature:ApiDtos.kt:LoginRequestDto</ID>
+    <ID>ClassSignature:ApiDtos.kt:MainResponseDto</ID>
+    <ID>ClassSignature:ApiDtos.kt:TrendingItemDto</ID>
+    <ID>ClassSignature:ApiDtos.kt:TrendingResponseDto</ID>
+    <ID>ClassSignature:ApiDtos.kt:UserDto</ID>
+    <ID>ClassSignature:ProductDetailsDto.kt:ProductSpecDto</ID>
+    <ID>FunctionExpressionBody:NetworkModule.kt:NetworkModule${ return Moshi.Builder() .add(KotlinJsonAdapterFactory()) .build() }</ID>
+    <ID>FunctionExpressionBody:NetworkModule.kt:NetworkModule${ return OkHttpClient.Builder() .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS) .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS) .addInterceptor( HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC }, ) .build() }</ID>
+    <ID>FunctionExpressionBody:NetworkModule.kt:NetworkModule${ return Retrofit.Builder() .baseUrl(ApiConfig.BASE_URL.ensureTrailingSlash()) .client(okHttpClient) .addConverterFactory(MoshiConverterFactory.create(moshi)) .build() }</ID>
+    <ID>FunctionExpressionBody:NetworkModule.kt:NetworkModule${ return retrofit.create(PriceWiseApi::class.java) }</ID>
+    <ID>FunctionExpressionBody:NetworkModule.kt:{ return if (endsWith("/")) this else "$this/" }</ID>
+    <ID>FunctionSignature:NetworkModule.kt:NetworkModule$@Provides @Singleton fun provideRetrofit: Retrofit</ID>
+    <ID>FunctionSignature:PriceWiseApi.kt:PriceWiseApi$@GET("api/favorites") suspend fun listFavorites: FavoritesResponseDto</ID>
+    <ID>FunctionSignature:PriceWiseApi.kt:PriceWiseApi$@GET("api/main") suspend fun getMain: MainResponseDto</ID>
+    <ID>FunctionSignature:PriceWiseApi.kt:PriceWiseApi$@GET("api/me") suspend fun getMe: UserDto</ID>
+    <ID>FunctionSignature:PriceWiseApi.kt:PriceWiseApi$@GET("api/profile") suspend fun getProfile: ProfileDto</ID>
+    <ID>FunctionSignature:PriceWiseApi.kt:PriceWiseApi$@GET("api/search/trending") suspend fun getTrending: TrendingResponseDto</ID>
+    <ID>FunctionSignature:PriceWiseApi.kt:PriceWiseApi$@POST("api/auth/login") suspend fun login: AuthResponseDto</ID>
+    <ID>FunctionSignature:PriceWiseApi.kt:PriceWiseApi$@POST("api/auth/register") suspend fun register: AuthResponseDto</ID>
+  </CurrentIssues>
+</SmellBaseline>

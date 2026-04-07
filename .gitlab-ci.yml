@@ -1,0 +1,28 @@
+image: eclipse-temurin:17-jdk
+
+stages:
+  - verify
+
+variables:
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4g -Dkotlin.incremental=false"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+detekt:
+  stage: verify
+  script:
+    - chmod +x ./gradlew
+    - ./gradlew detektAll
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - "**/build/reports/detekt/"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'

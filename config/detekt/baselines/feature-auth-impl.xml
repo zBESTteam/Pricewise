@@ -1,0 +1,110 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ArgumentListWrapping:RegistrationScreen.kt:(text = stringResource(R.string.login), color = colorResource(id = R.color.black))</ID>
+    <ID>ClassSignature:AuthModels.kt:AuthSession</ID>
+    <ID>ClassSignature:AuthModels.kt:AuthUser</ID>
+    <ID>ClassSignature:AuthModels.kt:LoginInput</ID>
+    <ID>ClassSignature:AuthModels.kt:RegisterInput</ID>
+    <ID>ClassSignature:AuthRepositoryImpl.kt:AuthRepositoryImpl : AuthRepository</ID>
+    <ID>ClassSignature:LoginViewModel.kt:LoginViewModel : ViewModel</ID>
+    <ID>ClassSignature:RegistrationViewModel.kt:RegistrationViewModel : ViewModel</ID>
+    <ID>FinalNewline:AuthMapper.kt:com.pricewise.feature.auth.impl.data.mapper.AuthMapper.kt</ID>
+    <ID>FinalNewline:AuthModels.kt:com.pricewise.feature.auth.impl.domain.model.AuthModels.kt</ID>
+    <ID>FinalNewline:AuthorizationScreen.kt:com.pricewise.feature.auth.impl.presentation.ui.AuthorizationScreen.kt</ID>
+    <ID>FinalNewline:Buttons.kt:com.pricewise.feature.auth.impl.presentation.ui.components.Buttons.kt</ID>
+    <ID>ForbiddenComment:AuthorizationScreen.kt:/* TODO: Implement VK Login */</ID>
+    <ID>FunctionLiteral:AuthFeatureEntryImpl.kt:AuthFeatureEntryImpl$&lt;anonymous&gt;</ID>
+    <ID>FunctionNaming:AuthorizationScreen.kt:@Composable fun AuthorizationScreen</ID>
+    <ID>FunctionNaming:Buttons.kt:@Composable fun AuthorisationButton</ID>
+    <ID>FunctionNaming:Buttons.kt:@Composable fun VkLoginButton</ID>
+    <ID>FunctionNaming:InputFields.kt:@Composable fun EmailInputField</ID>
+    <ID>FunctionNaming:InputFields.kt:@Composable fun PasswordInputField</ID>
+    <ID>FunctionNaming:RegistrationScreen.kt:@Composable fun RegistrationScreen</ID>
+    <ID>FunctionSignature:AuthorizationScreen.kt:@Composable fun AuthorizationScreen</ID>
+    <ID>FunctionSignature:Buttons.kt:@Composable fun AuthorisationButton</ID>
+    <ID>FunctionSignature:Buttons.kt:@Composable fun VkLoginButton</ID>
+    <ID>ImportOrdering:AuthorizationScreen.kt:import android.widget.Toast import androidx.compose.foundation.layout.Arrangement import androidx.compose.foundation.layout.Box import androidx.compose.foundation.layout.Column import androidx.compose.foundation.layout.Row import androidx.compose.foundation.layout.Spacer import androidx.compose.foundation.layout.fillMaxSize import androidx.compose.foundation.layout.height import androidx.compose.foundation.layout.padding import androidx.compose.foundation.layout.width import androidx.compose.runtime.Composable import androidx.compose.runtime.getValue import androidx.compose.runtime.remember import androidx.compose.runtime.setValue import androidx.compose.ui.Alignment import androidx.compose.ui.Modifier import androidx.compose.ui.res.colorResource import androidx.compose.ui.res.painterResource import androidx.compose.ui.res.stringResource import androidx.compose.ui.text.TextStyle import com.pricewise.feature.auth.impl.presentation.viewmodel.LoginViewModel import androidx.compose.ui.text.font.FontWeight import androidx.compose.ui.unit.dp import androidx.compose.ui.unit.sp import androidx.hilt.navigation.compose.hiltViewModel import androidx.compose.foundation.Image import androidx.compose.material3.CircularProgressIndicator import androidx.compose.material3.Scaffold import androidx.compose.material3.Text import androidx.compose.material3.TextButton import androidx.compose.runtime.LaunchedEffect import androidx.compose.ui.platform.LocalContext import androidx.compose.ui.text.font.Font import androidx.compose.ui.text.font.FontFamily import androidx.lifecycle.compose.collectAsStateWithLifecycle import com.pricewise.feature.auth.impl.R import com.pricewise.feature.auth.impl.presentation.ui.components.AuthorisationButton import com.pricewise.feature.auth.impl.presentation.ui.components.EmailInputField import com.pricewise.feature.auth.impl.presentation.ui.components.PasswordInputField import com.pricewise.feature.auth.impl.presentation.ui.components.VkLoginButton</ID>
+    <ID>ImportOrdering:RegistrationScreen.kt:import android.widget.Toast import androidx.compose.foundation.Image import androidx.compose.foundation.gestures.Orientation import androidx.compose.foundation.gestures.scrollable import androidx.compose.foundation.layout.Arrangement import androidx.compose.foundation.layout.Box import androidx.compose.foundation.layout.Column import androidx.compose.foundation.layout.Row import androidx.compose.foundation.layout.Spacer import androidx.compose.foundation.layout.fillMaxSize import androidx.compose.foundation.layout.height import androidx.compose.foundation.layout.padding import androidx.compose.foundation.layout.width import androidx.compose.foundation.rememberScrollState import androidx.compose.material3.CircularProgressIndicator import androidx.compose.material3.Scaffold import androidx.compose.material3.Text import androidx.compose.material3.TextButton import androidx.compose.runtime.Composable import androidx.compose.runtime.LaunchedEffect import androidx.compose.runtime.getValue import androidx.compose.runtime.remember import androidx.compose.runtime.setValue import androidx.compose.ui.Alignment import androidx.compose.ui.Modifier import androidx.compose.ui.platform.LocalContext import androidx.compose.ui.res.colorResource import androidx.compose.ui.res.painterResource import androidx.compose.ui.res.stringResource import androidx.compose.ui.text.TextStyle import androidx.compose.ui.text.font.Font import androidx.compose.ui.text.font.FontFamily import androidx.compose.ui.text.font.FontWeight import androidx.compose.ui.unit.dp import androidx.compose.ui.unit.sp import androidx.hilt.navigation.compose.hiltViewModel import androidx.lifecycle.compose.collectAsStateWithLifecycle import com.pricewise.feature.auth.impl.presentation.viewmodel.RegistrationViewModel import com.pricewise.feature.auth.impl.R import com.pricewise.feature.auth.impl.presentation.ui.components.AuthorisationButton import com.pricewise.feature.auth.impl.presentation.ui.components.EmailInputField import com.pricewise.feature.auth.impl.presentation.ui.components.PasswordInputField</ID>
+    <ID>LongMethod:AuthorizationScreen.kt:@Composable fun AuthorizationScreen</ID>
+    <ID>LongMethod:InputFields.kt:@Composable fun EmailInputField</ID>
+    <ID>LongMethod:InputFields.kt:@Composable fun PasswordInputField</ID>
+    <ID>LongMethod:RegistrationScreen.kt:@Composable fun RegistrationScreen</ID>
+    <ID>MultiLineIfElse:InputFields.kt:PasswordVisualTransformation( '*' )</ID>
+    <ID>MultiLineIfElse:InputFields.kt:Text( modifier = Modifier.fillMaxWidth(), text = defaultText, style = TextStyle( fontSize = 16.sp, lineHeight = 24.sp, fontFamily = inter, fontWeight = FontWeight(500), color = colorResource(R.color.input_field_text_color), textAlign = TextAlign.Justify, letterSpacing = 0.3.sp, ) )</ID>
+    <ID>MultiLineIfElse:InputFields.kt:Text( modifier = Modifier.fillMaxWidth(), text = stringResource(R.string.default_mail_text), style = TextStyle( fontSize = 16.sp, lineHeight = 24.sp, fontFamily = inter, fontWeight = FontWeight(500), color = colorResource(R.color.input_field_text_color), textAlign = TextAlign.Justify, letterSpacing = 0.3.sp, ) )</ID>
+    <ID>MultiLineIfElse:InputFields.kt:VisualTransformation.None</ID>
+    <ID>MultiLineIfElse:InputFields.kt:painterResource( id = R.drawable.ic_visibility_off )</ID>
+    <ID>MultiLineIfElse:InputFields.kt:painterResource(id = R.drawable.ic_visibility)</ID>
+    <ID>NewLineAtEndOfFile:AuthMapper.kt:com.pricewise.feature.auth.impl.data.mapper.AuthMapper.kt</ID>
+    <ID>NewLineAtEndOfFile:AuthModels.kt:com.pricewise.feature.auth.impl.domain.model.AuthModels.kt</ID>
+    <ID>NewLineAtEndOfFile:AuthorizationScreen.kt:com.pricewise.feature.auth.impl.presentation.ui.AuthorizationScreen.kt</ID>
+    <ID>NewLineAtEndOfFile:Buttons.kt:com.pricewise.feature.auth.impl.presentation.ui.components.Buttons.kt</ID>
+    <ID>NoConsecutiveBlankLines:AuthorizationScreen.kt: </ID>
+    <ID>NoConsecutiveBlankLines:InputFields.kt: </ID>
+    <ID>TrailingCommaOnCallSite:AuthFeatureEntryImpl.kt:AuthFeatureEntryImpl$( onNavigateToLogin = { navController.popBackStack() }, onNavigateToMain = { navController.navigate("home") { popUpTo(loginRoute) { inclusive = true } } } )</ID>
+    <ID>TrailingCommaOnCallSite:AuthFeatureEntryImpl.kt:AuthFeatureEntryImpl$( onNavigateToRegistration = { navController.navigate(registerRoute) }, onNavigateToMain = { navController.navigate("home") { // Replace with actual home route if different popUpTo(loginRoute) { inclusive = true } } } )</ID>
+    <ID>TrailingCommaOnCallSite:AuthRepositoryImpl.kt:AuthRepositoryImpl$( LoginRequestDto( email = input.email, password = input.password ) )</ID>
+    <ID>TrailingCommaOnCallSite:AuthRepositoryImpl.kt:AuthRepositoryImpl$( RegisterRequestDto( email = input.email, password = input.password, passwordConfirm = input.passwordConfirm ) )</ID>
+    <ID>TrailingCommaOnCallSite:AuthRepositoryImpl.kt:AuthRepositoryImpl$( email = input.email, password = input.password )</ID>
+    <ID>TrailingCommaOnCallSite:AuthRepositoryImpl.kt:AuthRepositoryImpl$( email = input.email, password = input.password, passwordConfirm = input.passwordConfirm )</ID>
+    <ID>TrailingCommaOnCallSite:AuthorizationScreen.kt:( email = uiState.email, onValueChange = viewModel::onEmailChange )</ID>
+    <ID>TrailingCommaOnCallSite:AuthorizationScreen.kt:( isLoading = uiState.isLoading, onClick = { /* TODO: Implement VK Login */ } )</ID>
+    <ID>TrailingCommaOnCallSite:AuthorizationScreen.kt:( modifier = Modifier .fillMaxSize() .padding(horizontal = 16.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally )</ID>
+    <ID>TrailingCommaOnCallSite:AuthorizationScreen.kt:( modifier = Modifier .padding(innerPadding) .fillMaxSize(), contentAlignment = Alignment.Center )</ID>
+    <ID>TrailingCommaOnCallSite:AuthorizationScreen.kt:( modifier = Modifier .width(96.dp) .height(96.dp), painter = painterResource(id = R.drawable.ic_logo), contentDescription = stringResource(R.string.logo_description) )</ID>
+    <ID>TrailingCommaOnCallSite:AuthorizationScreen.kt:( onClick = onNavigateToRegistration, enabled = !uiState.isLoading )</ID>
+    <ID>TrailingCommaOnCallSite:AuthorizationScreen.kt:( password = uiState.password, passwordVisible = passwordVisible, onValueChange = viewModel::onPasswordChange, changeVisibility = { passwordVisible = it }, stringResource(R.string.default_password_text) )</ID>
+    <ID>TrailingCommaOnCallSite:AuthorizationScreen.kt:( text = stringResource(R.string.login), isLoading = uiState.isLoading, onClick = viewModel::login )</ID>
+    <ID>TrailingCommaOnCallSite:AuthorizationScreen.kt:( text = stringResource(R.string.pricewise_login), style = TextStyle( fontSize = 24.sp, lineHeight = 31.2.sp, fontFamily = inter, fontWeight = FontWeight(700), color = colorResource(R.color.login_Pricewise_color), ) )</ID>
+    <ID>TrailingCommaOnCallSite:AuthorizationScreen.kt:( text = stringResource(R.string.register_suggestion), color = colorResource(id = R.color.black) )</ID>
+    <ID>TrailingCommaOnCallSite:Buttons.kt:( BorderStroke(1.dp, Color.Black), shape = RoundedCornerShape(10.dp) )</ID>
+    <ID>TrailingCommaOnCallSite:Buttons.kt:( brush = Brush.horizontalGradient( colors = listOf( colorResource(id = R.color.orange_gradient_start), colorResource(id = R.color.orange_gradient_end) ) ) )</ID>
+    <ID>TrailingCommaOnCallSite:Buttons.kt:( colorResource(id = R.color.orange_gradient_start), colorResource(id = R.color.orange_gradient_end) )</ID>
+    <ID>TrailingCommaOnCallSite:Buttons.kt:( colors = listOf( colorResource(id = R.color.orange_gradient_start), colorResource(id = R.color.orange_gradient_end) ) )</ID>
+    <ID>TrailingCommaOnCallSite:Buttons.kt:( modifier = Modifier .width(345.dp) .height(48.dp) .clip(RoundedCornerShape(10.dp)) .background( brush = Brush.horizontalGradient( colors = listOf( colorResource(id = R.color.orange_gradient_start), colorResource(id = R.color.orange_gradient_end) ) ) ) .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 8.dp) .clickable(enabled = !isLoading, onClick = onClick), contentAlignment = Alignment.Center )</ID>
+    <ID>TrailingCommaOnCallSite:Buttons.kt:( modifier = Modifier .width(345.dp) .height(48.dp) .clip(RoundedCornerShape(10.dp)) .background(Color.White) .border( BorderStroke(1.dp, Color.Black), shape = RoundedCornerShape(10.dp) ) .clickable(enabled = !isLoading, onClick = onClick), contentAlignment = Alignment.Center )</ID>
+    <ID>TrailingCommaOnCallSite:Buttons.kt:( painter = painterResource(id = R.drawable.ic_vk_logo), contentDescription = stringResource(R.string.vk_logo_description), modifier = Modifier.size(20.dp) )</ID>
+    <ID>TrailingCommaOnCallSite:Buttons.kt:( text = stringResource(R.string.vk_id_login), color = Color.Black )</ID>
+    <ID>TrailingCommaOnCallSite:Buttons.kt:( verticalAlignment = Alignment.CenterVertically )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( '*' )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( Modifier .border( width = 1.5.dp, color = colorResource(R.color.input_field_background_color) ) .padding(1.5.dp) .width(19.5.dp) .height(19.5.dp) )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( Modifier .border( width = 1.5.dp, color = colorResource(R.color.input_field_background_color) ) .padding(1.5.dp) .width(19.5.dp) .height(21.5.dp) )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( Modifier .border( width = 1.5.dp, color = colorResource(R.color.input_field_background_color) ) .padding(1.5.dp) .width(21.5.dp) .height(19.5.dp) )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( color = colorResource(R.color.input_field_background_color), shape = RoundedCornerShape(14.dp) )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( id = R.drawable.ic_visibility_off )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( modifier = Modifier .border( width = 1.dp, color = colorResource(R.color.input_field_border_color), shape = RoundedCornerShape(14.dp) ) .padding(0.5.dp) .width(345.dp) .height(48.dp) .background( color = colorResource(R.color.input_field_background_color), shape = RoundedCornerShape(14.dp) ) .padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 12.dp) )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( modifier = Modifier.clickable { changeVisibility(!passwordVisible) }, painter = if (!passwordVisible) painterResource(id = R.drawable.ic_visibility) else painterResource( id = R.drawable.ic_visibility_off ), contentDescription = stringResource(R.string.lock_icon_description), contentScale = ContentScale.None )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( modifier = Modifier.fillMaxWidth(), text = defaultText, style = TextStyle( fontSize = 16.sp, lineHeight = 24.sp, fontFamily = inter, fontWeight = FontWeight(500), color = colorResource(R.color.input_field_text_color), textAlign = TextAlign.Justify, letterSpacing = 0.3.sp, ) )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( modifier = Modifier.fillMaxWidth(), text = stringResource(R.string.default_mail_text), style = TextStyle( fontSize = 16.sp, lineHeight = 24.sp, fontFamily = inter, fontWeight = FontWeight(500), color = colorResource(R.color.input_field_text_color), textAlign = TextAlign.Justify, letterSpacing = 0.3.sp, ) )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( modifier = Modifier.fillMaxWidth(), value = email, onValueChange = onValueChange, textStyle = TextStyle( fontSize = 16.sp, lineHeight = 24.sp, fontFamily = inter, fontWeight = FontWeight(500), color = colorResource(R.color.input_field_text_color), textAlign = TextAlign.Justify, letterSpacing = 0.3.sp, ) )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( modifier = Modifier.weight(1f), value = password, onValueChange = onValueChange, textStyle = TextStyle( fontSize = 16.sp, lineHeight = 24.sp, fontFamily = inter, fontWeight = FontWeight(500), color = colorResource(R.color.input_field_text_color), textAlign = TextAlign.Justify, letterSpacing = 0.3.sp, ), visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation( '*' ) )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( painter = painterResource(id = R.drawable.ic_lock), contentDescription = stringResource(R.string.lock_icon_description), contentScale = ContentScale.None )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( painter = painterResource(id = R.drawable.ic_mail), contentDescription = "icon mail", contentScale = ContentScale.None )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( width = 1.5.dp, color = colorResource(R.color.input_field_background_color) )</ID>
+    <ID>TrailingCommaOnCallSite:InputFields.kt:( width = 1.dp, color = colorResource(R.color.input_field_border_color), shape = RoundedCornerShape(14.dp) )</ID>
+    <ID>TrailingCommaOnCallSite:RegistrationScreen.kt:( email = uiState.email, onValueChange = viewModel::onEmailChange )</ID>
+    <ID>TrailingCommaOnCallSite:RegistrationScreen.kt:( modifier = Modifier .fillMaxSize() .padding(horizontal = 16.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally )</ID>
+    <ID>TrailingCommaOnCallSite:RegistrationScreen.kt:( modifier = Modifier .fillMaxSize() .scrollable( orientation = Orientation.Horizontal, state = rememberScrollState() ) )</ID>
+    <ID>TrailingCommaOnCallSite:RegistrationScreen.kt:( modifier = Modifier .padding(innerPadding) .fillMaxSize(), contentAlignment = Alignment.Center )</ID>
+    <ID>TrailingCommaOnCallSite:RegistrationScreen.kt:( modifier = Modifier .width(96.dp) .height(96.dp), painter = painterResource(id = R.drawable.ic_logo), contentDescription = stringResource(R.string.logo_description) )</ID>
+    <ID>TrailingCommaOnCallSite:RegistrationScreen.kt:( orientation = Orientation.Horizontal, state = rememberScrollState() )</ID>
+    <ID>TrailingCommaOnCallSite:RegistrationScreen.kt:( password = uiState.password, passwordVisible = passwordVisible, onValueChange = viewModel::onPasswordChange, changeVisibility = { passwordVisible = it }, stringResource(R.string.default_password_text) )</ID>
+    <ID>TrailingCommaOnCallSite:RegistrationScreen.kt:( password = uiState.passwordConfirm, passwordVisible = confirmPasswordVisible, onValueChange = viewModel::onPasswordConfirmChange, changeVisibility = { confirmPasswordVisible = it }, stringResource(R.string.Confirm_password_text) )</ID>
+    <ID>TrailingCommaOnCallSite:RegistrationScreen.kt:( text = stringResource(R.string.default_register_text), isLoading = uiState.isLoading, onClick = viewModel::register )</ID>
+    <ID>TrailingCommaOnCallSite:RegistrationScreen.kt:( text = stringResource(R.string.default_register_text), style = TextStyle( fontSize = 24.sp, lineHeight = 31.2.sp, fontFamily = inter, fontWeight = FontWeight(700), color = colorResource(R.color.login_Pricewise_color), ) )</ID>
+    <ID>TrailingCommaOnCallSite:RegistrationScreen.kt:(text = stringResource(R.string.login), color = colorResource(id = R.color.black))</ID>
+    <ID>TrailingCommaOnCallSite:RegistrationViewModel.kt:RegistrationViewModel$( RegisterInput( currentState.email, currentState.password, currentState.passwordConfirm ) )</ID>
+    <ID>TrailingCommaOnCallSite:RegistrationViewModel.kt:RegistrationViewModel$( currentState.email, currentState.password, currentState.passwordConfirm )</ID>
+    <ID>TrailingCommaOnDeclarationSite:AuthRepositoryImpl.kt:AuthRepositoryImpl$( private val api: PriceWiseApi, private val tokenManager: TokenManager )</ID>
+    <ID>TrailingCommaOnDeclarationSite:Buttons.kt:( isLoading: Boolean, onClick: () -&gt; Unit )</ID>
+    <ID>TrailingCommaOnDeclarationSite:Buttons.kt:( text: String, isLoading: Boolean, onClick: () -&gt; Unit )</ID>
+    <ID>TrailingCommaOnDeclarationSite:InputFields.kt:( password: String, passwordVisible: Boolean, onValueChange: (String) -&gt; Unit, changeVisibility: (Boolean) -&gt; Unit, defaultText: String )</ID>
+    <ID>TrailingCommaOnDeclarationSite:LoginUIState.kt:LoginUIState$( val email: String = "", val password: String = "", val isLoading: Boolean = false, val hasSavedSession: Boolean = false, val error: String? = null, val session: AuthSession? = null )</ID>
+    <ID>TrailingCommaOnDeclarationSite:RegistrationScreen.kt:( onNavigateToLogin: () -&gt; Unit, onNavigateToMain: () -&gt; Unit, viewModel: RegistrationViewModel = hiltViewModel() )</ID>
+    <ID>TrailingCommaOnDeclarationSite:RegistrationUIState.kt:RegistrationUIState$( val email: String = "", val password: String = "", val passwordConfirm: String = "", val isLoading: Boolean = false, val error: String? = null, val session: AuthSession? = null )</ID>
+    <ID>TrailingCommaOnDeclarationSite:RegistrationViewModel.kt:RegistrationViewModel$( private val repo: AuthRepository )</ID>
+    <ID>Wrapping:RegistrationScreen.kt:(</ID>
+  </CurrentIssues>
+</SmellBaseline>
