@@ -1,5 +1,6 @@
 package com.pricewise.feature.home.impl.presentation.ui
 
+import LocalCustomColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,10 +13,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -70,7 +74,7 @@ fun HomeScreenContent(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .background(HomeColors.ScreenBackground)
+            .background(MaterialTheme.colorScheme.background)
             .padding(contentPadding),
         contentPadding = PaddingValues(bottom = HomeDimens.ListBottomPadding),
     ) {
@@ -191,7 +195,7 @@ private fun ErrorSection(
         Text(
             text = throwable.message.orEmpty().ifBlank { "Не удалось загрузить экран" },
             style = HomeTextStyles.ProductTitle,
-            color = HomeColors.SectionTitle,
+            color = LocalCustomColors.current.midDark,
         )
     }
 }
@@ -207,7 +211,9 @@ private fun HeaderSection(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(HomeColors.HeaderGradient, PriceWiseSearchHeaderTokens.Shape),
+            .background(Brush.linearGradient(
+                colors = listOf(Color(0xFFFFAB35), Color(0xFFFF2424)),
+            ), PriceWiseSearchHeaderTokens.Shape),
     ) {
         SearchBar(
             value = query,
@@ -311,7 +317,7 @@ private fun SectionTitle(
         text = title,
         modifier = modifier,
         style = HomeTextStyles.SectionTitle,
-        color = HomeColors.SectionTitle,
+        color = LocalCustomColors.current.midDark,
     )
 }
 

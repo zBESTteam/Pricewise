@@ -1,5 +1,6 @@
 package com.pricewise.feature.home.impl.presentation.ui.components
 
+import LocalCustomColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
 import com.pricewise.feature.home.impl.presentation.ui.HomeColors
 import com.pricewise.feature.home.impl.presentation.ui.HomeDimens
 import com.pricewise.feature.home.impl.presentation.ui.HomeLoadingDefaults
@@ -60,7 +60,7 @@ internal fun QuickActionCard(
             .size(HomeDimens.QuickActionCardSize)
             .border(
                 width = HomeDimens.BannerBorderWidth,
-                color = HomeColors.QuickActionBorder,
+                color = LocalCustomColors.current.quickActionBorder,
                 shape = HomeShapes.QuickAction,
             ),
         shape = HomeShapes.QuickAction,

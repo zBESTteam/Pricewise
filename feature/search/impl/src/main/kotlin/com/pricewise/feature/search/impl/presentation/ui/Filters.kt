@@ -1,5 +1,6 @@
 package com.pricewise.feature.search.impl.presentation.ui
 
+import LocalCustomColors
 import Typography.Inter
 import android.content.Context
 import androidx.compose.foundation.Image
@@ -24,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -87,7 +89,20 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
     }
     val customModifier: Modifier = Modifier.offset(y = (-7).dp)
     ModalBottomSheet(
-        onDismissRequest = { closeFilters() },
+        sheetState = sheetState, onDismissRequest = { closeFilters() }, dragHandle =
+            {
+                BottomSheetDefaults.DragHandle(
+                    modifier = customModifier,
+                    color = colorResource(R.color.handle_color),
+                    width = 63.dp,
+                    height = 4.dp
+                )
+            },
+        containerColor = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(
+            topStart = 35.dp,
+            topEnd = 35.dp
+        )
     ) {
         Box(
             modifier = customModifier
@@ -109,7 +124,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                         lineHeight = 26.sp,
                         fontFamily = Inter,
                         fontWeight = FontWeight(700),
-                        color = colorResource(R.color.mid_dark),
+                        color = LocalCustomColors.current.midDark,
                         letterSpacing = 0.3.sp
                     )
                 )
@@ -127,11 +142,11 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             .background(
                                 brush = Brush.horizontalGradient(
                                     colors = if (isProductChosen) listOf(
-                                        colorResource(R.color.start_gradient_color),
-                                        colorResource(R.color.end_gradient_color)
+                                        LocalCustomColors.current.startGradient,
+                                        LocalCustomColors.current.endGradient
                                     ) else listOf(
-                                        colorResource(R.color.disabled_filter_button_color),
-                                        colorResource(R.color.disabled_filter_button_color)
+                                        LocalCustomColors.current.disabledFilterButtonColor,
+                                        LocalCustomColors.current.disabledFilterButtonColor
                                     )
                                 ),
                                 shape = RoundedCornerShape(14.dp)
@@ -149,9 +164,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                 lineHeight = 24.sp,
                                 fontFamily = Inter,
                                 fontWeight = FontWeight(600),
-                                color = if (isProductChosen) colorResource(R.color.white) else colorResource(
-                                    R.color.disabled_filter_button_text_color
-                                ),
+                                color = if (isProductChosen) MaterialTheme.colorScheme.onPrimary else LocalCustomColors.current.disabledFilterButtonTextColor,
                                 letterSpacing = 0.3.sp,
                             )
                         )
@@ -163,11 +176,11 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             .background(
                                 brush = Brush.horizontalGradient(
                                     colors = if (!isProductChosen) listOf(
-                                        colorResource(R.color.start_gradient_color),
-                                        colorResource(R.color.end_gradient_color)
+                                        LocalCustomColors.current.startGradient,
+                                        LocalCustomColors.current.endGradient
                                     ) else listOf(
-                                        colorResource(R.color.disabled_filter_button_color),
-                                        colorResource(R.color.disabled_filter_button_color)
+                                        LocalCustomColors.current.disabledFilterButtonColor,
+                                        LocalCustomColors.current.disabledFilterButtonColor
                                     )
                                 ),
                                 shape = RoundedCornerShape(14.dp)
@@ -185,9 +198,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                 lineHeight = 24.sp,
                                 fontFamily = Inter,
                                 fontWeight = FontWeight(600),
-                                color = if (!isProductChosen) colorResource(R.color.white) else colorResource(
-                                    R.color.disabled_filter_button_text_color
-                                ),
+                                color = if (!isProductChosen) MaterialTheme.colorScheme.onPrimary else LocalCustomColors.current.disabledFilterButtonTextColor,
                                 letterSpacing = 0.3.sp,
                             )
                         )
@@ -201,7 +212,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             lineHeight = 24.sp,
                             fontFamily = Inter,
                             fontWeight = FontWeight(600),
-                            color = colorResource(R.color.mid_dark),
+                            color = LocalCustomColors.current.midDark,
                             letterSpacing = 0.3.sp,
                         )
                     )
@@ -239,7 +250,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             lineHeight = 24.sp,
                             fontFamily = Inter,
                             fontWeight = FontWeight(600),
-                            color = colorResource(R.color.mid_dark),
+                            color = LocalCustomColors.current.midDark,
 
                             letterSpacing = 0.3.sp,
                         )
@@ -272,7 +283,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             lineHeight = 24.sp,
                             fontFamily = Inter,
                             fontWeight = FontWeight(600),
-                            color = colorResource(R.color.mid_dark),
+                            color = LocalCustomColors.current.midDark,
 
                             letterSpacing = 0.3.sp,
                         )
@@ -298,7 +309,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             .fillMaxWidth()
                             .height(44.dp)
                             .background(
-                                color = colorResource(R.color.mid_dark),
+                                color = LocalCustomColors.current.midDark,
                                 shape = RoundedCornerShape(size = 14.dp)
                             )
                             .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
@@ -326,7 +337,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                 lineHeight = 21.sp,
                                 fontFamily = Inter,
                                 fontWeight = FontWeight(600),
-                                color = colorResource(R.color.white),
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 letterSpacing = 0.3.sp,
                             )
                         )
@@ -339,7 +350,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             lineHeight = 24.sp,
                             fontFamily = Inter,
                             fontWeight = FontWeight(600),
-                            color = colorResource(R.color.mid_dark),
+                            color = LocalCustomColors.current.midDark,
                             letterSpacing = 0.3.sp,
                         )
                     )
@@ -402,7 +413,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                 .height(8.dp)
                                 .align(Alignment.Center)
                                 .background(
-                                    color = colorResource(R.color.disabled_filter_button_color),
+                                    color = LocalCustomColors.current.disabledFilterButtonColor,
                                     shape = RoundedCornerShape(size = 14.dp)
                                 )
                         )
@@ -415,8 +426,8 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                 .background(
                                     brush = Brush.linearGradient(
                                         listOf(
-                                            colorResource(R.color.start_gradient_color),
-                                            colorResource(R.color.end_gradient_color)
+                                            LocalCustomColors.current.startGradient,
+                                            LocalCustomColors.current.endGradient
                                         )
                                     ),
                                     shape = RoundedCornerShape(size = 14.dp)
@@ -430,8 +441,8 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                 .background(
                                     brush = Brush.linearGradient(
                                         listOf(
-                                            colorResource(R.color.start_gradient_color),
-                                            colorResource(R.color.end_gradient_color)
+                                            LocalCustomColors.current.startGradient,
+                                            LocalCustomColors.current.endGradient
                                         )
                                     ),
                                     shape = CircleShape
@@ -445,8 +456,8 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                 .background(
                                     brush = Brush.linearGradient(
                                         listOf(
-                                            colorResource(R.color.start_gradient_color),
-                                            colorResource(R.color.end_gradient_color)
+                                            LocalCustomColors.current.startGradient,
+                                            LocalCustomColors.current.endGradient
                                         )
                                     ),
                                     shape = CircleShape
@@ -460,7 +471,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             lineHeight = 24.sp,
                             fontFamily = Inter,
                             fontWeight = FontWeight(600),
-                            color = colorResource(R.color.mid_dark),
+                            color = LocalCustomColors.current.midDark,
                             letterSpacing = 0.3.sp,
                         )
                     )
@@ -503,7 +514,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             lineHeight = 24.sp,
                             fontFamily = Inter,
                             fontWeight = FontWeight(600),
-                            color = colorResource(R.color.mid_dark),
+                            color = LocalCustomColors.current.midDark,
 
                             letterSpacing = 0.3.sp,
                         )
@@ -519,7 +530,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             .fillMaxWidth()
                             .height(44.dp)
                             .background(
-                                color = colorResource(R.color.mid_dark),
+                                color = LocalCustomColors.current.midDark,
                                 shape = RoundedCornerShape(size = 14.dp)
                             )
                             .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
@@ -547,7 +558,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                 lineHeight = 21.sp,
                                 fontFamily = Inter,
                                 fontWeight = FontWeight(600),
-                                color = colorResource(R.color.white),
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 letterSpacing = 0.3.sp,
                             )
                         )
@@ -568,9 +579,7 @@ fun FilterDefaultButton(
         modifier = Modifier
             .height(41.dp)
             .background(
-                color = if (!isSelected) colorResource(R.color.disabled_filter_button_color) else colorResource(
-                    R.color.mid_dark
-                ),
+                color = if (!isSelected) LocalCustomColors.current.disabledFilterButtonColor else LocalCustomColors.current.midDark,
                 shape = RoundedCornerShape(size = 14.dp)
             )
             .clickable { onClick() },
@@ -584,9 +593,7 @@ fun FilterDefaultButton(
                 lineHeight = 21.sp,
                 fontFamily = Inter,
                 fontWeight = FontWeight(600),
-                color = if (!isSelected) colorResource(R.color.disabled_filter_button_text_color) else colorResource(
-                    R.color.white
-                ),
+                color = if (!isSelected) LocalCustomColors.current.disabledFilterButtonTextColor else MaterialTheme.colorScheme.onPrimary,
                 letterSpacing = 0.3.sp,
             )
         )
@@ -605,7 +612,7 @@ fun FilterSwitch(
             .fillMaxWidth()
             .height(44.dp)
             .background(
-                color = colorResource(R.color.disabled_filter_button_color),
+                color = LocalCustomColors.current.disabledFilterButtonColor,
                 shape = RoundedCornerShape(size = 14.dp)
             )
             .padding(horizontal = 14.dp)
@@ -625,7 +632,7 @@ fun FilterSwitch(
                     lineHeight = 24.sp,
                     fontFamily = Inter,
                     fontWeight = FontWeight(500),
-                    color = colorResource(R.color.disabled_filter_button_text_color),
+                    color = LocalCustomColors.current.disabledFilterButtonTextColor,
                     letterSpacing = 0.3.sp,
                 ),
                 maxLines = 2,
@@ -657,7 +664,7 @@ fun PriceInputField(
         modifier = modifier
             .height(44.dp)
             .background(
-                color = colorResource(R.color.disabled_filter_button_color),
+                color = LocalCustomColors.current.disabledFilterButtonColor,
                 shape = RoundedCornerShape(size = 14.dp)
             )
             .padding(horizontal = 10.dp),
@@ -674,7 +681,7 @@ fun PriceInputField(
                     fontSize = 16.sp,
                     lineHeight = 24.sp,
                     fontWeight = FontWeight(500),
-                    color = colorResource(R.color.disabled_filter_button_text_color),
+                    color = LocalCustomColors.current.disabledFilterButtonTextColor,
                     letterSpacing = 0.3.sp,
                 )
             )
@@ -710,7 +717,7 @@ fun PriceInputField(
                         fontSize = 16.sp,
                         lineHeight = 24.sp,
                         fontWeight = FontWeight(500),
-                        color = colorResource(R.color.disabled_filter_button_text_color),
+                        color = LocalCustomColors.current.disabledFilterButtonTextColor,
                         letterSpacing = 0.3.sp,
                         textAlign = TextAlign.Center
                     ),
@@ -737,7 +744,7 @@ fun PriceInputField(
                     fontSize = 16.sp,
                     lineHeight = 24.sp,
                     fontWeight = FontWeight(500),
-                    color = colorResource(R.color.disabled_filter_button_text_color),
+                    color = LocalCustomColors.current.disabledFilterButtonTextColor,
                     letterSpacing = 0.3.sp,
                 )
             )

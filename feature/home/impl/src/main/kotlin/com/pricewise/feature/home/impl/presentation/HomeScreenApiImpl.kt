@@ -18,15 +18,13 @@ class HomeScreenApiImpl @Inject constructor() : HomeScreenApi {
         onSearchRequest: (String) -> Unit,
         onPhotoSearchRequest: () -> Unit,
     ) {
-        PriceWiseComposeTheme {
-            Surface {
-                HomeScreenContent(
-                    contentPadding = contentPadding,
-                    modifier = modifier,
-                    onSearchRequest = onSearchRequest,
-                    onPhotoSearchRequest = onPhotoSearchRequest,
-                )
-            }
+        Surface {
+            HomeScreenContent(
+                contentPadding = contentPadding,
+                modifier = modifier,
+                onSearchRequest = onSearchRequest,
+                onPhotoSearchRequest = onPhotoSearchRequest,
+            )
         }
     }
 }

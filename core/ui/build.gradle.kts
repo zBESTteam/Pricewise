@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -25,5 +26,7 @@ dependencies {
     implementation(libs.timber)
     api(libs.compose.material3)
     implementation(libs.compose.ui)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
     implementation("com.google.android.material:material:1.12.0")
 }

@@ -1,5 +1,6 @@
 package com.pricewise.feature.home.impl.presentation.ui.placeholders
 
+import LocalCustomColors
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -16,7 +17,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Shape
-import com.pricewise.feature.home.impl.presentation.ui.HomeColors
 import com.pricewise.feature.home.impl.presentation.ui.HomeLoadingDefaults
 
 @Composable
@@ -34,7 +34,7 @@ internal fun PlaceholderBox(
 
     Box(
         modifier = shapedModifier
-            .background(HomeColors.PlaceholderBase)
+            .background(LocalCustomColors.current.shimmer1)
             .then(
                 if (useShimmer) {
                     Modifier.shimmerLoading(shape = shape, delayMillis = delayMillis)
@@ -65,9 +65,9 @@ private fun Modifier.shimmerLoading(
     )
     val shimmerBrush = Brush.linearGradient(
         colors = listOf(
-            HomeColors.PlaceholderBase,
-            HomeColors.PlaceholderHighlight,
-            HomeColors.PlaceholderBase,
+            LocalCustomColors.current.shimmer1,
+            LocalCustomColors.current.shimmer2,
+            LocalCustomColors.current.shimmer1
         ),
         start = Offset(shimmerShift, 0f),
         end = Offset(

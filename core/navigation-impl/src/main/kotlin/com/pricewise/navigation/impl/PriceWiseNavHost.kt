@@ -5,15 +5,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.pricewise.core.ui.ThemeManager
 import com.pricewise.navigation.api.registerFeature
 
 @Composable
@@ -70,19 +73,30 @@ fun PriceWiseNavHost(
 private fun PlaceholderScreen(
     title: String,
     contentPadding: PaddingValues,
-    modifier: Modifier,
+    modifier: Modifier
 ) {
+    val context = LocalContext.current
     Box(
         modifier = modifier
             .fillMaxSize()
             .padding(contentPadding)
-            .background(Color(0xFFFEFEFE)),
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = title,
-            color = Color(0xFF232323),
+            color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.SemiBold,
         )
+        if (title == stringResource(R.string.nav_profile)) {
+            Button(
+                modifier = Modifier.align(Alignment.Center),
+                onClick = {
+                    ThemeManager.toggleTheme(context)
+                }
+            ) {
+
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.pricewise.feature.search.impl.presentation.ui
 
+import LocalCustomColors
 import Typography.Inter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,6 +38,8 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalConfiguration
@@ -76,7 +79,8 @@ fun SearchScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(contentPadding),
+            .padding(contentPadding)
+            .background(MaterialTheme.colorScheme.background),
     ) {
         val total = state.totalSources.coerceAtLeast(1)
         val checked = state.checkedSources.coerceAtLeast(0)
@@ -100,7 +104,7 @@ fun SearchScreen(
                 lineHeight = 26.sp,
                 fontFamily = Inter,
                 fontWeight = FontWeight(700),
-                color = colorResource(R.color.mid_dark),
+                color = LocalCustomColors.current.midDark,
             )
         )
         Text(
@@ -114,7 +118,7 @@ fun SearchScreen(
                 lineHeight = 21.sp,
                 fontFamily = Inter,
                 fontWeight = FontWeight(600),
-                color = colorResource(R.color.secondary_text_color),
+                color = LocalCustomColors.current.secondaryText,
 
                 letterSpacing = 0.3.sp,
             )
@@ -126,7 +130,7 @@ fun SearchScreen(
                 .padding(horizontal = 15.dp)
                 .padding(top = 7.dp)
                 .background(
-                    color = colorResource(R.color.button_color_search_screen),
+                    color = LocalCustomColors.current.buttonColor,
                     shape = RoundedCornerShape(5.dp)
                 )
         ) {
@@ -264,9 +268,7 @@ fun DefaultButton(
     var modifier = Modifier
         .height(41.dp)
         .background(
-            color = if (!isSelected) colorResource(R.color.disabled_filter_button_color) else colorResource(
-                R.color.mid_dark
-            ),
+            color = if (!isSelected) LocalCustomColors.current.disabledFilterButtonColor else LocalCustomColors.current.midDark,
             shape = RoundedCornerShape(size = 14.dp)
         )
         .clickable { onClick() }
@@ -279,7 +281,7 @@ fun DefaultButton(
             Icon(
                 modifier = Modifier.padding(all = 10.dp),
                 painter = painterResource(icon),
-                tint = colorResource(R.color.icons_color),
+                tint = LocalCustomColors.current.iconsColor,
                 contentDescription = null
             )
         if (text != null)
@@ -291,9 +293,7 @@ fun DefaultButton(
                     lineHeight = 21.sp,
                     fontFamily = Inter,
                     fontWeight = FontWeight(600),
-                    color = if (!isSelected) colorResource(R.color.disabled_filter_button_text_color) else colorResource(
-                        R.color.white
-                    ),
+                    color = if (!isSelected) LocalCustomColors.current.disabledFilterButtonTextColor else MaterialTheme.colorScheme.onPrimary,
                     letterSpacing = 0.3.sp,
                 )
             )
