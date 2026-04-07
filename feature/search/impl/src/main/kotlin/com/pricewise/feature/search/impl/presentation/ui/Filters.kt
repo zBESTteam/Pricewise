@@ -28,22 +28,19 @@ import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -62,13 +59,11 @@ import com.pricewise.core.ui.R
 import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel
 import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToLong
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchViewModel) {
+fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val state = viewModel.uiState.collectAsStateWithLifecycle()
     val minPrice =
         state.value.items.minByOrNull { it.price }?.price?.toFloat() ?: 0f
@@ -158,6 +153,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         modifier = Modifier
                             .weight(1f)
                             .height(44.dp)
+                            .clip(shape = RoundedCornerShape(size = 14.dp))
                             .background(
                                 brush = Brush.horizontalGradient(
                                     colors = if (isProductChosen) listOf(
@@ -167,8 +163,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                                         LocalCustomColors.current.disabledFilterButtonColor,
                                         LocalCustomColors.current.disabledFilterButtonColor
                                     )
-                                ),
-                                shape = RoundedCornerShape(14.dp)
+                                )
                             )
                             .clickable { isProductChosen = true },
                         contentAlignment = Alignment.Center
@@ -192,6 +187,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         modifier = Modifier
                             .weight(1f)
                             .height(44.dp)
+                            .clip(shape = RoundedCornerShape(size = 14.dp))
                             .background(
                                 brush = Brush.horizontalGradient(
                                     colors = if (!isProductChosen) listOf(
@@ -201,8 +197,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                                         LocalCustomColors.current.disabledFilterButtonColor,
                                         LocalCustomColors.current.disabledFilterButtonColor
                                     )
-                                ),
-                                shape = RoundedCornerShape(14.dp)
+                                )
                             )
                             .clickable { isProductChosen = false },
                         contentAlignment = Alignment.Center,
@@ -246,7 +241,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                             isSelected = currentFiltersState.deliveryChosen == Delivery.TODAY,
                             onClick = {
                                 currentFiltersState =
-                                    currentFiltersState.copy(deliveryChosen = if (currentFiltersState.deliveryChosen == Delivery.TODAY) Delivery.NONE else Delivery.TODAY)
+                                    currentFiltersState.copy(deliveryChosen = if (currentFiltersState.deliveryChosen == Delivery.TODAY) Delivery.ANY else Delivery.TODAY)
                             }
                         )
                         FilterDefaultButton(
@@ -254,7 +249,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                             isSelected = currentFiltersState.deliveryChosen == Delivery.TODAY_OR_TOMORROW,
                             onClick = {
                                 currentFiltersState =
-                                    currentFiltersState.copy(deliveryChosen = if (currentFiltersState.deliveryChosen == Delivery.TODAY_OR_TOMORROW) Delivery.NONE else Delivery.TODAY_OR_TOMORROW)
+                                    currentFiltersState.copy(deliveryChosen = if (currentFiltersState.deliveryChosen == Delivery.TODAY_OR_TOMORROW) Delivery.ANY else Delivery.TODAY_OR_TOMORROW)
                             }
                         )
                         FilterDefaultButton(
@@ -262,7 +257,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                             isSelected = currentFiltersState.deliveryChosen == Delivery.WEEK,
                             onClick = {
                                 currentFiltersState =
-                                    currentFiltersState.copy(deliveryChosen = if (currentFiltersState.deliveryChosen == Delivery.WEEK) Delivery.NONE else Delivery.WEEK)
+                                    currentFiltersState.copy(deliveryChosen = if (currentFiltersState.deliveryChosen == Delivery.WEEK) Delivery.ANY else Delivery.WEEK)
                             }
                         )
                         FilterDefaultButton(
@@ -270,7 +265,7 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                             isSelected = currentFiltersState.deliveryChosen == Delivery.TWO_WEEKS,
                             onClick = {
                                 currentFiltersState =
-                                    currentFiltersState.copy(deliveryChosen = if (currentFiltersState.deliveryChosen == Delivery.TWO_WEEKS) Delivery.NONE else Delivery.TWO_WEEKS)
+                                    currentFiltersState.copy(deliveryChosen = if (currentFiltersState.deliveryChosen == Delivery.TWO_WEEKS) Delivery.ANY else Delivery.TWO_WEEKS)
                             }
                         )
                     }
@@ -351,9 +346,9 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(44.dp)
+                            .clip(shape = RoundedCornerShape(size = 14.dp))
                             .background(
-                                color = LocalCustomColors.current.midDark,
-                                shape = RoundedCornerShape(size = 14.dp)
+                                color = LocalCustomColors.current.midDark
                             )
                             .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
                             .clickable {
@@ -572,9 +567,9 @@ fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchV
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(44.dp)
+                            .clip(shape = RoundedCornerShape(size = 14.dp))
                             .background(
-                                color = LocalCustomColors.current.midDark,
-                                shape = RoundedCornerShape(size = 14.dp)
+                                color = LocalCustomColors.current.midDark
                             )
                             .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
                             .clickable {
@@ -609,9 +604,9 @@ fun FilterDefaultButton(
     Box(
         modifier = Modifier
             .height(41.dp)
+            .clip(shape = RoundedCornerShape(size = 14.dp))
             .background(
-                color = if (!isSelected) LocalCustomColors.current.disabledFilterButtonColor else LocalCustomColors.current.midDark,
-                shape = RoundedCornerShape(size = 14.dp)
+                color = if (!isSelected) LocalCustomColors.current.disabledFilterButtonColor else LocalCustomColors.current.midDark
             )
             .clickable { onClick() },
         contentAlignment = Alignment.Center
@@ -642,9 +637,9 @@ fun FilterSwitch(
         modifier = modifier
             .fillMaxWidth()
             .height(44.dp)
+            .clip(shape = RoundedCornerShape(size = 14.dp))
             .background(
-                color = LocalCustomColors.current.disabledFilterButtonColor,
-                shape = RoundedCornerShape(size = 14.dp)
+                color = LocalCustomColors.current.disabledFilterButtonColor
             )
             .padding(horizontal = 14.dp)
             .clickable { onCheckedChange(!isChecked) },

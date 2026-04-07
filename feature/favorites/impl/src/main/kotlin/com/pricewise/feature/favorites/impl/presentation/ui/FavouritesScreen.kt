@@ -97,8 +97,7 @@ fun FavoritesScreen(
                 )
                 showFilterSheet = false
             },
-            viewModel = searchFilterViewModel,
-            sheetState = sheetState
+            viewModel = searchFilterViewModel
         )
     }
 

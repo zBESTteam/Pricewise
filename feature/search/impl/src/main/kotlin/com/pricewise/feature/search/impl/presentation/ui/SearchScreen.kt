@@ -39,9 +39,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -61,16 +61,25 @@ fun SearchScreen(
     val viewModel: SearchViewModel = hiltViewModel()
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
+    var filtersSelected by rememberSaveable {
+        mutableStateOf(
+            viewModel.filtersState.value != FiltersState(
+                priceFrom = 0L,
+                priceTo = 0L
+            )
+        )
+    }
+    var onlyDeliverySelected by rememberSaveable { mutableStateOf(false) }
+    var onlyNewSelected by rememberSaveable { mutableStateOf(false) }
+    var sortSelected by rememberSaveable { mutableStateOf(false) }
     var showFilters by rememberSaveable { mutableStateOf(false) }
+
     val closeFilters = { showFilters = false }
 
     if (showFilters) {
         Filters(
             closeFilters = closeFilters,
-            viewModel = viewModel,
-            sheetState = sheetState
+            viewModel = viewModel
         )
     }
 
@@ -168,16 +177,33 @@ fun SearchScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             item {
-                DefaultButton(icon = R.drawable.ic_sort, isSelected = false, onClick = {})
+                DefaultButton(icon = R.drawable.ic_sort, isSelected = sortSelected, onClick = {})
             }
             item {
-                DefaultButton(icon = R.drawable.ic_filter, isSelected = false, onClick = { showFilters = true })
+                DefaultButton(
+                    icon = R.drawable.ic_filter,
+                    isSelected = filtersSelected,
+                    onClick = { showFilters = true })
             }
             item {
-                DefaultButton(text = stringResource(com.pricewise.feature.search.impl.R.string.only_new), isSelected = false, onClick = {})
+                DefaultButton(
+                    text = stringResource(com.pricewise.feature.search.impl.R.string.only_new),
+                    isSelected = onlyNewSelected,
+                    onClick = {
+                        if (!onlyNewSelected) viewModel.setOnlyNew(true)
+                        onlyNewSelected = !onlyNewSelected
+                    })
             }
             item {
-                DefaultButton(text = stringResource(com.pricewise.feature.search.impl.R.string.only_with_delievery), isSelected = false, onClick = {})
+                DefaultButton(
+                    text = stringResource(com.pricewise.feature.search.impl.R.string.only_with_delievery),
+                    isSelected = onlyDeliverySelected,
+                    onClick = {
+                        if (viewModel.filtersState.value.deliveryChosen != Delivery.ANY && !onlyDeliverySelected) viewModel.setDeliveryChosen(
+                            Delivery.EXIST
+                        )
+                        onlyDeliverySelected = !onlyDeliverySelected
+                    })
             }
         }
         if (state.items.isNotEmpty()) {
@@ -269,9 +295,9 @@ fun DefaultButton(
 ) {
     var modifier = Modifier
         .height(41.dp)
+        .clip(shape = RoundedCornerShape(size = 14.dp))
         .background(
-            color = if (!isSelected) LocalCustomColors.current.disabledFilterButtonColor else LocalCustomColors.current.midDark,
-            shape = RoundedCornerShape(size = 14.dp)
+            color = if (!isSelected) LocalCustomColors.current.disabledFilterButtonColor else LocalCustomColors.current.midDark
         )
         .clickable { onClick() }
     if (icon != null && text == null) modifier = modifier.width(41.dp)
