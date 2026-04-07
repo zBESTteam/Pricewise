@@ -89,11 +89,11 @@ fun FavoritesScreen(
         }
         Filters(
             closeFilters = {
-                viewModel.setOnlyMarketplaces(searchFilterViewModel.onlyMarketplaces.value)
-                viewModel.setOnlyOfflineShops(searchFilterViewModel.onlyOfflineShops.value)
+                viewModel.setOnlyMarketplaces(searchFilterViewModel.filtersState.value.onlyMarketplaces)
+                viewModel.setOnlyOfflineShops(searchFilterViewModel.filtersState.value.onlyOfflineShops)
                 viewModel.setPriceRange(
-                    from = searchFilterViewModel.priceFrom.value,
-                    to = searchFilterViewModel.priceTo.value,
+                    from = searchFilterViewModel.filtersState.value.priceFrom,
+                    to = searchFilterViewModel.filtersState.value.priceTo,
                 )
                 showFilterSheet = false
             },
