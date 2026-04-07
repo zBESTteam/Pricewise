@@ -24,9 +24,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -61,7 +63,7 @@ import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
+fun Filters(sheetState: SheetState, closeFilters: () -> Unit, viewModel: SearchViewModel) {
     var isProductChosen by rememberSaveable { mutableStateOf(true) }
     var deliveryChosen by rememberSaveable { mutableIntStateOf(0) }
     var onlyOriginals by rememberSaveable { mutableStateOf(false) }
@@ -89,11 +91,12 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
     }
     val customModifier: Modifier = Modifier.offset(y = (-7).dp)
     ModalBottomSheet(
-        sheetState = sheetState, onDismissRequest = { closeFilters() }, dragHandle =
+        sheetState = sheetState,
+        onDismissRequest = { closeFilters() }, dragHandle =
             {
                 BottomSheetDefaults.DragHandle(
                     modifier = customModifier,
-                    color = colorResource(R.color.handle_color),
+                    color = LocalCustomColors.current.handleColor,
                     width = 63.dp,
                     height = 4.dp
                 )
@@ -352,7 +355,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             fontWeight = FontWeight(600),
                             color = LocalCustomColors.current.midDark,
                             letterSpacing = 0.3.sp,
-                        )
+                        ),
                     )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(
@@ -385,7 +388,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                     Box(
                         modifier = Modifier
                             .width(345.dp)
-                            .height(14.dp)
+                            .height(13.9.dp)
                             .align(Alignment.CenterHorizontally)
                     ) {
                         val minPrice =

@@ -61,6 +61,7 @@ fun SearchScreen(
     val viewModel: SearchViewModel = hiltViewModel()
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var showFilters by rememberSaveable { mutableStateOf(false) }
     val closeFilters = { showFilters = false }
@@ -68,7 +69,8 @@ fun SearchScreen(
     if (showFilters) {
         Filters(
             closeFilters = closeFilters,
-            viewModel = viewModel
+            viewModel = viewModel,
+            sheetState = sheetState
         )
     }
 

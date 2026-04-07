@@ -47,7 +47,7 @@ fun ProductCard(product: Product, addToFavourites: (Product) -> Unit) {
 }
 
 private fun Long.toRubles(): String {
-    return "%,d в‚Ѕ".format(this).replace(',', ' ')
+    return "%,d ₽".format(this).replace(',', ' ')
 }
 
 @Composable
@@ -57,7 +57,7 @@ fun ProductCardShimmer() {
             .height(113.dp)
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = LocalCustomColors.current.cardBackgroundColor,
                 shape = RoundedCornerShape(14.dp)
             )
             .shimmer(),
