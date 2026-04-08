@@ -36,7 +36,6 @@ import com.pricewise.feature.search.impl.presentation.components.ProductCard
 import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
@@ -51,7 +50,6 @@ import com.pricewise.core.ui.R
 import com.pricewise.feature.search.impl.presentation.components.ProductCardShimmer
 import components.SearchBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     contentPadding: PaddingValues,
@@ -190,7 +188,10 @@ fun SearchScreen(
                     text = stringResource(com.pricewise.feature.search.impl.R.string.only_new),
                     isSelected = onlyNewSelected,
                     onClick = {
-                        if (!onlyNewSelected) viewModel.setOnlyNew(true)
+                        if (!onlyNewSelected) {
+                            viewModel.setOnlyNew(true)
+                            viewModel.performSearch(viewModel.uiState.value.query)
+                        }
                         onlyNewSelected = !onlyNewSelected
                     })
             }
@@ -199,14 +200,17 @@ fun SearchScreen(
                     text = stringResource(com.pricewise.feature.search.impl.R.string.only_with_delievery),
                     isSelected = onlyDeliverySelected,
                     onClick = {
-                        if (viewModel.filtersState.value.deliveryChosen != Delivery.ANY && !onlyDeliverySelected) viewModel.setDeliveryChosen(
-                            Delivery.EXIST
-                        )
+                        if (viewModel.filtersState.value.deliveryChosen == Delivery.ANY && !onlyDeliverySelected) {
+                            viewModel.setDeliveryChosen(
+                                Delivery.EXIST
+                            )
+                            viewModel.performSearch(viewModel.uiState.value.query)
+                        }
                         onlyDeliverySelected = !onlyDeliverySelected
                     })
             }
         }
-        if (state.items.isNotEmpty()) {
+        if (state.items.isNotEmpty() && !state.isLoading) {
             LazyColumn(
                 modifier = Modifier
                     .padding(horizontal = 15.dp)
@@ -227,7 +231,7 @@ fun SearchScreen(
                 }
             }
         }
-        if (state.items.isEmpty()) {
+        if (state.isLoading) {
             LazyColumn(
                 modifier = Modifier
                     .padding(horizontal = 15.dp)
