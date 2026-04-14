@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.pricewise.core.ui.ThemeManager
+import com.pricewise.feature.profile.impl.ProfileScreenRoot
 import com.pricewise.navigation.api.registerFeature
 
 @Composable
@@ -60,11 +61,7 @@ fun PriceWiseNavHost(
             modifier = Modifier,
         )
         composable(PriceWiseTopLevelDestination.Profile.route) {
-            PlaceholderScreen(
-                title = stringResource(R.string.nav_profile),
-                contentPadding = contentPadding,
-                modifier = Modifier,
-            )
+            ProfileScreenRoot(navController = appState.navController)
         }
     }
 }
