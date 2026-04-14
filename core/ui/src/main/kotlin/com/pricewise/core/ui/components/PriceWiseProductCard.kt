@@ -81,7 +81,7 @@ fun PriceWiseProductCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
+                .background(LocalCustomColors.current.cardBackgroundColor)
                 .padding(
                     horizontal = ProductCardTokens.ContentPadding,
                     vertical = ProductCardTokens.ContentPadding,

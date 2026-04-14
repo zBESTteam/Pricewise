@@ -2,11 +2,15 @@ package com.pricewise.feature.search.impl.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.util.copy
 import com.pricewise.feature.favorites.api.FavoriteMutationRequest
 import com.pricewise.feature.favorites.api.FavoritesFeatureApi
 import com.pricewise.feature.search.api.SearchFeatureApi
 import com.pricewise.feature.search.api.domain.model.Product
+import com.pricewise.feature.search.impl.presentation.ui.Delivery
+import com.pricewise.feature.search.impl.presentation.ui.FiltersState
 import com.pricewise.feature.search.impl.presentation.ui.SearchUiState
+import com.pricewise.feature.search.impl.presentation.ui.Sort
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -46,29 +50,19 @@ class SearchViewModel @Inject constructor(
     private val _allItems = MutableStateFlow(listOf<Product>())
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
-
     private val _isProductChosen = MutableStateFlow(true)
-    private val _deliveryChosen = MutableStateFlow(0)
-    private val _onlyOriginals = MutableStateFlow(false)
-    private val _onlyNew = MutableStateFlow(false)
-    private val _onlyUsed = MutableStateFlow(false)
-    private val _onlyMarketplaces = MutableStateFlow(false)
-    private val _onlyOfflineShops = MutableStateFlow(false)
-    private val _priceFrom = MutableStateFlow(0L)
-    private val _priceTo = MutableStateFlow(0L)
-    private val _popularDiapasonChosen = MutableStateFlow(0)
-    private val _canPayLater = MutableStateFlow(false)
     val isProductChosen: StateFlow<Boolean> = _isProductChosen.asStateFlow()
-    val deliveryChosen: StateFlow<Int> = _deliveryChosen.asStateFlow()
-    val onlyOriginals: StateFlow<Boolean> = _onlyOriginals.asStateFlow()
-    val onlyNew: StateFlow<Boolean> = _onlyNew.asStateFlow()
-    val onlyUsed: StateFlow<Boolean> = _onlyUsed.asStateFlow()
-    val onlyMarketplaces: StateFlow<Boolean> = _onlyMarketplaces.asStateFlow()
-    val onlyOfflineShops: StateFlow<Boolean> = _onlyOfflineShops.asStateFlow()
-    val priceFrom: StateFlow<Long> = _priceFrom.asStateFlow()
-    val priceTo: StateFlow<Long> = _priceTo.asStateFlow()
-    val popularDiapasonChosen: StateFlow<Int> = _popularDiapasonChosen.asStateFlow()
-    val canPayLater: StateFlow<Boolean> = _canPayLater.asStateFlow()
+    private val _filtersState = MutableStateFlow(
+        FiltersState(
+            priceFrom = 0L,
+            priceTo = 0L
+        )
+    )
+    val filtersState: StateFlow<FiltersState> = _filtersState.asStateFlow()
+    private var canRewriteFilters = true
+    private val _chosenSort = MutableStateFlow(Sort.DEFAULT)
+    val chosenSort: StateFlow<Sort> = _chosenSort.asStateFlow()
+
     val sources = listOf(
         "market.yandex.ru",
         "mvideo.ru",
@@ -81,57 +75,55 @@ class SearchViewModel @Inject constructor(
     )
 
     fun setIsProductChosen(value: Boolean) {
-        _isProductChosen.value = value
+        _filtersState.value = _filtersState.value.copy(isProductChosen = value)
     }
 
-    fun setDeliveryChosen(value: Int) {
-        _deliveryChosen.value = value
+    fun setDeliveryChosen(value: Delivery) {
+        _filtersState.value = _filtersState.value.copy(deliveryChosen = value)
     }
 
     fun setOnlyOriginals(value: Boolean) {
-        _onlyOriginals.value = value
+        _filtersState.value = _filtersState.value.copy(onlyOriginals = value)
     }
 
     fun setOnlyNew(value: Boolean) {
-        _onlyNew.value = value
+        _filtersState.value = _filtersState.value.copy(onlyNew = value)
     }
 
     fun setOnlyUsed(value: Boolean) {
-        _onlyUsed.value = value
+        _filtersState.value = _filtersState.value.copy(onlyUsed = value)
     }
 
     fun setOnlyMarketplaces(value: Boolean) {
-        _onlyMarketplaces.value = value
+        _filtersState.value = _filtersState.value.copy(onlyMarketplaces = value)
     }
 
     fun setOnlyOfflineShops(value: Boolean) {
-        _onlyOfflineShops.value = value
+        _filtersState.value = _filtersState.value.copy(onlyOfflineShops = value)
     }
 
     fun setPriceFrom(value: Long) {
-        _priceFrom.value = value
+        _filtersState.value = _filtersState.value.copy(priceFrom = value)
     }
 
     fun setPriceTo(value: Long) {
-        _priceTo.value = value
+        _filtersState.value = _filtersState.value.copy(priceTo = value)
     }
 
     fun setPopularDiapasonChosen(value: Int) {
-        _popularDiapasonChosen.value = value
+        _filtersState.value = _filtersState.value.copy(popularDiapasonChosen = value)
     }
 
     fun setCanPayLater(value: Boolean) {
-        _canPayLater.value = value
+        _filtersState.value = _filtersState.value.copy(canPayLater = value)
     }
 
     fun resetAllFilters() {
         _isProductChosen.value = true
-        _deliveryChosen.value = 0
-        _onlyOriginals.value = false
-        _onlyNew.value = false
-        _onlyUsed.value = false
-        _onlyMarketplaces.value = false
-        _onlyOfflineShops.value = false
+        _filtersState.value = FiltersState(
+            priceFrom = 0L,
+            priceTo = 0L
+        )
     }
 
     fun onProductFavoriteClick(productId: String) {
@@ -174,7 +166,11 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private fun updateProductFavoriteState(productId: String, source: String?, isFavorite: Boolean) {
+    private fun updateProductFavoriteState(
+        productId: String,
+        source: String?,
+        isFavorite: Boolean
+    ) {
         _allItems.update { items ->
             items.map { product ->
                 if (product.id == productId && (source == null || product.source == source)) {
@@ -229,13 +225,20 @@ class SearchViewModel @Inject constructor(
     }
 
     fun submitSearch() {
+        canRewriteFilters = true
         searchJob?.cancel()
         searchAttempts = 0
         viewModelScope.launch(Dispatchers.IO) {
             searchJob = viewModelScope.launch {
+                setChosenSort(Sort.DEFAULT)
                 resetAllFilters()
                 performSearch(_uiState.value.query.trim())
             }
+        }
+        _uiState.update { state ->
+            state.copy(
+                checkedSources = 0
+            )
         }
     }
 
@@ -251,16 +254,16 @@ class SearchViewModel @Inject constructor(
                         perSource = true,
                         partial = true,
                         sources = sources,
-                        sort = "",
-                        priceMin = priceFrom.value,
-                        priceMax = priceTo.value,
-                        delivery = deliveryChosen.value.toString(),
-                        onlyOriginal = onlyOriginals.value,
-                        onlyNew = onlyNew.value,
-                        onlyUsed = onlyUsed.value,
-                        marketplaceOnly = onlyMarketplaces.value,
-                        offlineOnly = onlyOfflineShops.value,
-                        playLaterOnly = canPayLater.value,
+                        sort = _chosenSort.value.text,
+                        priceMin = filtersState.value.priceFrom,
+                        priceMax = filtersState.value.priceTo,
+                        delivery = filtersState.value.deliveryChosen.text,
+                        onlyOriginal = filtersState.value.onlyOriginals,
+                        onlyNew = filtersState.value.onlyNew,
+                        onlyUsed = filtersState.value.onlyUsed,
+                        marketplaceOnly = filtersState.value.onlyMarketplaces,
+                        offlineOnly = filtersState.value.onlyOfflineShops,
+                        playLaterOnly = filtersState.value.canPayLater,
                     )
                 }
                 _allItems.value = result.items
@@ -284,10 +287,15 @@ class SearchViewModel @Inject constructor(
                         checkedSources = checked,
                         totalSources = resolvedTotal.value,
                         pendingSources = result.pendingSources,
-                    )
+                        minPrice = if (canRewriteFilters) result.items.minByOrNull { it.price }?.price ?: 0 else state.minPrice,
+                        maxPrice = if (canRewriteFilters) result.items.maxByOrNull { it.price }?.price ?: 0 else state.maxPrice
+                        )
                 }
                 if (shouldSearchAgain) {
                     repeatSearch(query = query)
+                }
+                else {
+                    canRewriteFilters = false
                 }
             } catch (_: Exception) {
                 _uiState.update { state -> state.copy(isError = true) }
@@ -302,6 +310,10 @@ class SearchViewModel @Inject constructor(
             delay(SEARCH_INTERVAL_MS)
             performSearch(query)
         }
+    }
+
+    fun setChosenSort(newSort: Sort) {
+        _chosenSort.value = newSort
     }
 }
 
