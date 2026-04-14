@@ -57,6 +57,7 @@ data class PriceWiseProductCardModel(
     val id: String,
     val title: String,
     val price: String,
+    val deliveryText: String,
     val isFavorite: Boolean,
     val thumbnailUrl: String?,
     val marketplaceName: String,
@@ -125,6 +126,20 @@ fun PriceWiseProductCard(
                         color = LocalCustomColors.current.primaryText,
                     ),
                 )
+                if (product.deliveryText.isNotBlank()) {
+                    Text(
+                        text = product.deliveryText,
+                        style = TextStyle(
+                            fontFamily = Inter,
+                            fontWeight = FontWeight.W500,
+                            fontSize = 11.sp,
+                            lineHeight = 14.sp,
+                            color = SecondaryTextColor,
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
             FavoriteButton(
                 isFavorite = product.isFavorite,

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
@@ -27,6 +28,12 @@ fun PriceWiseAppNavigation(
         window = window,
         useLightStatusIcons = appState.shouldUseLightStatusIcons,
     )
+
+    val currentBackStackEntry = appState.currentBackStackEntry
+
+    SideEffect {
+        appState.rememberHomeRoute(currentBackStackEntry)
+    }
 
     val currentRoute = appState.currentDestination?.route
     val shouldShowBottomBar = currentRoute != null && currentRoute !in setOf(

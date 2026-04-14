@@ -25,9 +25,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -88,6 +90,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
         canPayLater = viewModel.canPayLater.value
     }
     val customModifier: Modifier = Modifier.offset(y = (-7).dp)
+    val sheetState = rememberModalBottomSheetState()
     ModalBottomSheet(
         sheetState = sheetState, onDismissRequest = { closeFilters() }, dragHandle =
             {

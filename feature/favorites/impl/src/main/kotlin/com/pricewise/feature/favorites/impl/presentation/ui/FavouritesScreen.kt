@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,16 +29,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pricewise.core.ui.components.FilterActionButton
@@ -95,107 +99,114 @@ fun FavoritesScreen(
         )
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(contentPadding),
+    ) {
         val orangeStart = colorResource(id = R.color.orange_gradient_start)
         val orangeEnd = colorResource(id = R.color.orange_gradient_end)
-
+        val density = LocalDensity.current
+        val statusBarHeight = with(density) {
+            WindowInsets.safeDrawing.getTop(this).toDp()
+        }
         val gradient = remember(orangeStart, orangeEnd) {
             Brush.linearGradient(
                 colors = listOf(orangeStart, orangeEnd),
                 start = Offset.Zero,
-                end = Offset(900f, 260f)
+                end = Offset(900f, 260f),
             )
         }
-
-        val heroShape = RoundedCornerShape(
-            bottomStart = 22.dp,
-            bottomEnd = 22.dp
-        )
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(30.dp)
-                .background(brush = gradient, shape = heroShape),
-            contentAlignment = Alignment.Center
-        ) {}
-
-        Text(
-            modifier = Modifier.padding(
-                start = 15.dp,
-                top = 15.dp,
-                bottom = 15.dp
-            ),
-            text = stringResource(R.string.favorites),
-            style = TextStyle(
-                fontSize = 20.sp,
-                lineHeight = 26.sp,
-                fontWeight = FontWeight(700),
-                color = colorResource(R.color.mid_dark),
-            )
+                .height(statusBarHeight)
+                .background(
+                    brush = gradient,
+                    shape = RoundedCornerShape(bottomStart = 26.dp, bottomEnd = 33.dp),
+                )
+                .align(Alignment.TopCenter),
         )
 
-        Row(modifier = Modifier.padding(horizontal = 15.dp)) {
-            FilterActionButton(
-                icon = com.pricewise.core.ui.R.drawable.ic_sort,
-                isSelected = false,
-                onClick = { showSortSheet = true },
+        Column(modifier = Modifier.fillMaxSize()) {
+            Text(
+                modifier = Modifier.padding(
+                    start = 15.dp,
+                    top = statusBarHeight + 16.dp,
+                    bottom = 15.dp
+                ),
+                text = stringResource(R.string.favorites),
+                style = TextStyle(
+                    fontSize = 24.sp,
+                    lineHeight = 31.sp,
+                    fontWeight = FontWeight(700),
+                    color = colorResource(R.color.mid_dark),
+                )
             )
 
-            FilterActionButton(
-                icon = com.pricewise.core.ui.R.drawable.ic_filter,
-                isSelected = uiState.onlyMarketplaces || uiState.onlyOfflineShops || uiState.priceFrom > 0 || uiState.priceTo > 0,
-                onClick = {
-                    showFilterSheet = true
-                },
-            )
+            Row(modifier = Modifier.padding(horizontal = 15.dp)) {
+                FilterActionButton(
+                    icon = com.pricewise.core.ui.R.drawable.ic_sort,
+                    isSelected = false,
+                    onClick = { showSortSheet = true },
+                )
 
-            FilterActionButton(
-                text = stringResource(R.string.sort_by_brand),
-                isSelected = uiState.sortOption == FavoritesSortOption.BRAND_ASC,
-                onClick = {
-                    viewModel.setSortOption(
-                        if (uiState.sortOption == FavoritesSortOption.BRAND_ASC) {
-                            FavoritesSortOption.NONE
-                        } else {
-                            FavoritesSortOption.BRAND_ASC
-                        },
-                    )
-                },
-            )
-        }
+                FilterActionButton(
+                    icon = com.pricewise.core.ui.R.drawable.ic_filter,
+                    isSelected = uiState.onlyMarketplaces || uiState.onlyOfflineShops || uiState.priceFrom > 0 || uiState.priceTo > 0,
+                    onClick = {
+                        showFilterSheet = true
+                    },
+                )
 
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            when {
-                uiState.isLoading -> {
-                    CircularProgressIndicator(color = orangeStart)
-                }
+                FilterActionButton(
+                    text = stringResource(R.string.sort_by_brand),
+                    isSelected = uiState.sortOption == FavoritesSortOption.BRAND_ASC,
+                    onClick = {
+                        viewModel.setSortOption(
+                            if (uiState.sortOption == FavoritesSortOption.BRAND_ASC) {
+                                FavoritesSortOption.NONE
+                            } else {
+                                FavoritesSortOption.BRAND_ASC
+                            },
+                        )
+                    },
+                )
+            }
 
-                uiState.error != null -> {
-                    Text(text = uiState.error ?: "Ошибка", color = Color.Red)
-                }
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                when {
+                    uiState.isLoading -> {
+                        CircularProgressIndicator(color = orangeStart)
+                    }
 
-                uiState.items.isEmpty() -> {
-                    Text(
-                        text = stringResource(R.string.favorites_list_is_empty),
-                        fontSize = 16.sp,
-                        color = Color.Gray
-                    )
-                }
+                    uiState.error != null -> {
+                        Text(text = uiState.error ?: "Ошибка", color = Color.Red)
+                    }
 
-                else -> {
-                    LazyColumn(
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        items(uiState.items) { product ->
-                            PriceWiseProductCard(
-                                product = product,
-                                onFavoriteClick = { viewModel.removeFavorite(product) },
-                                onClick = {},
-                                modifier = Modifier
-                            )
+                    uiState.items.isEmpty() -> {
+                        Text(
+                            text = stringResource(R.string.favorites_list_is_empty),
+                            fontSize = 16.sp,
+                            color = Color.Gray
+                        )
+                    }
+
+                    else -> {
+                        LazyColumn(
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            items(uiState.items) { product ->
+                                PriceWiseProductCard(
+                                    product = product,
+                                    onFavoriteClick = { viewModel.removeFavorite(product) },
+                                    onClick = {},
+                                    modifier = Modifier
+                                )
+                            }
                         }
                     }
                 }
@@ -266,4 +277,3 @@ private fun FilterOptionRow(
             .padding(horizontal = 12.dp, vertical = 10.dp),
     )
 }
-

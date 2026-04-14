@@ -167,6 +167,7 @@ private fun FavoriteItem.toPriceWiseProductCardModel(): PriceWiseProductCardMode
         id = this.externalId,
         title = this.title,
         price = rubleFormatter.format(this.price) + " ₽",
+        deliveryText = "",
         thumbnailUrl = this.thumbnailUrl,
         marketplaceName = this.source,
         marketplaceShortName = this.source,
@@ -181,4 +182,3 @@ private fun String.toPriceLong(): Long {
 
 private val rubleFormatter: NumberFormat =
     NumberFormat.getIntegerInstance(Locale.forLanguageTag("ru-RU"))
-

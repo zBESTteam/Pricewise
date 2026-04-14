@@ -18,10 +18,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +39,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +51,7 @@ import com.pricewise.core.ui.R
 fun SearchBar(
     value: String,
     onValueChange: (String) -> Unit,
-    onClear: () -> Unit = {},
+    onClear: () -> Unit,
     onSearch: (() -> Unit)? = null,
     onPhotoSearchClick: () -> Unit,
     modifier: Modifier,
@@ -60,6 +64,23 @@ fun SearchBar(
     val searchFieldContentDescription = stringResource(R.string.search_field_content_description)
     val focusManager = LocalFocusManager.current
     var isFocused by remember { mutableStateOf(false) }
+    var textFieldValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(
+            TextFieldValue(
+                text = value,
+                selection = TextRange(value.length),
+            ),
+        )
+    }
+
+    LaunchedEffect(value) {
+        if (value != textFieldValue.text) {
+            textFieldValue = TextFieldValue(
+                text = value,
+                selection = TextRange(value.length),
+            )
+        }
+    }
 
     Surface(
         modifier = modifier,
@@ -69,8 +90,11 @@ fun SearchBar(
         color = MaterialTheme.colorScheme.surface
     ) {
         BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
+            value = textFieldValue,
+            onValueChange = { newValue: TextFieldValue ->
+                textFieldValue = newValue
+                onValueChange(newValue.text)
+            },
             textStyle = TextStyle(
                 fontSize = 16.sp,
                 lineHeight = 24.sp,
@@ -114,7 +138,7 @@ fun SearchBar(
                     )
                     Spacer(modifier = Modifier.width(textSpacing))
                     Box(modifier = Modifier.weight(1f)) {
-                        if (value.isEmpty()) {
+                        if (textFieldValue.text.isEmpty()) {
                             Text(
                                 text = placeholder,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
@@ -131,9 +155,12 @@ fun SearchBar(
                         innerTextField()
                     }
                     Spacer(modifier = Modifier.width(textSpacing))
-                    if (value.isNotEmpty() && isFocused) {
+                    if (textFieldValue.text.isNotEmpty() && isFocused) {
                         IconButton(
-                            onClick = onClear,
+                            onClick = {
+                                textFieldValue = TextFieldValue()
+                                onClear()
+                            },
                             modifier = Modifier.size(extraIconSize)
                         ) {
                             Icon(
