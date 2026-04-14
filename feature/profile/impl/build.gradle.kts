@@ -1,27 +1,3 @@
-/* plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
-}
-
-android {
-    namespace = "com.pricewise.feature.profile.impl"
-}
-
-dependencies {
-    implementation(project(":feature:profile:api"))
-    implementation(project(":core:di"))
-    implementation(project(":core:navigation-api"))
-    implementation(project(":core:network"))
-    implementation(project(":core:auth"))
-
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    ksp(libs.room.compiler)
-} */
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.ksp)
