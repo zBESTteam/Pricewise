@@ -49,6 +49,7 @@ import com.pricewise.core.ui.components.PriceWiseSearchHeaderTokens
 import com.pricewise.core.ui.R
 import com.pricewise.feature.search.impl.presentation.components.ProductCardShimmer
 import components.SearchBar
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun SearchScreen(
@@ -59,25 +60,22 @@ fun SearchScreen(
     val viewModel: SearchViewModel = hiltViewModel()
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    var filtersSelected by rememberSaveable {
-        mutableStateOf(
-            viewModel.filtersState.value != FiltersState(
-                priceFrom = 0L,
-                priceTo = 0L
-            )
-        )
-    }
     var onlyDeliverySelected by rememberSaveable { mutableStateOf(false) }
     var onlyNewSelected by rememberSaveable { mutableStateOf(false) }
-    var sortSelected by rememberSaveable { mutableStateOf(false) }
     var showFilters by rememberSaveable { mutableStateOf(false) }
+    var showSorts by rememberSaveable { mutableStateOf(false) }
 
     val closeFilters = { showFilters = false }
+    val closeSorts = { showSorts = false }
 
     if (showFilters) {
         Filters(
-            closeFilters = closeFilters,
-            viewModel = viewModel
+            closeFilters = closeFilters
+        )
+    }
+    if (showSorts) {
+        Sorts(
+            closeSorts = closeSorts
         )
     }
 
@@ -175,12 +173,17 @@ fun SearchScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             item {
-                DefaultButton(icon = R.drawable.ic_sort, isSelected = sortSelected, onClick = {})
+                DefaultButton(icon = R.drawable.ic_sort, isSelected = viewModel.chosenSort.collectAsState().value != Sort.DEFAULT, onClick = {
+                    showSorts = true
+                })
             }
             item {
                 DefaultButton(
                     icon = R.drawable.ic_filter,
-                    isSelected = filtersSelected,
+                    isSelected = viewModel.filtersState.collectAsState().value != FiltersState(
+                        priceFrom = 0L,
+                        priceTo = 0L
+                    ),
                     onClick = { showFilters = true })
             }
             item {
@@ -188,11 +191,11 @@ fun SearchScreen(
                     text = stringResource(com.pricewise.feature.search.impl.R.string.only_new),
                     isSelected = onlyNewSelected,
                     onClick = {
-                        if (!onlyNewSelected) {
-                            viewModel.setOnlyNew(true)
-                            viewModel.performSearch(viewModel.uiState.value.query)
-                        }
-                        onlyNewSelected = !onlyNewSelected
+//                        if (!onlyNewSelected) {
+//                            viewModel.setOnlyNew(true)
+//                            viewModel.performSearch(viewModel.uiState.value.query)
+//                        }
+//                        onlyNewSelected = !onlyNewSelected
                     })
             }
             item {
@@ -200,13 +203,13 @@ fun SearchScreen(
                     text = stringResource(com.pricewise.feature.search.impl.R.string.only_with_delievery),
                     isSelected = onlyDeliverySelected,
                     onClick = {
-                        if (viewModel.filtersState.value.deliveryChosen == Delivery.ANY && !onlyDeliverySelected) {
-                            viewModel.setDeliveryChosen(
-                                Delivery.EXIST
-                            )
-                            viewModel.performSearch(viewModel.uiState.value.query)
-                        }
-                        onlyDeliverySelected = !onlyDeliverySelected
+//                        if (viewModel.filtersState.value.deliveryChosen == Delivery.ANY && !onlyDeliverySelected) {
+//                            viewModel.setDeliveryChosen(
+//                                Delivery.EXIST
+//                            )
+//                            viewModel.performSearch(viewModel.uiState.value.query)
+//                        }
+//                        onlyDeliverySelected = !onlyDeliverySelected
                     })
             }
         }
@@ -313,7 +316,7 @@ fun DefaultButton(
             Icon(
                 modifier = Modifier.padding(all = 10.dp),
                 painter = painterResource(icon),
-                tint = LocalCustomColors.current.iconsColor,
+                tint = if (!isSelected) LocalCustomColors.current.iconsColor else MaterialTheme.colorScheme.onPrimary,
                 contentDescription = null
             )
         if (text != null)

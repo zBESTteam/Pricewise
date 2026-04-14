@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
@@ -54,21 +55,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pricewise.core.ui.R
 import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel
 import kotlin.math.ceil
 import kotlin.math.floor
+import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
+fun Filters(
+    closeFilters: () -> Unit,
+    viewModel: SearchViewModel = hiltViewModel()
+) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val state = viewModel.uiState.collectAsStateWithLifecycle()
     val minPrice =
-        state.value.items.minByOrNull { it.price }?.price?.toFloat() ?: 0f
+        state.value.minPrice.toFloat()
     val maxPrice =
-        state.value.items.maxByOrNull { it.price }?.price?.toFloat() ?: 0f
+        state.value.maxPrice.toFloat()
     var currentFiltersState by remember {
         mutableStateOf(
             FiltersState(
@@ -524,12 +530,15 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             text = "${(minPrice + (maxPrice - minPrice) / 4).toRubles()} - ${(minPrice + (maxPrice - minPrice) * 0.75f).toRubles()}",
                             isSelected = currentFiltersState.popularDiapasonChosen == 2,
                             onClick = {
-                                currentFiltersState =
-                                    currentFiltersState.copy(popularDiapasonChosen = if (currentFiltersState.popularDiapasonChosen == 2) 0 else 2)
-                                currentFiltersState =
-                                    currentFiltersState.copy(priceFrom = (minPrice + (maxPrice - minPrice) / 4).toLong())
-                                currentFiltersState =
-                                    currentFiltersState.copy(priceTo = (minPrice + (maxPrice - minPrice) * 0.75f).toLong())
+                                val isSelected = currentFiltersState.popularDiapasonChosen == 2
+                                if (!isSelected) {
+                                    currentFiltersState =
+                                        currentFiltersState.copy(popularDiapasonChosen = if (currentFiltersState.popularDiapasonChosen == 2) 0 else 2)
+                                    currentFiltersState =
+                                        currentFiltersState.copy(priceFrom = (minPrice + (maxPrice - minPrice) / 4).toLong())
+                                    currentFiltersState =
+                                        currentFiltersState.copy(priceTo = (minPrice + (maxPrice - minPrice) * 0.75f).toLong())
+                                }
                             })
                     }
                     FilterDefaultButton(
@@ -641,8 +650,8 @@ fun FilterSwitch(
             .background(
                 color = LocalCustomColors.current.disabledFilterButtonColor
             )
-            .padding(horizontal = 14.dp)
-            .clickable { onCheckedChange(!isChecked) },
+            .clickable { onCheckedChange(!isChecked) }
+            .padding(horizontal = 14.dp),
         contentAlignment = Alignment.CenterStart
     ) {
         Row(

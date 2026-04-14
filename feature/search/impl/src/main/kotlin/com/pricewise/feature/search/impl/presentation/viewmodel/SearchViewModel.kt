@@ -2,6 +2,7 @@ package com.pricewise.feature.search.impl.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.util.copy
 import com.pricewise.feature.favorites.api.FavoriteMutationRequest
 import com.pricewise.feature.favorites.api.FavoritesFeatureApi
 import com.pricewise.feature.search.api.SearchFeatureApi
@@ -9,6 +10,7 @@ import com.pricewise.feature.search.api.domain.model.Product
 import com.pricewise.feature.search.impl.presentation.ui.Delivery
 import com.pricewise.feature.search.impl.presentation.ui.FiltersState
 import com.pricewise.feature.search.impl.presentation.ui.SearchUiState
+import com.pricewise.feature.search.impl.presentation.ui.Sort
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -57,6 +59,9 @@ class SearchViewModel @Inject constructor(
         )
     )
     val filtersState: StateFlow<FiltersState> = _filtersState.asStateFlow()
+    private var canRewriteFilters = true
+    private val _chosenSort = MutableStateFlow(Sort.DEFAULT)
+    val chosenSort: StateFlow<Sort> = _chosenSort.asStateFlow()
 
     val sources = listOf(
         "market.yandex.ru",
@@ -220,13 +225,20 @@ class SearchViewModel @Inject constructor(
     }
 
     fun submitSearch() {
+        canRewriteFilters = true
         searchJob?.cancel()
         searchAttempts = 0
         viewModelScope.launch(Dispatchers.IO) {
             searchJob = viewModelScope.launch {
+                setChosenSort(Sort.DEFAULT)
                 resetAllFilters()
                 performSearch(_uiState.value.query.trim())
             }
+        }
+        _uiState.update { state ->
+            state.copy(
+                checkedSources = 0
+            )
         }
     }
 
@@ -242,7 +254,7 @@ class SearchViewModel @Inject constructor(
                         perSource = true,
                         partial = true,
                         sources = sources,
-                        sort = "",
+                        sort = _chosenSort.value.text,
                         priceMin = filtersState.value.priceFrom,
                         priceMax = filtersState.value.priceTo,
                         delivery = filtersState.value.deliveryChosen.text,
@@ -275,10 +287,15 @@ class SearchViewModel @Inject constructor(
                         checkedSources = checked,
                         totalSources = resolvedTotal.value,
                         pendingSources = result.pendingSources,
-                    )
+                        minPrice = if (canRewriteFilters) result.items.minByOrNull { it.price }?.price ?: 0 else state.minPrice,
+                        maxPrice = if (canRewriteFilters) result.items.maxByOrNull { it.price }?.price ?: 0 else state.maxPrice
+                        )
                 }
                 if (shouldSearchAgain) {
                     repeatSearch(query = query)
+                }
+                else {
+                    canRewriteFilters = false
                 }
             } catch (_: Exception) {
                 _uiState.update { state -> state.copy(isError = true) }
@@ -293,6 +310,10 @@ class SearchViewModel @Inject constructor(
             delay(SEARCH_INTERVAL_MS)
             performSearch(query)
         }
+    }
+
+    fun setChosenSort(newSort: Sort) {
+        _chosenSort.value = newSort
     }
 }
 
