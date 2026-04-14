@@ -18,6 +18,7 @@ internal fun ProductCard(
             id = product.id,
             title = product.title,
             price = product.price,
+            deliveryText = "",
             isFavorite = product.isFavorite,
             thumbnailUrl = product.thumbnailUrl,
             marketplaceName = product.marketplace.name,

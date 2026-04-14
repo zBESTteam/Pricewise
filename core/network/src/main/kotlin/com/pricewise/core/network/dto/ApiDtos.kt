@@ -61,6 +61,12 @@ data class ProductDto(
     val logoUrl: String?,
     @param:Json(name = "merchant_id")
     val merchantId: String?,
+    @param:Json(name = "delivery_text")
+    val deliveryText: String?,
+    @param:Json(name = "delivery_days_min")
+    val deliveryDaysMin: Int?,
+    @param:Json(name = "delivery_days_max")
+    val deliveryDaysMax: Int?,
     @param:Json(name = "is_favorite")
     val isFavorite: Boolean?,
 )

@@ -218,6 +218,7 @@ private fun HeaderSection(
         SearchBar(
             value = query,
             onValueChange = onQueryChange,
+            onClear = { onQueryChange("") },
             onSearch = { onSearch(query) },
             onPhotoSearchClick = onPhotoSearchClick,
             modifier = Modifier
