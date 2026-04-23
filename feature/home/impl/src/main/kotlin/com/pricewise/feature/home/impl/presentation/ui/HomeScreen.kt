@@ -166,7 +166,7 @@ fun HomeScreenContent(
                     }
                     itemsIndexed(
                         items = loadedState.products,
-                        key = { _, product -> product.id },
+                        key = { _, product -> "${product.id}|${product.source}" },
                         contentType = { _, _ -> "product" },
                     ) { index, product ->
                         ProductCardListItem(

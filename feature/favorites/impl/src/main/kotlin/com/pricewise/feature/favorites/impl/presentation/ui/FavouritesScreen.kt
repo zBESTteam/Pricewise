@@ -22,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,8 +46,6 @@ import com.pricewise.core.ui.components.PriceWiseProductCard
 import com.pricewise.feature.favorites.impl.R
 import com.pricewise.feature.favorites.impl.presentation.viewmodel.FavoritesSortOption
 import com.pricewise.feature.favorites.impl.presentation.viewmodel.FavouritesViewModel
-import com.pricewise.feature.search.impl.presentation.ui.Filters
-import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,30 +69,18 @@ fun FavoritesScreen(
     }
 
     if (showFilterSheet) {
-        val searchFilterViewModel: SearchViewModel = hiltViewModel()
-        LaunchedEffect(
-            uiState.onlyMarketplaces,
-            uiState.onlyOfflineShops,
-            uiState.priceFrom,
-            uiState.priceTo,
-        ) {
-            searchFilterViewModel.setIsProductChosen(true)
-            searchFilterViewModel.setOnlyMarketplaces(uiState.onlyMarketplaces)
-            searchFilterViewModel.setOnlyOfflineShops(uiState.onlyOfflineShops)
-            searchFilterViewModel.setPriceFrom(uiState.priceFrom)
-            searchFilterViewModel.setPriceTo(uiState.priceTo)
-        }
-        Filters(
-            closeFilters = {
-                viewModel.setOnlyMarketplaces(searchFilterViewModel.onlyMarketplaces.value)
-                viewModel.setOnlyOfflineShops(searchFilterViewModel.onlyOfflineShops.value)
-                viewModel.setPriceRange(
-                    from = searchFilterViewModel.priceFrom.value,
-                    to = searchFilterViewModel.priceTo.value,
-                )
+        FavoritesFilterSheet(
+            onlyMarketplaces = uiState.onlyMarketplaces,
+            onlyOfflineShops = uiState.onlyOfflineShops,
+            priceFrom = uiState.priceFrom,
+            priceTo = uiState.priceTo,
+            onApply = { marketplaces, offlineShops, from, to ->
+                viewModel.setOnlyMarketplaces(marketplaces)
+                viewModel.setOnlyOfflineShops(offlineShops)
+                viewModel.setPriceRange(from = from, to = to)
                 showFilterSheet = false
             },
-            viewModel = searchFilterViewModel,
+            onDismiss = { showFilterSheet = false },
         )
     }
 
@@ -276,4 +261,81 @@ private fun FilterOptionRow(
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 10.dp),
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FavoritesFilterSheet(
+    onlyMarketplaces: Boolean,
+    onlyOfflineShops: Boolean,
+    priceFrom: Long,
+    priceTo: Long,
+    onApply: (marketplaces: Boolean, offlineShops: Boolean, from: Long, to: Long) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var localMarketplaces by rememberSaveable { mutableStateOf(onlyMarketplaces) }
+    var localOfflineShops by rememberSaveable { mutableStateOf(onlyOfflineShops) }
+    var localPriceFrom by rememberSaveable { mutableStateOf(priceFrom.toString()) }
+    var localPriceTo by rememberSaveable { mutableStateOf(priceTo.toString()) }
+
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.favorites_filter_title),
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight(700),
+                    color = colorResource(R.color.mid_dark),
+                ),
+            )
+
+            FilterOptionRow(
+                title = stringResource(R.string.favorites_filter_marketplaces),
+                selected = localMarketplaces,
+                onClick = {
+                    localMarketplaces = !localMarketplaces
+                    if (localMarketplaces && localOfflineShops) localOfflineShops = false
+                },
+            )
+            FilterOptionRow(
+                title = stringResource(R.string.favorites_filter_offline),
+                selected = localOfflineShops,
+                onClick = {
+                    localOfflineShops = !localOfflineShops
+                    if (localOfflineShops && localMarketplaces) localMarketplaces = false
+                },
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp)
+                    .background(
+                        color = colorResource(R.color.mid_dark),
+                        shape = RoundedCornerShape(14.dp),
+                    )
+                    .clickable {
+                        onApply(
+                            localMarketplaces,
+                            localOfflineShops,
+                            localPriceFrom.toLongOrNull() ?: 0L,
+                            localPriceTo.toLongOrNull() ?: 0L,
+                        )
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = stringResource(R.string.favorites_filter_apply),
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight(600),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                )
+            }
+        }
+    }
 }

@@ -178,39 +178,83 @@ fun SearchScreen(
                 DefaultButton(text = stringResource(com.pricewise.feature.search.impl.R.string.only_with_delievery), isSelected = false, onClick = {})
             }
         }
-        if (state.items.isNotEmpty()) {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(horizontal = 15.dp)
-                    .fillMaxSize()
-                    .padding(top = 14.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                items(
-                    items = state.items,
-                    key = { it.id }
-                ) { item ->
-                    ProductCard(
-                        product = item,
-                        addToFavourites = { product ->
-                            viewModel.onProductFavoriteClick(productId = product.id)
-                        },
+        when {
+            state.items.isNotEmpty() -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(horizontal = 15.dp)
+                        .fillMaxSize()
+                        .padding(top = 14.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    items(
+                        items = state.items,
+                        key = { item -> "${item.id}|${item.source}" }
+                    ) { item ->
+                        ProductCard(
+                            product = item,
+                            addToFavourites = { product ->
+                                viewModel.onProductFavoriteClick(
+                                    productId = product.id,
+                                    source = product.source,
+                                )
+                            },
+                        )
+                    }
+                    if (state.isLoading) {
+                        items(3) {
+                            ProductCardShimmer()
+                        }
+                    }
+                }
+            }
+            state.isLoading -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(horizontal = 15.dp)
+                        .fillMaxSize()
+                        .padding(top = 14.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    items(6) {
+                        ProductCardShimmer()
+                    }
+                }
+            }
+            state.isError -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 14.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "Произошла ошибка при поиске",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontFamily = Inter,
+                            fontWeight = FontWeight(500),
+                            color = LocalCustomColors.current.secondaryText,
+                        ),
                     )
                 }
             }
-        }
-        if (state.items.isEmpty()) {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(horizontal = 15.dp)
-                    .fillMaxSize()
-                    .padding(top = 14.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                items(
-                    100
+            state.submittedQuery.isNotEmpty() -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 14.dp),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    ProductCardShimmer()
+                    Text(
+                        text = "По запросу «${state.submittedQuery}» ничего не найдено",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontFamily = Inter,
+                            fontWeight = FontWeight(500),
+                            color = LocalCustomColors.current.secondaryText,
+                        ),
+                    )
                 }
             }
         }
