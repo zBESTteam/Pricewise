@@ -1,6 +1,7 @@
 package com.pricewise.feature.favorites.api
 
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 
 data class FavoriteMutationRequest(
 	val externalId: String,
@@ -20,6 +21,9 @@ data class FavoriteMutationEvent(
 
 interface FavoritesFeatureApi {
 	val favoriteMutations: SharedFlow<FavoriteMutationEvent>
+	val favoriteStates: StateFlow<Map<String, Boolean>>
+
+	suspend fun syncFavorites()
 
 	suspend fun addToFavorites(request: FavoriteMutationRequest)
 

@@ -55,4 +55,8 @@
     <string name="favorites">Избранное</string>
     <string name="favorites_list_is_empty">Список избранного пуст</string>
     <string name="error">Ошибка</string>
+    <string name="favorites_filter_title">Фильтры</string>
+    <string name="favorites_filter_marketplaces">Маркетплейсы</string>
+    <string name="favorites_filter_offline">Офлайн магазины</string>
+    <string name="favorites_filter_apply">Применить</string>
 </resources>

@@ -10,13 +10,12 @@ import com.pricewise.feature.home.impl.presentation.ui.HomeScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -35,29 +34,46 @@ class HomeScreenViewModel @Inject constructor(
         ),
     )
 
-    private val homeFeedAsync = viewModelScopeSafe.async(Dispatchers.IO) {
-        getHomeFeedUseCase()
-    }
+    private val homeFeedState = MutableStateFlow<HomeFeed?>(null)
 
     init {
+        viewModelScopeSafe.launch(Dispatchers.IO) {
+            runCatching { favoritesFeatureApi.syncFavorites() }
+        }
         viewModelScopeSafe.launch {
-            favoritesFeatureApi.favoriteMutations.collect { event ->
-                val favoriteKey = makeFavoriteKey(
-                    productId = event.externalId,
-                    source = normalizeSource(event.source),
-                )
+            favoritesFeatureApi.favoriteStates.collect { favoriteProductIds ->
                 userInputState.update { currentState ->
                     currentState.copy(
-                        favoriteProductIds = currentState.favoriteProductIds + (favoriteKey to event.isFavorite),
+                        favoriteProductIds = favoriteProductIds,
                     )
                 }
             }
         }
+        loadHomeFeed()
     }
 
-    val screenState: StateFlow<HomeScreenState> = userInputState.map { userInput: HomeScreenUserInput ->
-        val homeFeed: HomeFeed = homeFeedAsync.await()
-        homeScreenMapper.getScreenState(homeFeed = homeFeed, userInput = userInput)
+    private fun loadHomeFeed() {
+        viewModelScopeSafe.launch(Dispatchers.IO) {
+            try {
+                val feed = getHomeFeedUseCase()
+                homeFeedState.value = feed
+            } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                // homeFeedState stays null → screenState emits Loading
+            }
+        }
+    }
+
+    val screenState: StateFlow<HomeScreenState> = combine(
+        userInputState,
+        homeFeedState,
+    ) { userInput: HomeScreenUserInput, homeFeed: HomeFeed? ->
+        if (homeFeed == null) {
+            HomeScreenState.Loading
+        } else {
+            homeScreenMapper.getScreenState(homeFeed = homeFeed, userInput = userInput)
+        }
     }
         .catch { throwable ->
             emit(homeScreenMapper.getScreenState(throwable = throwable))
