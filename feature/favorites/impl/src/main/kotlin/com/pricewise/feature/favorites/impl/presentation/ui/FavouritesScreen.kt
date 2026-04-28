@@ -1,6 +1,5 @@
 package com.pricewise.feature.favorites.impl.presentation.ui
 
-import LocalCustomColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,12 +7,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,7 +21,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,7 +56,6 @@ fun FavoritesScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showSortSheet by rememberSaveable { mutableStateOf(false) }
     var showFilterSheet by rememberSaveable { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     if (showSortSheet) {
         SortBottomSheet(
@@ -72,30 +69,18 @@ fun FavoritesScreen(
     }
 
     if (showFilterSheet) {
-        val searchFilterViewModel: SearchViewModel = hiltViewModel()
-        LaunchedEffect(
-            uiState.onlyMarketplaces,
-            uiState.onlyOfflineShops,
-            uiState.priceFrom,
-            uiState.priceTo,
-        ) {
-            searchFilterViewModel.setIsProductChosen(true)
-            searchFilterViewModel.setOnlyMarketplaces(uiState.onlyMarketplaces)
-            searchFilterViewModel.setOnlyOfflineShops(uiState.onlyOfflineShops)
-            searchFilterViewModel.setPriceFrom(uiState.priceFrom)
-            searchFilterViewModel.setPriceTo(uiState.priceTo)
-        }
-        Filters(
-            closeFilters = {
-                viewModel.setOnlyMarketplaces(searchFilterViewModel.filtersState.value.onlyMarketplaces)
-                viewModel.setOnlyOfflineShops(searchFilterViewModel.filtersState.value.onlyOfflineShops)
-                viewModel.setPriceRange(
-                    from = searchFilterViewModel.filtersState.value.priceFrom,
-                    to = searchFilterViewModel.filtersState.value.priceTo,
-                )
+        FavoritesFilterSheet(
+            onlyMarketplaces = uiState.onlyMarketplaces,
+            onlyOfflineShops = uiState.onlyOfflineShops,
+            priceFrom = uiState.priceFrom,
+            priceTo = uiState.priceTo,
+            onApply = { marketplaces, offlineShops, from, to ->
+                viewModel.setOnlyMarketplaces(marketplaces)
+                viewModel.setOnlyOfflineShops(offlineShops)
+                viewModel.setPriceRange(from = from, to = to)
                 showFilterSheet = false
             },
-            viewModel = searchFilterViewModel
+            onDismiss = { showFilterSheet = false },
         )
     }
 
@@ -121,53 +106,44 @@ fun FavoritesScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(30.dp)
-                .background(brush = gradient, shape = heroShape),
-            contentAlignment = Alignment.Center
-        ) {}
-
-        Text(
-            modifier = Modifier.padding(
-                start = 15.dp,
-                top = 15.dp,
-                bottom = 15.dp
-            ),
-            text = stringResource(R.string.favorites),
-            style = TextStyle(
-                fontSize = 20.sp,
-                lineHeight = 26.sp,
-                fontWeight = FontWeight(700),
-                color = LocalCustomColors.current.midDark,
-            )
+                .height(statusBarHeight)
+                .background(
+                    brush = gradient,
+                    shape = RoundedCornerShape(bottomStart = 26.dp, bottomEnd = 33.dp),
+                )
+                .align(Alignment.TopCenter),
         )
 
-        Row(modifier = Modifier.padding(horizontal = 15.dp), horizontalArrangement = Arrangement.spacedBy(18.dp)) {
-            FilterActionButton(
-                icon = com.pricewise.core.ui.R.drawable.ic_sort,
-                isSelected = false,
-                onClick = { showSortSheet = true },
+        Column(modifier = Modifier.fillMaxSize()) {
+            Text(
+                modifier = Modifier.padding(
+                    start = 15.dp,
+                    top = statusBarHeight + 16.dp,
+                    bottom = 15.dp
+                ),
+                text = stringResource(R.string.favorites),
+                style = TextStyle(
+                    fontSize = 24.sp,
+                    lineHeight = 31.sp,
+                    fontWeight = FontWeight(700),
+                    color = colorResource(R.color.mid_dark),
+                )
             )
-            FilterActionButton(
-                icon = com.pricewise.core.ui.R.drawable.ic_filter,
-                isSelected = uiState.onlyMarketplaces || uiState.onlyOfflineShops || uiState.priceFrom > 0 || uiState.priceTo > 0,
-                onClick = {
-                    showFilterSheet = true
-                },
-            )
-            FilterActionButton(
-                text = stringResource(R.string.sort_by_brand),
-                isSelected = uiState.sortOption == FavoritesSortOption.BRAND_ASC,
-                onClick = {
-                    viewModel.setSortOption(
-                        if (uiState.sortOption == FavoritesSortOption.BRAND_ASC) {
-                            FavoritesSortOption.NONE
-                        } else {
-                            FavoritesSortOption.BRAND_ASC
-                        },
-                    )
-                },
-            )
-        }
+
+            Row(modifier = Modifier.padding(horizontal = 15.dp)) {
+                FilterActionButton(
+                    icon = com.pricewise.core.ui.R.drawable.ic_sort,
+                    isSelected = false,
+                    onClick = { showSortSheet = true },
+                )
+
+                FilterActionButton(
+                    icon = com.pricewise.core.ui.R.drawable.ic_filter,
+                    isSelected = uiState.onlyMarketplaces || uiState.onlyOfflineShops || uiState.priceFrom > 0 || uiState.priceTo > 0,
+                    onClick = {
+                        showFilterSheet = true
+                    },
+                )
 
                 FilterActionButton(
                     text = stringResource(R.string.sort_by_brand),
@@ -190,13 +166,17 @@ fun FavoritesScreen(
                         CircularProgressIndicator(color = orangeStart)
                     }
 
-                uiState.items.isEmpty() -> {
-                    Text(
-                        text = stringResource(R.string.favorites_list_is_empty),
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                }
+                    uiState.error != null -> {
+                        Text(text = uiState.error ?: "Ошибка", color = Color.Red)
+                    }
+
+                    uiState.items.isEmpty() -> {
+                        Text(
+                            text = stringResource(R.string.favorites_list_is_empty),
+                            fontSize = 16.sp,
+                            color = Color.Gray
+                        )
+                    }
 
                     else -> {
                         LazyColumn(
@@ -272,7 +252,7 @@ private fun FilterOptionRow(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    val backgroundColor = if (!selected) colorResource(R.color.disabled_filter_button_color) else Color.Transparent
+    val backgroundColor = if (selected) colorResource(R.color.disabled_filter_button_color) else Color.Transparent
     Text(
         text = title,
         modifier = Modifier

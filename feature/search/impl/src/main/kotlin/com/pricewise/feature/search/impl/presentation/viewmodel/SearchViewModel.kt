@@ -16,6 +16,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,8 +28,19 @@ import kotlinx.coroutines.withContext
 class SearchViewModel @Inject constructor(
     private val repository: SearchFeatureApi,
     private val favoritesFeatureApi: FavoritesFeatureApi,
-    private val searchSessionCache: SearchSessionCache,
-) : BaseViewModel() {
+) : ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            favoritesFeatureApi.favoriteMutations.collect { event ->
+                updateProductFavoriteState(
+                    productId = event.externalId,
+                    source = event.source,
+                    isFavorite = event.isFavorite,
+                )
+            }
+        }
+    }
 
     private val defaultLimit: Int = 20
     private var searchJob: Job? = null
@@ -61,16 +73,6 @@ class SearchViewModel @Inject constructor(
         "aliexpress.ru",
         "xcom-shop.ru",
     )
-
-    init {
-        viewModelScopeSafe.launch {
-            favoritesFeatureApi.favoriteStates.collect { favoriteStates ->
-                applyFavoriteStates(favoriteStates = favoriteStates)
-            }
-        }
-
-        resumePendingSearchIfNeeded()
-    }
 
     fun setIsProductChosen(value: Boolean) {
         _filtersState.value = _filtersState.value.copy(isProductChosen = value)
@@ -124,25 +126,22 @@ class SearchViewModel @Inject constructor(
         )
     }
 
-    fun onProductFavoriteClick(productId: String, source: String) {
-        val normalizedSource = normalizeSource(source)
-        val product = allItemsState.value.firstOrNull { item ->
-            item.id == productId && normalizeSource(item.source) == normalizedSource
-        } ?: return
+    fun onProductFavoriteClick(productId: String) {
+        val product = _allItems.value.firstOrNull { it.id == productId } ?: return
         val updatedFavoriteState = !product.isFavorite
         updateProductFavoriteState(
             productId = productId,
-            source = normalizedSource,
+            source = product.source,
             isFavorite = updatedFavoriteState,
         )
 
-        viewModelScopeSafe.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             runCatching {
                 if (updatedFavoriteState) {
                     favoritesFeatureApi.addToFavorites(
                         request = FavoriteMutationRequest(
                             externalId = product.id,
-                            source = normalizedSource,
+                            source = product.source,
                             title = product.title,
                             price = product.price,
                             thumbnailUrl = product.thumbnailUrl,
@@ -153,16 +152,16 @@ class SearchViewModel @Inject constructor(
                 } else {
                     favoritesFeatureApi.removeFromFavorites(
                         externalId = product.id,
-                        source = normalizedSource,
+                        source = product.source,
                     )
                 }
             }.onFailure {
                 updateProductFavoriteState(
                     productId = productId,
-                    source = normalizedSource,
+                    source = product.source,
                     isFavorite = product.isFavorite,
                 )
-                uiStateState.update { state -> state.copy(isError = true) }
+                _uiState.update { state -> state.copy(isError = true) }
             }
         }
     }
@@ -174,23 +173,17 @@ class SearchViewModel @Inject constructor(
     ) {
         _allItems.update { items ->
             items.map { product ->
-                if (
-                    product.id == productId &&
-                    (normalizedSource == null || normalizeSource(product.source) == normalizedSource)
-                ) {
+                if (product.id == productId && (source == null || product.source == source)) {
                     product.copy(isFavorite = isFavorite)
                 } else {
                     product
                 }
             }
         }
-        uiStateState.update { state ->
+        _uiState.update { state ->
             state.copy(
                 items = state.items.map { product ->
-                    if (
-                        product.id == productId &&
-                        (normalizedSource == null || normalizeSource(product.source) == normalizedSource)
-                    ) {
+                    if (product.id == productId && (source == null || product.source == source)) {
                         product.copy(isFavorite = isFavorite)
                     } else {
                         product
@@ -201,13 +194,17 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onQueryChange(query: String) {
-        uiStateState.update { state ->
-            state.copy(query = query)
+        val trimmedQuery = query.trim()
+        if (trimmedQuery.isEmpty()) clearQuery()
+        else {
+            _uiState.update { state ->
+                state.copy(query = query)
+            }
         }
     }
 
     fun clearQuery() {
-        uiStateState.update { state -> state.copy(query = "") }
+        _uiState.update { state -> state.copy(query = "") }
     }
 
     fun initializeSearch(searchQuery: String) {
@@ -217,14 +214,11 @@ class SearchViewModel @Inject constructor(
             return
         }
 
-        if (
-            uiStateState.value.submittedQuery == trimmedSearchQuery &&
-            uiStateState.value.query == trimmedSearchQuery
-        ) {
+        if (_uiState.value.submittedQuery == trimmedSearchQuery && _uiState.value.query == trimmedSearchQuery) {
             return
         }
 
-        uiStateState.update { state ->
+        _uiState.update { state ->
             state.copy(query = trimmedSearchQuery)
         }
         submitSearch()
@@ -240,7 +234,6 @@ class SearchViewModel @Inject constructor(
                 resetAllFilters()
                 performSearch(_uiState.value.query.trim())
             }
-            performSearchLoop(query)
         }
         _uiState.update { state ->
             state.copy(
@@ -249,10 +242,10 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private suspend fun performSearchLoop(query: String) {
-        try {
-            var attempts = 0
-            while (attempts <= MAX_SEARCH_ATTEMPTS) {
+    fun performSearch(query: String) {
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true, submittedQuery = query) }
                 val result = withContext(Dispatchers.IO) {
                     repository.search(
                         query = query,
@@ -273,32 +266,30 @@ class SearchViewModel @Inject constructor(
                         playLaterOnly = filtersState.value.canPayLater,
                     )
                 }
-                val items = applyFavoriteStatesToItems(
-                    items = result.items,
-                    favoriteStates = favoritesFeatureApi.favoriteStates.value,
-                )
-                allItemsState.value = items
-                val shouldSearchAgain = result.pendingSources.isNotEmpty() && attempts < MAX_SEARCH_ATTEMPTS
-                uiStateState.update { state ->
+                _allItems.value = result.items
+                val shouldSearchAgain =
+                    result.pendingSources.isNotEmpty() && searchAttempts < MAX_SEARCH_ATTEMPTS
+                _uiState.update { state ->
                     val checked = result.checkedSources ?: state.checkedSources
                     val totalSources = result.totalSources
-                    resolvedTotalState.value = when {
+                    _resolvedTotal.value = when {
                         totalSources != null && totalSources > 0 -> {
                             maxOf(totalSources, checked)
                         }
+
                         checked > state.totalSources -> checked
                         else -> state.totalSources
                     }
                     state.copy(
                         isLoading = shouldSearchAgain,
-                        items = items,
+                        items = result.items,
                         hasMore = result.hasMore,
                         checkedSources = checked,
                         totalSources = resolvedTotal.value,
                         pendingSources = result.pendingSources,
                         minPrice = if (canRewriteFilters) result.items.minByOrNull { it.price }?.price ?: 0 else state.minPrice,
                         maxPrice = if (canRewriteFilters) result.items.maxByOrNull { it.price }?.price ?: 0 else state.maxPrice
-                        )
+                    )
                 }
                 if (shouldSearchAgain) {
                     repeatSearch(query = query)
@@ -309,46 +300,15 @@ class SearchViewModel @Inject constructor(
             } catch (_: Exception) {
                 _uiState.update { state -> state.copy(isError = true) }
             }
-        } catch (e: kotlin.coroutines.cancellation.CancellationException) {
-            throw e
-        } catch (_: Exception) {
-            uiStateState.update { state -> state.copy(isError = true, isLoading = false) }
         }
     }
 
-    private fun applyFavoriteStates(favoriteStates: Map<String, Boolean>) {
-        val items = applyFavoriteStatesToItems(
-            items = allItemsState.value,
-            favoriteStates = favoriteStates,
-        )
-        allItemsState.value = items
-        uiStateState.update { state ->
-            state.copy(items = applyFavoriteStatesToItems(items = state.items, favoriteStates = favoriteStates))
-        }
-    }
-
-    private fun applyFavoriteStatesToItems(
-        items: List<Product>,
-        favoriteStates: Map<String, Boolean>,
-    ): List<Product> {
-        return items.map { product ->
-            val favoriteKey = makeFavoriteKey(
-                productId = product.id,
-                source = product.source,
-            )
-            val isFavorite = favoriteStates[favoriteKey] ?: product.isFavorite
-            product.copy(isFavorite = isFavorite)
-        }
-    }
-
-    private fun resumePendingSearchIfNeeded() {
-        val state = uiStateState.value
-        if (!state.isLoading || state.submittedQuery.isBlank()) {
-            return
-        }
-        val query = state.submittedQuery
-        searchJob = viewModelScopeSafe.launch {
-            performSearchLoop(query)
+    fun repeatSearch(query: String) {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch(Dispatchers.IO) {
+            searchAttempts += 1
+            delay(SEARCH_INTERVAL_MS)
+            performSearch(query)
         }
     }
 
@@ -359,4 +319,3 @@ class SearchViewModel @Inject constructor(
 
 private const val MAX_SEARCH_ATTEMPTS = 8
 private const val SEARCH_INTERVAL_MS: Long = 1000
-

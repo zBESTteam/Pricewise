@@ -245,15 +245,7 @@ fun SearchScreen(
                 items(
                     100
                 ) {
-                    Text(
-                        text = "По запросу «${state.submittedQuery}» ничего не найдено",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            fontFamily = Inter,
-                            fontWeight = FontWeight(500),
-                            color = LocalCustomColors.current.secondaryText,
-                        ),
-                    )
+                    ProductCardShimmer()
                 }
             }
         }
