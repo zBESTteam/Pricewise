@@ -34,6 +34,7 @@ fun ProductCard(product: Product, addToFavourites: (Product) -> Unit) {
             id = product.id,
             title = product.title,
             price = product.price.toRubles(),
+            deliveryText = product.deliveryText,
             isFavorite = product.isFavorite,
             thumbnailUrl = product.thumbnailUrl,
             marketplaceName = product.merchant.name,

@@ -6,7 +6,9 @@ import com.pricewise.feature.home.impl.domain.model.HomeFeed
 import com.pricewise.feature.home.impl.domain.repository.HomeRepository
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 @Singleton
 class HomeRepositoryImpl @Inject constructor(
@@ -14,16 +16,13 @@ class HomeRepositoryImpl @Inject constructor(
     private val homeDataToDomainMapper: HomeDataToDomainMapper,
 ) : HomeRepository {
 
-    override suspend fun getHomeFeed(): HomeFeed {
-        val mainResponse = withContext(kotlinx.coroutines.Dispatchers.IO) {
-            remoteDataSource.loadMain()
-        }
-        val trendingResponse = withContext(kotlinx.coroutines.Dispatchers.IO) {
-            remoteDataSource.loadTrending()
-        }
-        return homeDataToDomainMapper.map(
-            main = mainResponse,
-            trending = trendingResponse,
+    override suspend fun getHomeFeed(): HomeFeed = coroutineScope {
+        val mainDeferred = async(Dispatchers.IO) { remoteDataSource.loadMain() }
+        val trendingDeferred = async(Dispatchers.IO) { remoteDataSource.loadTrending() }
+        homeDataToDomainMapper.map(
+            main = mainDeferred.await(),
+            trending = trendingDeferred.await(),
         )
     }
 }
+

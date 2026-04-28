@@ -24,23 +24,23 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pricewise.core.ui.components.FilterActionButton
@@ -48,8 +48,6 @@ import com.pricewise.core.ui.components.PriceWiseProductCard
 import com.pricewise.feature.favorites.impl.R
 import com.pricewise.feature.favorites.impl.presentation.viewmodel.FavoritesSortOption
 import com.pricewise.feature.favorites.impl.presentation.viewmodel.FavouritesViewModel
-import com.pricewise.feature.search.impl.presentation.ui.Filters
-import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,22 +99,24 @@ fun FavoritesScreen(
         )
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(contentPadding),
+    ) {
         val orangeStart = colorResource(id = R.color.orange_gradient_start)
         val orangeEnd = colorResource(id = R.color.orange_gradient_end)
-
+        val density = LocalDensity.current
+        val statusBarHeight = with(density) {
+            WindowInsets.safeDrawing.getTop(this).toDp()
+        }
         val gradient = remember(orangeStart, orangeEnd) {
             Brush.linearGradient(
                 colors = listOf(orangeStart, orangeEnd),
                 start = Offset.Zero,
-                end = Offset(900f, 260f)
+                end = Offset(900f, 260f),
             )
         }
-
-        val heroShape = RoundedCornerShape(
-            bottomStart = 22.dp,
-            bottomEnd = 22.dp
-        )
 
         Box(
             modifier = Modifier
@@ -169,15 +169,26 @@ fun FavoritesScreen(
             )
         }
 
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            when {
-                uiState.isLoading -> {
-                    CircularProgressIndicator(color = orangeStart)
-                }
+                FilterActionButton(
+                    text = stringResource(R.string.sort_by_brand),
+                    isSelected = uiState.sortOption == FavoritesSortOption.BRAND_ASC,
+                    onClick = {
+                        viewModel.setSortOption(
+                            if (uiState.sortOption == FavoritesSortOption.BRAND_ASC) {
+                                FavoritesSortOption.NONE
+                            } else {
+                                FavoritesSortOption.BRAND_ASC
+                            },
+                        )
+                    },
+                )
+            }
 
-                uiState.error != null -> {
-                    Text(text = uiState.error ?: "Ошибка", color = Color.Red)
-                }
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                when {
+                    uiState.isLoading -> {
+                        CircularProgressIndicator(color = orangeStart)
+                    }
 
                 uiState.items.isEmpty() -> {
                     Text(
@@ -187,19 +198,20 @@ fun FavoritesScreen(
                     )
                 }
 
-                else -> {
-                    LazyColumn(
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        items(uiState.items) { product ->
-                            PriceWiseProductCard(
-                                product = product,
-                                onFavoriteClick = { viewModel.removeFavorite(product) },
-                                onClick = {},
-                                modifier = Modifier
-                            )
+                    else -> {
+                        LazyColumn(
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            items(uiState.items) { product ->
+                                PriceWiseProductCard(
+                                    product = product,
+                                    onFavoriteClick = { viewModel.removeFavorite(product) },
+                                    onClick = {},
+                                    modifier = Modifier
+                                )
+                            }
                         }
                     }
                 }
@@ -271,3 +283,79 @@ private fun FilterOptionRow(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FavoritesFilterSheet(
+    onlyMarketplaces: Boolean,
+    onlyOfflineShops: Boolean,
+    priceFrom: Long,
+    priceTo: Long,
+    onApply: (marketplaces: Boolean, offlineShops: Boolean, from: Long, to: Long) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var localMarketplaces by rememberSaveable { mutableStateOf(onlyMarketplaces) }
+    var localOfflineShops by rememberSaveable { mutableStateOf(onlyOfflineShops) }
+    var localPriceFrom by rememberSaveable { mutableStateOf(priceFrom.toString()) }
+    var localPriceTo by rememberSaveable { mutableStateOf(priceTo.toString()) }
+
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.favorites_filter_title),
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight(700),
+                    color = colorResource(R.color.mid_dark),
+                ),
+            )
+
+            FilterOptionRow(
+                title = stringResource(R.string.favorites_filter_marketplaces),
+                selected = localMarketplaces,
+                onClick = {
+                    localMarketplaces = !localMarketplaces
+                    if (localMarketplaces && localOfflineShops) localOfflineShops = false
+                },
+            )
+            FilterOptionRow(
+                title = stringResource(R.string.favorites_filter_offline),
+                selected = localOfflineShops,
+                onClick = {
+                    localOfflineShops = !localOfflineShops
+                    if (localOfflineShops && localMarketplaces) localMarketplaces = false
+                },
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp)
+                    .background(
+                        color = colorResource(R.color.mid_dark),
+                        shape = RoundedCornerShape(14.dp),
+                    )
+                    .clickable {
+                        onApply(
+                            localMarketplaces,
+                            localOfflineShops,
+                            localPriceFrom.toLongOrNull() ?: 0L,
+                            localPriceTo.toLongOrNull() ?: 0L,
+                        )
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = stringResource(R.string.favorites_filter_apply),
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight(600),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                )
+            }
+        }
+    }
+}

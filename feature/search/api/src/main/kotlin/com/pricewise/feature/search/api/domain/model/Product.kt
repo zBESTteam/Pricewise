@@ -8,5 +8,8 @@ data class Product(
     val source: String,
     val productUrl: String,
     val thumbnailUrl: String,
+    val deliveryText: String,
+    val deliveryDaysMin: Int?,
+    val deliveryDaysMax: Int?,
     val isFavorite: Boolean = false,
 )

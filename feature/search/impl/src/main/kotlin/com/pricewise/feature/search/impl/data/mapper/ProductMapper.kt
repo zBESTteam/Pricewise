@@ -27,6 +27,9 @@ class ProductMapper @Inject constructor() {
                 source = item.source?.trim().orEmpty().ifBlank { merchant.name },
                 productUrl = item.productUrl?.trim().orEmpty(),
                 thumbnailUrl = resolveImageUrl(item),
+                deliveryText = item.deliveryText?.trim().orEmpty(),
+                deliveryDaysMin = item.deliveryDaysMin,
+                deliveryDaysMax = item.deliveryDaysMax,
                 isFavorite = item.isFavorite ?: false,
             )
         }

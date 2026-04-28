@@ -166,7 +166,7 @@ fun HomeScreenContent(
                     }
                     itemsIndexed(
                         items = loadedState.products,
-                        key = { _, product -> product.id },
+                        key = { _, product -> "${product.id}|${product.source}" },
                         contentType = { _, _ -> "product" },
                     ) { index, product ->
                         ProductCardListItem(
@@ -218,6 +218,7 @@ private fun HeaderSection(
         SearchBar(
             value = query,
             onValueChange = onQueryChange,
+            onClear = { onQueryChange("") },
             onSearch = { onSearch(query) },
             onPhotoSearchClick = onPhotoSearchClick,
             modifier = Modifier
