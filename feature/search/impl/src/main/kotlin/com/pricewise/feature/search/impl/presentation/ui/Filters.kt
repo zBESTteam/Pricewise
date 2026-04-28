@@ -24,8 +24,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -33,17 +33,15 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -57,46 +55,65 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pricewise.core.ui.R
 import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel
+import kotlin.math.ceil
+import kotlin.math.floor
+import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
-    var isProductChosen by rememberSaveable { mutableStateOf(true) }
-    var deliveryChosen by rememberSaveable { mutableIntStateOf(0) }
-    var onlyOriginals by rememberSaveable { mutableStateOf(false) }
-    var onlyNew by rememberSaveable { mutableStateOf(false) }
-    var onlyUsed by rememberSaveable { mutableStateOf(false) }
-    var onlyMarketplaces by rememberSaveable { mutableStateOf(false) }
-    var onlyOfflineShops by rememberSaveable { mutableStateOf(false) }
-    var priceFrom by rememberSaveable { mutableLongStateOf(0L) }
-    var priceTo by rememberSaveable { mutableLongStateOf(0L) }
-    var popularDiapasonChosen by rememberSaveable { mutableIntStateOf(0) }
-    var canPayLater by rememberSaveable { mutableStateOf(false) }
+fun Filters(
+    closeFilters: () -> Unit,
+    viewModel: SearchViewModel = hiltViewModel()
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val state = viewModel.uiState.collectAsStateWithLifecycle()
+    val minPrice =
+        state.value.minPrice.toFloat()
+    val maxPrice =
+        state.value.maxPrice.toFloat()
+    var currentFiltersState by remember {
+        mutableStateOf(
+            FiltersState(
+                priceFrom = floor(minPrice).toLong(),
+                priceTo = ceil(maxPrice).toLong()
+            )
+        )
+    }
+    var isProductChosen by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
         isProductChosen = viewModel.isProductChosen.value
-        deliveryChosen = viewModel.deliveryChosen.value
-        onlyOriginals = viewModel.onlyOriginals.value
-        onlyNew = viewModel.onlyNew.value
-        onlyUsed = viewModel.onlyUsed.value
-        onlyMarketplaces = viewModel.onlyMarketplaces.value
-        onlyOfflineShops = viewModel.onlyOfflineShops.value
-        priceFrom = viewModel.priceFrom.value
-        priceTo = viewModel.priceTo.value
-        popularDiapasonChosen = viewModel.popularDiapasonChosen.value
-        canPayLater = viewModel.canPayLater.value
+        currentFiltersState = viewModel.filtersState.value
     }
     val customModifier: Modifier = Modifier.offset(y = (-7).dp)
-    val sheetState = rememberModalBottomSheetState()
+
+    fun apply() {
+        viewModel.setIsProductChosen(isProductChosen)
+        viewModel.setDeliveryChosen(currentFiltersState.deliveryChosen)
+        viewModel.setOnlyOriginals(currentFiltersState.onlyOriginals)
+        viewModel.setOnlyNew(currentFiltersState.onlyNew)
+        viewModel.setOnlyUsed(currentFiltersState.onlyUsed)
+        viewModel.setOnlyMarketplaces(currentFiltersState.onlyMarketplaces)
+        viewModel.setOnlyOfflineShops(currentFiltersState.onlyOfflineShops)
+        viewModel.setPriceFrom(currentFiltersState.priceFrom)
+        viewModel.setPriceTo(currentFiltersState.priceTo)
+        viewModel.setPopularDiapasonChosen(currentFiltersState.popularDiapasonChosen)
+        viewModel.setCanPayLater(currentFiltersState.canPayLater)
+        viewModel.performSearch(viewModel.uiState.value.query) // Должно начать поиск с фильтрами (не проверено)
+        closeFilters()
+    }
+
+
     ModalBottomSheet(
-        sheetState = sheetState, onDismissRequest = { closeFilters() }, dragHandle =
+        sheetState = sheetState,
+        onDismissRequest = { closeFilters() }, dragHandle =
             {
                 BottomSheetDefaults.DragHandle(
                     modifier = customModifier,
-                    color = colorResource(R.color.handle_color),
+                    color = LocalCustomColors.current.handleColor,
                     width = 63.dp,
                     height = 4.dp
                 )
@@ -142,6 +159,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                         modifier = Modifier
                             .weight(1f)
                             .height(44.dp)
+                            .clip(shape = RoundedCornerShape(size = 14.dp))
                             .background(
                                 brush = Brush.horizontalGradient(
                                     colors = if (isProductChosen) listOf(
@@ -151,8 +169,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                         LocalCustomColors.current.disabledFilterButtonColor,
                                         LocalCustomColors.current.disabledFilterButtonColor
                                     )
-                                ),
-                                shape = RoundedCornerShape(14.dp)
+                                )
                             )
                             .clickable { isProductChosen = true },
                         contentAlignment = Alignment.Center
@@ -176,6 +193,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                         modifier = Modifier
                             .weight(1f)
                             .height(44.dp)
+                            .clip(shape = RoundedCornerShape(size = 14.dp))
                             .background(
                                 brush = Brush.horizontalGradient(
                                     colors = if (!isProductChosen) listOf(
@@ -185,8 +203,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                         LocalCustomColors.current.disabledFilterButtonColor,
                                         LocalCustomColors.current.disabledFilterButtonColor
                                     )
-                                ),
-                                shape = RoundedCornerShape(14.dp)
+                                )
                             )
                             .clickable { isProductChosen = false },
                         contentAlignment = Alignment.Center,
@@ -227,23 +244,35 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                     ) {
                         FilterDefaultButton(
                             text = stringResource(R.string.today),
-                            isSelected = deliveryChosen == 1,
-                            onClick = { deliveryChosen = if (deliveryChosen == 1) 0 else 1 }
+                            isSelected = currentFiltersState.deliveryChosen == Delivery.TODAY,
+                            onClick = {
+                                currentFiltersState =
+                                    currentFiltersState.copy(deliveryChosen = if (currentFiltersState.deliveryChosen == Delivery.TODAY) Delivery.ANY else Delivery.TODAY)
+                            }
                         )
                         FilterDefaultButton(
                             text = stringResource(R.string.today_or_tomorrow),
-                            isSelected = deliveryChosen == 2,
-                            onClick = { deliveryChosen = if (deliveryChosen == 2) 0 else 2 }
+                            isSelected = currentFiltersState.deliveryChosen == Delivery.TODAY_OR_TOMORROW,
+                            onClick = {
+                                currentFiltersState =
+                                    currentFiltersState.copy(deliveryChosen = if (currentFiltersState.deliveryChosen == Delivery.TODAY_OR_TOMORROW) Delivery.ANY else Delivery.TODAY_OR_TOMORROW)
+                            }
                         )
                         FilterDefaultButton(
                             text = stringResource(R.string.week),
-                            isSelected = deliveryChosen == 3,
-                            onClick = { deliveryChosen = if (deliveryChosen == 3) 0 else 3 }
+                            isSelected = currentFiltersState.deliveryChosen == Delivery.WEEK,
+                            onClick = {
+                                currentFiltersState =
+                                    currentFiltersState.copy(deliveryChosen = if (currentFiltersState.deliveryChosen == Delivery.WEEK) Delivery.ANY else Delivery.WEEK)
+                            }
                         )
                         FilterDefaultButton(
                             text = stringResource(R.string.two_weeks),
-                            isSelected = deliveryChosen == 4,
-                            onClick = { deliveryChosen = if (deliveryChosen == 4) 0 else 4 }
+                            isSelected = currentFiltersState.deliveryChosen == Delivery.TWO_WEEKS,
+                            onClick = {
+                                currentFiltersState =
+                                    currentFiltersState.copy(deliveryChosen = if (currentFiltersState.deliveryChosen == Delivery.TWO_WEEKS) Delivery.ANY else Delivery.TWO_WEEKS)
+                            }
                         )
                     }
                     Text(
@@ -264,20 +293,26 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                     ) {
                         FilterSwitch(
                             title = stringResource(R.string.only_originals),
-                            isChecked = onlyOriginals,
-                            onCheckedChange = { onlyOriginals = it }
+                            isChecked = currentFiltersState.onlyOriginals,
+                            onCheckedChange = {
+                                currentFiltersState = currentFiltersState.copy(onlyOriginals = it)
+                            }
                         )
 
                         FilterSwitch(
                             title = stringResource(R.string.only_new),
-                            isChecked = onlyNew,
-                            onCheckedChange = { onlyNew = it }
+                            isChecked = currentFiltersState.onlyNew,
+                            onCheckedChange = {
+                                currentFiltersState = currentFiltersState.copy(onlyNew = it)
+                            }
                         )
 
                         FilterSwitch(
                             title = stringResource(R.string.only_bu),
-                            isChecked = onlyUsed,
-                            onCheckedChange = { onlyUsed = it })
+                            isChecked = currentFiltersState.onlyUsed,
+                            onCheckedChange = {
+                                currentFiltersState = currentFiltersState.copy(onlyUsed = it)
+                            })
                     }
                     Text(
                         text = stringResource(R.string.shops),
@@ -297,39 +332,33 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                     ) {
                         FilterSwitch(
                             title = stringResource(R.string.marketplaces),
-                            isChecked = onlyMarketplaces,
-                            onCheckedChange = { onlyMarketplaces = it }
+                            isChecked = currentFiltersState.onlyMarketplaces,
+                            onCheckedChange = {
+                                currentFiltersState =
+                                    currentFiltersState.copy(onlyMarketplaces = it)
+                            }
                         )
 
                         FilterSwitch(
                             title = stringResource(R.string.offline_shops),
-                            isChecked = onlyOfflineShops,
-                            onCheckedChange = { onlyOfflineShops = it }
+                            isChecked = currentFiltersState.onlyOfflineShops,
+                            onCheckedChange = {
+                                currentFiltersState =
+                                    currentFiltersState.copy(onlyOfflineShops = it)
+                            }
                         )
                     }
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(44.dp)
+                            .clip(shape = RoundedCornerShape(size = 14.dp))
                             .background(
-                                color = LocalCustomColors.current.midDark,
-                                shape = RoundedCornerShape(size = 14.dp)
+                                color = LocalCustomColors.current.midDark
                             )
                             .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
                             .clickable {
-                                viewModel.setIsProductChosen(isProductChosen)
-                                viewModel.setDeliveryChosen(deliveryChosen)
-                                viewModel.setOnlyOriginals(onlyOriginals)
-                                viewModel.setOnlyNew(onlyNew)
-                                viewModel.setOnlyUsed(onlyUsed)
-                                viewModel.setOnlyMarketplaces(onlyMarketplaces)
-                                viewModel.setOnlyOfflineShops(onlyOfflineShops)
-                                viewModel.setPriceFrom(priceFrom)
-                                viewModel.setPriceTo(priceTo)
-                                viewModel.setPopularDiapasonChosen(popularDiapasonChosen)
-                                viewModel.setCanPayLater(canPayLater)
-                                // Добавить начало поиска заново
-                                closeFilters()
+                                apply()
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -355,7 +384,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             fontWeight = FontWeight(600),
                             color = LocalCustomColors.current.midDark,
                             letterSpacing = 0.3.sp,
-                        )
+                        ),
                     )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(
@@ -368,41 +397,42 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             modifier = Modifier.weight(1f),
                             text = "От",
                             onValueChange = {
-                                priceFrom = it
-                                popularDiapasonChosen = 0
+                                currentFiltersState = currentFiltersState.copy(priceFrom = it)
+                                currentFiltersState =
+                                    currentFiltersState.copy(popularDiapasonChosen = 0)
                             },
                             context = LocalContext.current,
-                            value = priceFrom.toString()
+                            value = currentFiltersState.priceFrom.toString()
                         )
                         PriceInputField(
                             modifier = Modifier.weight(1f),
                             text = "До",
                             onValueChange = {
-                                priceTo = it
-                                popularDiapasonChosen = 0
+                                currentFiltersState = currentFiltersState.copy(priceTo = it)
+                                currentFiltersState =
+                                    currentFiltersState.copy(popularDiapasonChosen = 0)
                             },
                             context = LocalContext.current,
-                            value = priceTo.toString()
+                            value = currentFiltersState.priceTo.toString()
                         )
                     }
                     Box(
                         modifier = Modifier
                             .width(345.dp)
-                            .height(14.dp)
+                            .height(13.9.dp)
                             .align(Alignment.CenterHorizontally)
                     ) {
-                        val minPrice =
-                            state.value.items.minByOrNull { it.price }?.price?.toFloat() ?: 0f
-                        val maxPrice =
-                            state.value.items.maxByOrNull { it.price }?.price?.toFloat() ?: 0f
                         val priceRange = maxPrice - minPrice
                         val normalizedFrom = if (priceRange > 0) {
-                            ((priceFrom - minPrice) / priceRange).coerceIn(0f, 1f)
+                            ((currentFiltersState.priceFrom - minPrice) / priceRange).coerceIn(
+                                0f,
+                                1f
+                            )
                         } else {
                             0f
                         }
                         val normalizedTo = if (priceRange > 0) {
-                            ((priceTo - minPrice) / priceRange).coerceIn(0f, 1f)
+                            ((currentFiltersState.priceTo - minPrice) / priceRange).coerceIn(0f, 1f)
                         } else {
                             1f
                         }
@@ -440,7 +470,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             modifier = Modifier
                                 .align(Alignment.TopStart)
                                 .offset(x = leftOffset)
-                                .size(if (priceTo - priceFrom > 0) 14.dp else 0.dp)
+                                .size(if (currentFiltersState.priceTo - currentFiltersState.priceFrom > 0) 14.dp else 0.dp)
                                 .background(
                                     brush = Brush.linearGradient(
                                         listOf(
@@ -455,7 +485,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             modifier = Modifier
                                 .align(Alignment.TopStart)
                                 .offset(x = (containerWidth - rightOffset) - 14.dp)
-                                .size(if (priceTo - priceFrom > 0) 14.dp else 0.dp)
+                                .size(if (currentFiltersState.priceTo - currentFiltersState.priceFrom > 0) 14.dp else 0.dp)
                                 .background(
                                     brush = Brush.linearGradient(
                                         listOf(
@@ -486,29 +516,41 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         FilterDefaultButton(
-                            text = stringResource(R.string.below_80_000),
-                            isSelected = popularDiapasonChosen == 1,
+                            text = "До ${(minPrice + (maxPrice - minPrice) / 4).toRubles()}",
+                            isSelected = currentFiltersState.popularDiapasonChosen == 1,
                             onClick = {
-                                popularDiapasonChosen = if (popularDiapasonChosen == 1) 0 else 1
-                                priceFrom = 0
-                                priceTo = 0
+                                currentFiltersState =
+                                    currentFiltersState.copy(popularDiapasonChosen = if (currentFiltersState.popularDiapasonChosen == 1) 0 else 1)
+                                currentFiltersState =
+                                    currentFiltersState.copy(priceFrom = 0)
+                                currentFiltersState =
+                                    currentFiltersState.copy(priceTo = (minPrice + (maxPrice - minPrice) / 4).toLong())
                             })
                         FilterDefaultButton(
-                            text = stringResource(R.string.in_80_000_120_000),
-                            isSelected = popularDiapasonChosen == 2,
+                            text = "${(minPrice + (maxPrice - minPrice) / 4).toRubles()} - ${(minPrice + (maxPrice - minPrice) * 0.75f).toRubles()}",
+                            isSelected = currentFiltersState.popularDiapasonChosen == 2,
                             onClick = {
-                                popularDiapasonChosen = if (popularDiapasonChosen == 2) 0 else 2
-                                priceFrom = 0
-                                priceTo = 0
+                                val isSelected = currentFiltersState.popularDiapasonChosen == 2
+                                if (!isSelected) {
+                                    currentFiltersState =
+                                        currentFiltersState.copy(popularDiapasonChosen = if (currentFiltersState.popularDiapasonChosen == 2) 0 else 2)
+                                    currentFiltersState =
+                                        currentFiltersState.copy(priceFrom = (minPrice + (maxPrice - minPrice) / 4).toLong())
+                                    currentFiltersState =
+                                        currentFiltersState.copy(priceTo = (minPrice + (maxPrice - minPrice) * 0.75f).toLong())
+                                }
                             })
                     }
                     FilterDefaultButton(
-                        text = stringResource(R.string.after_120_000),
-                        isSelected = popularDiapasonChosen == 3,
+                        text = "${(minPrice + (maxPrice - minPrice) * 0.75f).toRubles()} и дороже",
+                        isSelected = currentFiltersState.popularDiapasonChosen == 3,
                         onClick = {
-                            popularDiapasonChosen = if (popularDiapasonChosen == 3) 0 else 3
-                            priceFrom = 0
-                            priceTo = 0
+                            currentFiltersState =
+                                currentFiltersState.copy(popularDiapasonChosen = if (currentFiltersState.popularDiapasonChosen == 3) 0 else 3)
+                            currentFiltersState =
+                                currentFiltersState.copy(priceFrom = (minPrice + (maxPrice - minPrice) * 0.75f).toLong())
+                            currentFiltersState =
+                                currentFiltersState.copy(priceTo = Long.MAX_VALUE)
                         })
                     Text(
                         text = stringResource(R.string.pay_later),
@@ -525,32 +567,22 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                     FilterSwitch(
                         modifier = Modifier.height(60.dp),
                         title = stringResource(R.string.show_product_pay_later),
-                        isChecked = canPayLater,
-                        onCheckedChange = { canPayLater = it })
+                        isChecked = currentFiltersState.canPayLater,
+                        onCheckedChange = {
+                            currentFiltersState = currentFiltersState.copy(canPayLater = it)
+                        })
                     Spacer(modifier = Modifier.size(56.dp))
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(44.dp)
+                            .clip(shape = RoundedCornerShape(size = 14.dp))
                             .background(
-                                color = LocalCustomColors.current.midDark,
-                                shape = RoundedCornerShape(size = 14.dp)
+                                color = LocalCustomColors.current.midDark
                             )
                             .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
                             .clickable {
-                                viewModel.setIsProductChosen(isProductChosen)
-                                viewModel.setDeliveryChosen(deliveryChosen)
-                                viewModel.setOnlyOriginals(onlyOriginals)
-                                viewModel.setOnlyNew(onlyNew)
-                                viewModel.setOnlyUsed(onlyUsed)
-                                viewModel.setOnlyMarketplaces(onlyMarketplaces)
-                                viewModel.setOnlyOfflineShops(onlyOfflineShops)
-                                viewModel.setPriceFrom(priceFrom)
-                                viewModel.setPriceTo(priceTo)
-                                viewModel.setPopularDiapasonChosen(popularDiapasonChosen)
-                                viewModel.setCanPayLater(canPayLater)
-                                // Добавить начало поиска заново
-                                closeFilters()
+                                apply()
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -581,9 +613,9 @@ fun FilterDefaultButton(
     Box(
         modifier = Modifier
             .height(41.dp)
+            .clip(shape = RoundedCornerShape(size = 14.dp))
             .background(
-                color = if (!isSelected) LocalCustomColors.current.disabledFilterButtonColor else LocalCustomColors.current.midDark,
-                shape = RoundedCornerShape(size = 14.dp)
+                color = if (!isSelected) LocalCustomColors.current.disabledFilterButtonColor else LocalCustomColors.current.midDark
             )
             .clickable { onClick() },
         contentAlignment = Alignment.Center
@@ -614,12 +646,12 @@ fun FilterSwitch(
         modifier = modifier
             .fillMaxWidth()
             .height(44.dp)
+            .clip(shape = RoundedCornerShape(size = 14.dp))
             .background(
-                color = LocalCustomColors.current.disabledFilterButtonColor,
-                shape = RoundedCornerShape(size = 14.dp)
+                color = LocalCustomColors.current.disabledFilterButtonColor
             )
-            .padding(horizontal = 14.dp)
-            .clickable { onCheckedChange(!isChecked) },
+            .clickable { onCheckedChange(!isChecked) }
+            .padding(horizontal = 14.dp),
         contentAlignment = Alignment.CenterStart
     ) {
         Row(
@@ -662,7 +694,12 @@ fun PriceInputField(
     context: Context
 ) {
     var textFieldValue by remember { mutableStateOf(TextFieldValue(value)) }
-
+    LaunchedEffect(value) {
+        if (textFieldValue.text != value) {
+            textFieldValue = TextFieldValue(value, selection = TextRange(value.length))
+        }
+        if (textFieldValue.text == Long.MAX_VALUE.toString()) textFieldValue = TextFieldValue("-")
+    }
     Box(
         modifier = modifier
             .height(44.dp)
@@ -753,4 +790,8 @@ fun PriceInputField(
             )
         }
     }
+}
+
+private fun Float.toRubles(): String {
+    return "%,d ₽".format(this.toLong()).replace(',', ' ')
 }

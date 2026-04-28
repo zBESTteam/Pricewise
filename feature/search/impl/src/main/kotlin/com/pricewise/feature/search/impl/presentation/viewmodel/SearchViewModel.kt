@@ -1,16 +1,22 @@
 package com.pricewise.feature.search.impl.presentation.viewmodel
 
-import com.pricewise.core.ui.viewmodel.BaseViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.room.util.copy
 import com.pricewise.feature.favorites.api.FavoriteMutationRequest
 import com.pricewise.feature.favorites.api.FavoritesFeatureApi
 import com.pricewise.feature.search.api.SearchFeatureApi
 import com.pricewise.feature.search.api.domain.model.Product
+import com.pricewise.feature.search.impl.presentation.ui.Delivery
+import com.pricewise.feature.search.impl.presentation.ui.FiltersState
 import com.pricewise.feature.search.impl.presentation.ui.SearchUiState
+import com.pricewise.feature.search.impl.presentation.ui.Sort
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,39 +28,41 @@ import kotlinx.coroutines.withContext
 class SearchViewModel @Inject constructor(
     private val repository: SearchFeatureApi,
     private val favoritesFeatureApi: FavoritesFeatureApi,
-    private val searchSessionCache: SearchSessionCache,
-) : BaseViewModel() {
+) : ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            favoritesFeatureApi.favoriteMutations.collect { event ->
+                updateProductFavoriteState(
+                    productId = event.externalId,
+                    source = event.source,
+                    isFavorite = event.isFavorite,
+                )
+            }
+        }
+    }
 
     private val defaultLimit: Int = 20
     private var searchJob: Job? = null
-    private val resolvedTotalState = searchSessionCache.resolvedTotal
-    val resolvedTotal: StateFlow<Int> = resolvedTotalState.asStateFlow()
-    private val allItemsState = searchSessionCache.allItems
-    private val uiStateState = searchSessionCache.uiState
-    val uiState: StateFlow<SearchUiState> = uiStateState.asStateFlow()
+    private var searchAttempts = 0
+    private val _resolvedTotal = MutableStateFlow(0)
+    val resolvedTotal: StateFlow<Int> = _resolvedTotal.asStateFlow()
+    private val _allItems = MutableStateFlow(listOf<Product>())
+    private val _uiState = MutableStateFlow(SearchUiState())
+    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
+    private val _isProductChosen = MutableStateFlow(true)
+    val isProductChosen: StateFlow<Boolean> = _isProductChosen.asStateFlow()
+    private val _filtersState = MutableStateFlow(
+        FiltersState(
+            priceFrom = 0L,
+            priceTo = 0L
+        )
+    )
+    val filtersState: StateFlow<FiltersState> = _filtersState.asStateFlow()
+    private var canRewriteFilters = true
+    private val _chosenSort = MutableStateFlow(Sort.DEFAULT)
+    val chosenSort: StateFlow<Sort> = _chosenSort.asStateFlow()
 
-    private val isProductChosenState = searchSessionCache.isProductChosen
-    private val deliveryChosenState = searchSessionCache.deliveryChosen
-    private val onlyOriginalsState = searchSessionCache.onlyOriginals
-    private val onlyNewState = searchSessionCache.onlyNew
-    private val onlyUsedState = searchSessionCache.onlyUsed
-    private val onlyMarketplacesState = searchSessionCache.onlyMarketplaces
-    private val onlyOfflineShopsState = searchSessionCache.onlyOfflineShops
-    private val priceFromState = searchSessionCache.priceFrom
-    private val priceToState = searchSessionCache.priceTo
-    private val popularDiapasonChosenState = searchSessionCache.popularDiapasonChosen
-    private val canPayLaterState = searchSessionCache.canPayLater
-    val isProductChosen: StateFlow<Boolean> = isProductChosenState.asStateFlow()
-    val deliveryChosen: StateFlow<Int> = deliveryChosenState.asStateFlow()
-    val onlyOriginals: StateFlow<Boolean> = onlyOriginalsState.asStateFlow()
-    val onlyNew: StateFlow<Boolean> = onlyNewState.asStateFlow()
-    val onlyUsed: StateFlow<Boolean> = onlyUsedState.asStateFlow()
-    val onlyMarketplaces: StateFlow<Boolean> = onlyMarketplacesState.asStateFlow()
-    val onlyOfflineShops: StateFlow<Boolean> = onlyOfflineShopsState.asStateFlow()
-    val priceFrom: StateFlow<Long> = priceFromState.asStateFlow()
-    val priceTo: StateFlow<Long> = priceToState.asStateFlow()
-    val popularDiapasonChosen: StateFlow<Int> = popularDiapasonChosenState.asStateFlow()
-    val canPayLater: StateFlow<Boolean> = canPayLaterState.asStateFlow()
     val sources = listOf(
         "market.yandex.ru",
         "mvideo.ru",
@@ -66,89 +74,74 @@ class SearchViewModel @Inject constructor(
         "xcom-shop.ru",
     )
 
-    init {
-        viewModelScopeSafe.launch {
-            favoritesFeatureApi.favoriteStates.collect { favoriteStates ->
-                applyFavoriteStates(favoriteStates = favoriteStates)
-            }
-        }
-
-        resumePendingSearchIfNeeded()
-    }
-
     fun setIsProductChosen(value: Boolean) {
-        isProductChosenState.value = value
+        _filtersState.value = _filtersState.value.copy(isProductChosen = value)
     }
 
-    fun setDeliveryChosen(value: Int) {
-        deliveryChosenState.value = value
+    fun setDeliveryChosen(value: Delivery) {
+        _filtersState.value = _filtersState.value.copy(deliveryChosen = value)
     }
 
     fun setOnlyOriginals(value: Boolean) {
-        onlyOriginalsState.value = value
+        _filtersState.value = _filtersState.value.copy(onlyOriginals = value)
     }
 
     fun setOnlyNew(value: Boolean) {
-        onlyNewState.value = value
+        _filtersState.value = _filtersState.value.copy(onlyNew = value)
     }
 
     fun setOnlyUsed(value: Boolean) {
-        onlyUsedState.value = value
+        _filtersState.value = _filtersState.value.copy(onlyUsed = value)
     }
 
     fun setOnlyMarketplaces(value: Boolean) {
-        onlyMarketplacesState.value = value
+        _filtersState.value = _filtersState.value.copy(onlyMarketplaces = value)
     }
 
     fun setOnlyOfflineShops(value: Boolean) {
-        onlyOfflineShopsState.value = value
+        _filtersState.value = _filtersState.value.copy(onlyOfflineShops = value)
     }
 
     fun setPriceFrom(value: Long) {
-        priceFromState.value = value
+        _filtersState.value = _filtersState.value.copy(priceFrom = value)
     }
 
     fun setPriceTo(value: Long) {
-        priceToState.value = value
+        _filtersState.value = _filtersState.value.copy(priceTo = value)
     }
 
     fun setPopularDiapasonChosen(value: Int) {
-        popularDiapasonChosenState.value = value
+        _filtersState.value = _filtersState.value.copy(popularDiapasonChosen = value)
     }
 
     fun setCanPayLater(value: Boolean) {
-        canPayLaterState.value = value
+        _filtersState.value = _filtersState.value.copy(canPayLater = value)
     }
 
     fun resetAllFilters() {
-        isProductChosenState.value = true
-        deliveryChosenState.value = 0
-        onlyOriginalsState.value = false
-        onlyNewState.value = false
-        onlyUsedState.value = false
-        onlyMarketplacesState.value = false
-        onlyOfflineShopsState.value = false
+        _isProductChosen.value = true
+        _filtersState.value = FiltersState(
+            priceFrom = 0L,
+            priceTo = 0L
+        )
     }
 
-    fun onProductFavoriteClick(productId: String, source: String) {
-        val normalizedSource = normalizeSource(source)
-        val product = allItemsState.value.firstOrNull { item ->
-            item.id == productId && normalizeSource(item.source) == normalizedSource
-        } ?: return
+    fun onProductFavoriteClick(productId: String) {
+        val product = _allItems.value.firstOrNull { it.id == productId } ?: return
         val updatedFavoriteState = !product.isFavorite
         updateProductFavoriteState(
             productId = productId,
-            source = normalizedSource,
+            source = product.source,
             isFavorite = updatedFavoriteState,
         )
 
-        viewModelScopeSafe.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             runCatching {
                 if (updatedFavoriteState) {
                     favoritesFeatureApi.addToFavorites(
                         request = FavoriteMutationRequest(
                             externalId = product.id,
-                            source = normalizedSource,
+                            source = product.source,
                             title = product.title,
                             price = product.price,
                             thumbnailUrl = product.thumbnailUrl,
@@ -159,42 +152,38 @@ class SearchViewModel @Inject constructor(
                 } else {
                     favoritesFeatureApi.removeFromFavorites(
                         externalId = product.id,
-                        source = normalizedSource,
+                        source = product.source,
                     )
                 }
             }.onFailure {
                 updateProductFavoriteState(
                     productId = productId,
-                    source = normalizedSource,
+                    source = product.source,
                     isFavorite = product.isFavorite,
                 )
-                uiStateState.update { state -> state.copy(isError = true) }
+                _uiState.update { state -> state.copy(isError = true) }
             }
         }
     }
 
-    private fun updateProductFavoriteState(productId: String, source: String?, isFavorite: Boolean) {
-        val normalizedSource = source?.let(::normalizeSource)
-
-        allItemsState.update { items ->
+    private fun updateProductFavoriteState(
+        productId: String,
+        source: String?,
+        isFavorite: Boolean
+    ) {
+        _allItems.update { items ->
             items.map { product ->
-                if (
-                    product.id == productId &&
-                    (normalizedSource == null || normalizeSource(product.source) == normalizedSource)
-                ) {
+                if (product.id == productId && (source == null || product.source == source)) {
                     product.copy(isFavorite = isFavorite)
                 } else {
                     product
                 }
             }
         }
-        uiStateState.update { state ->
+        _uiState.update { state ->
             state.copy(
                 items = state.items.map { product ->
-                    if (
-                        product.id == productId &&
-                        (normalizedSource == null || normalizeSource(product.source) == normalizedSource)
-                    ) {
+                    if (product.id == productId && (source == null || product.source == source)) {
                         product.copy(isFavorite = isFavorite)
                     } else {
                         product
@@ -205,13 +194,17 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onQueryChange(query: String) {
-        uiStateState.update { state ->
-            state.copy(query = query)
+        val trimmedQuery = query.trim()
+        if (trimmedQuery.isEmpty()) clearQuery()
+        else {
+            _uiState.update { state ->
+                state.copy(query = query)
+            }
         }
     }
 
     fun clearQuery() {
-        uiStateState.update { state -> state.copy(query = "") }
+        _uiState.update { state -> state.copy(query = "") }
     }
 
     fun initializeSearch(searchQuery: String) {
@@ -221,45 +214,38 @@ class SearchViewModel @Inject constructor(
             return
         }
 
-        if (
-            uiStateState.value.submittedQuery == trimmedSearchQuery &&
-            uiStateState.value.query == trimmedSearchQuery
-        ) {
+        if (_uiState.value.submittedQuery == trimmedSearchQuery && _uiState.value.query == trimmedSearchQuery) {
             return
         }
 
-        uiStateState.update { state ->
+        _uiState.update { state ->
             state.copy(query = trimmedSearchQuery)
         }
         submitSearch()
     }
 
     fun submitSearch() {
+        canRewriteFilters = true
         searchJob?.cancel()
-        searchSessionCache.searchAttempts = 0
-        val query = uiStateState.value.query.trim()
-        if (query.isEmpty()) return
-        searchJob = viewModelScopeSafe.launch {
-            resetAllFilters()
-            allItemsState.value = emptyList()
-            uiStateState.update { state ->
-                state.copy(
-                    isLoading = true,
-                    submittedQuery = query,
-                    isError = false,
-                    items = emptyList(),
-                    checkedSources = 0,
-                    pendingSources = emptyList(),
-                )
+        searchAttempts = 0
+        viewModelScope.launch(Dispatchers.IO) {
+            searchJob = viewModelScope.launch {
+                setChosenSort(Sort.DEFAULT)
+                resetAllFilters()
+                performSearch(_uiState.value.query.trim())
             }
-            performSearchLoop(query)
+        }
+        _uiState.update { state ->
+            state.copy(
+                checkedSources = 0
+            )
         }
     }
 
-    private suspend fun performSearchLoop(query: String) {
-        try {
-            var attempts = 0
-            while (attempts <= MAX_SEARCH_ATTEMPTS) {
+    fun performSearch(query: String) {
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true, submittedQuery = query) }
                 val result = withContext(Dispatchers.IO) {
                     repository.search(
                         query = query,
@@ -268,100 +254,68 @@ class SearchViewModel @Inject constructor(
                         perSource = true,
                         partial = true,
                         sources = sources,
-                        sort = "",
-                        priceMin = priceFromState.value,
-                        priceMax = priceToState.value,
-                        delivery = deliveryChosenState.value.toString(),
-                        onlyOriginal = onlyOriginalsState.value,
-                        onlyNew = onlyNewState.value,
-                        onlyUsed = onlyUsedState.value,
-                        marketplaceOnly = onlyMarketplacesState.value,
-                        offlineOnly = onlyOfflineShopsState.value,
-                        playLaterOnly = canPayLaterState.value,
+                        sort = _chosenSort.value.text,
+                        priceMin = filtersState.value.priceFrom,
+                        priceMax = filtersState.value.priceTo,
+                        delivery = filtersState.value.deliveryChosen.text,
+                        onlyOriginal = filtersState.value.onlyOriginals,
+                        onlyNew = filtersState.value.onlyNew,
+                        onlyUsed = filtersState.value.onlyUsed,
+                        marketplaceOnly = filtersState.value.onlyMarketplaces,
+                        offlineOnly = filtersState.value.onlyOfflineShops,
+                        playLaterOnly = filtersState.value.canPayLater,
                     )
                 }
-                val items = applyFavoriteStatesToItems(
-                    items = result.items,
-                    favoriteStates = favoritesFeatureApi.favoriteStates.value,
-                )
-                allItemsState.value = items
-                val shouldSearchAgain = result.pendingSources.isNotEmpty() && attempts < MAX_SEARCH_ATTEMPTS
-                uiStateState.update { state ->
+                _allItems.value = result.items
+                val shouldSearchAgain =
+                    result.pendingSources.isNotEmpty() && searchAttempts < MAX_SEARCH_ATTEMPTS
+                _uiState.update { state ->
                     val checked = result.checkedSources ?: state.checkedSources
                     val totalSources = result.totalSources
-                    resolvedTotalState.value = when {
+                    _resolvedTotal.value = when {
                         totalSources != null && totalSources > 0 -> {
                             maxOf(totalSources, checked)
                         }
+
                         checked > state.totalSources -> checked
                         else -> state.totalSources
                     }
                     state.copy(
                         isLoading = shouldSearchAgain,
-                        items = items,
+                        items = result.items,
                         hasMore = result.hasMore,
                         checkedSources = checked,
                         totalSources = resolvedTotal.value,
                         pendingSources = result.pendingSources,
+                        minPrice = if (canRewriteFilters) result.items.minByOrNull { it.price }?.price ?: 0 else state.minPrice,
+                        maxPrice = if (canRewriteFilters) result.items.maxByOrNull { it.price }?.price ?: 0 else state.maxPrice
                     )
                 }
-                if (!shouldSearchAgain) break
-                attempts++
-                searchSessionCache.searchAttempts = attempts
-                delay(SEARCH_INTERVAL_MS)
+                if (shouldSearchAgain) {
+                    repeatSearch(query = query)
+                }
+                else {
+                    canRewriteFilters = false
+                }
+            } catch (_: Exception) {
+                _uiState.update { state -> state.copy(isError = true) }
             }
-        } catch (e: kotlin.coroutines.cancellation.CancellationException) {
-            throw e
-        } catch (_: Exception) {
-            uiStateState.update { state -> state.copy(isError = true, isLoading = false) }
         }
     }
 
-    private fun applyFavoriteStates(favoriteStates: Map<String, Boolean>) {
-        val items = applyFavoriteStatesToItems(
-            items = allItemsState.value,
-            favoriteStates = favoriteStates,
-        )
-        allItemsState.value = items
-        uiStateState.update { state ->
-            state.copy(items = applyFavoriteStatesToItems(items = state.items, favoriteStates = favoriteStates))
+    fun repeatSearch(query: String) {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch(Dispatchers.IO) {
+            searchAttempts += 1
+            delay(SEARCH_INTERVAL_MS)
+            performSearch(query)
         }
     }
 
-    private fun applyFavoriteStatesToItems(
-        items: List<Product>,
-        favoriteStates: Map<String, Boolean>,
-    ): List<Product> {
-        return items.map { product ->
-            val favoriteKey = makeFavoriteKey(
-                productId = product.id,
-                source = product.source,
-            )
-            val isFavorite = favoriteStates[favoriteKey] ?: product.isFavorite
-            product.copy(isFavorite = isFavorite)
-        }
-    }
-
-    private fun resumePendingSearchIfNeeded() {
-        val state = uiStateState.value
-        if (!state.isLoading || state.submittedQuery.isBlank()) {
-            return
-        }
-        val query = state.submittedQuery
-        searchJob = viewModelScopeSafe.launch {
-            performSearchLoop(query)
-        }
-    }
-
-    private fun makeFavoriteKey(productId: String, source: String): String {
-        return "$productId|${normalizeSource(source)}"
-    }
-
-    private fun normalizeSource(source: String): String {
-        return source.trim().ifBlank { "unknown" }
+    fun setChosenSort(newSort: Sort) {
+        _chosenSort.value = newSort
     }
 }
 
 private const val MAX_SEARCH_ATTEMPTS = 8
 private const val SEARCH_INTERVAL_MS: Long = 1000
-

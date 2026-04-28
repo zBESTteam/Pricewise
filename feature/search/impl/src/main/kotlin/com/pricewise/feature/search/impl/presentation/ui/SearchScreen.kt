@@ -36,12 +36,11 @@ import com.pricewise.feature.search.impl.presentation.components.ProductCard
 import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,8 +49,8 @@ import com.pricewise.core.ui.components.PriceWiseSearchHeaderTokens
 import com.pricewise.core.ui.R
 import com.pricewise.feature.search.impl.presentation.components.ProductCardShimmer
 import components.SearchBar
+import androidx.compose.runtime.collectAsState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     contentPadding: PaddingValues,
@@ -61,14 +60,22 @@ fun SearchScreen(
     val viewModel: SearchViewModel = hiltViewModel()
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-
+    var onlyDeliverySelected by rememberSaveable { mutableStateOf(false) }
+    var onlyNewSelected by rememberSaveable { mutableStateOf(false) }
     var showFilters by rememberSaveable { mutableStateOf(false) }
+    var showSorts by rememberSaveable { mutableStateOf(false) }
+
     val closeFilters = { showFilters = false }
+    val closeSorts = { showSorts = false }
 
     if (showFilters) {
         Filters(
-            closeFilters = closeFilters,
-            viewModel = viewModel
+            closeFilters = closeFilters
+        )
+    }
+    if (showSorts) {
+        Sorts(
+            closeSorts = closeSorts
         )
     }
 
@@ -166,95 +173,79 @@ fun SearchScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             item {
-                DefaultButton(icon = R.drawable.ic_sort, isSelected = false, onClick = {})
+                DefaultButton(icon = R.drawable.ic_sort, isSelected = viewModel.chosenSort.collectAsState().value != Sort.DEFAULT, onClick = {
+                    showSorts = true
+                })
             }
             item {
-                DefaultButton(icon = R.drawable.ic_filter, isSelected = false, onClick = { showFilters = true })
+                DefaultButton(
+                    icon = R.drawable.ic_filter,
+                    isSelected = viewModel.filtersState.collectAsState().value != FiltersState(
+                        priceFrom = 0L,
+                        priceTo = 0L
+                    ),
+                    onClick = { showFilters = true })
             }
             item {
-                DefaultButton(text = stringResource(com.pricewise.feature.search.impl.R.string.only_new), isSelected = false, onClick = {})
+                DefaultButton(
+                    text = stringResource(com.pricewise.feature.search.impl.R.string.only_new),
+                    isSelected = onlyNewSelected,
+                    onClick = {
+//                        if (!onlyNewSelected) {
+//                            viewModel.setOnlyNew(true)
+//                            viewModel.performSearch(viewModel.uiState.value.query)
+//                        }
+//                        onlyNewSelected = !onlyNewSelected
+                    })
             }
             item {
-                DefaultButton(text = stringResource(com.pricewise.feature.search.impl.R.string.only_with_delievery), isSelected = false, onClick = {})
+                DefaultButton(
+                    text = stringResource(com.pricewise.feature.search.impl.R.string.only_with_delievery),
+                    isSelected = onlyDeliverySelected,
+                    onClick = {
+//                        if (viewModel.filtersState.value.deliveryChosen == Delivery.ANY && !onlyDeliverySelected) {
+//                            viewModel.setDeliveryChosen(
+//                                Delivery.EXIST
+//                            )
+//                            viewModel.performSearch(viewModel.uiState.value.query)
+//                        }
+//                        onlyDeliverySelected = !onlyDeliverySelected
+                    })
             }
         }
-        when {
-            state.items.isNotEmpty() -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(horizontal = 15.dp)
-                        .fillMaxSize()
-                        .padding(top = 14.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    items(
-                        items = state.items,
-                        key = { item -> "${item.id}|${item.source}" }
-                    ) { item ->
-                        ProductCard(
-                            product = item,
-                            addToFavourites = { product ->
-                                viewModel.onProductFavoriteClick(
-                                    productId = product.id,
-                                    source = product.source,
-                                )
-                            },
-                        )
-                    }
-                    if (state.isLoading) {
-                        items(3) {
-                            ProductCardShimmer()
-                        }
-                    }
-                }
-            }
-            state.isLoading -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(horizontal = 15.dp)
-                        .fillMaxSize()
-                        .padding(top = 14.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    items(6) {
-                        ProductCardShimmer()
-                    }
-                }
-            }
-            state.isError -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 14.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "Произошла ошибка при поиске",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            fontFamily = Inter,
-                            fontWeight = FontWeight(500),
-                            color = LocalCustomColors.current.secondaryText,
-                        ),
+        if (state.items.isNotEmpty() && !state.isLoading) {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
+                    .fillMaxSize()
+                    .padding(top = 14.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                items(
+                    items = state.items,
+                    key = { it.id }
+                ) { item ->
+                    ProductCard(
+                        product = item,
+                        addToFavourites = { product ->
+                            viewModel.onProductFavoriteClick(productId = product.id)
+                        },
                     )
                 }
             }
-            state.submittedQuery.isNotEmpty() -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 14.dp),
-                    contentAlignment = Alignment.Center,
+        }
+        if (state.isLoading) {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
+                    .fillMaxSize()
+                    .padding(top = 14.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                items(
+                    100
                 ) {
-                    Text(
-                        text = "По запросу «${state.submittedQuery}» ничего не найдено",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            fontFamily = Inter,
-                            fontWeight = FontWeight(500),
-                            color = LocalCustomColors.current.secondaryText,
-                        ),
-                    )
+                    ProductCardShimmer()
                 }
             }
         }
@@ -311,9 +302,9 @@ fun DefaultButton(
 ) {
     var modifier = Modifier
         .height(41.dp)
+        .clip(shape = RoundedCornerShape(size = 14.dp))
         .background(
-            color = if (!isSelected) LocalCustomColors.current.disabledFilterButtonColor else LocalCustomColors.current.midDark,
-            shape = RoundedCornerShape(size = 14.dp)
+            color = if (!isSelected) LocalCustomColors.current.disabledFilterButtonColor else LocalCustomColors.current.midDark
         )
         .clickable { onClick() }
     if (icon != null && text == null) modifier = modifier.width(41.dp)
@@ -325,7 +316,7 @@ fun DefaultButton(
             Icon(
                 modifier = Modifier.padding(all = 10.dp),
                 painter = painterResource(icon),
-                tint = LocalCustomColors.current.iconsColor,
+                tint = if (!isSelected) LocalCustomColors.current.iconsColor else MaterialTheme.colorScheme.onPrimary,
                 contentDescription = null
             )
         if (text != null)

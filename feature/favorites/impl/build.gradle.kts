@@ -29,11 +29,12 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.hilt.android)
     implementation(libs.runtime)
+    implementation(libs.material3)
     implementation(libs.compose.ui)
-    implementation(libs.compose.material3)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.androidx.runtime)
 
     val moshiVersion = "1.15.0"
     implementation("com.squareup.moshi:moshi:$moshiVersion")
