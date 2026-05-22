@@ -1,0 +1,38 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+  <!-- Верхняя линия (была внизу) -->
+  <path
+      android:pathData="M2.5,7.5L11.667,7.5"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#4E4E4E"
+      android:strokeLineCap="round"/>
+  <!-- Средняя линия (была в центре) -->
+  <path
+      android:pathData="M2.5,12.5H8.333"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#4E4E4E"
+      android:strokeLineCap="round"/>
+  <!-- Нижняя линия (была вверху) -->
+  <path
+      android:pathData="M2.5,2.5H15.833"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#4E4E4E"
+      android:strokeLineCap="round"/>
+  <!-- Вертикальная линия со стрелкой, отражённая по Y -->
+  <path
+      android:pathData="M15.416,17.5V7.5M15.416,17.5C14.833,17.5 13.743,15.838 13.333,15.417M15.416,17.5C16,17.5 17.09,15.838 17.5,15.417"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#4E4E4E"
+      android:strokeLineCap="round"/>
+</vector>

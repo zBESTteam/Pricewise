@@ -58,7 +58,7 @@ fun ProductCardShimmer() {
             .height(113.dp)
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = LocalCustomColors.current.cardBackgroundColor,
                 shape = RoundedCornerShape(14.dp)
             )
             .shimmer(),

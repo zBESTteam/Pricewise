@@ -23,7 +23,8 @@ dependencies {
     implementation(project(":feature:auth:impl"))
     implementation(project(":feature:favorites:api"))
     implementation(project(":feature:favorites:impl"))
-
+    implementation(project(":feature:profile:api"))
+    implementation(project(":feature:profile:impl"))
     implementation(platform(libs.compose.bom))
     implementation(libs.animation)
     implementation(libs.core.ktx)

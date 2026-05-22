@@ -1,5 +1,6 @@
 package com.pricewise.core.ui.components
 
+import LocalCustomColors
 import Typography.Inter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -32,9 +34,9 @@ fun FilterActionButton(
         .height(41.dp)
         .background(
             color = if (isSelected) {
-                colorResource(R.color.mid_dark)
+                LocalCustomColors.current.midDark
             } else {
-                colorResource(R.color.disabled_filter_button_color)
+                LocalCustomColors.current.disabledFilterButtonColor
             },
             shape = RoundedCornerShape(size = 14.dp),
         )
@@ -52,7 +54,7 @@ fun FilterActionButton(
             Icon(
                 modifier = Modifier.padding(all = 10.dp),
                 painter = painterResource(icon),
-                tint = colorResource(R.color.icons_color),
+                tint = LocalCustomColors.current.iconsColor,
                 contentDescription = null,
             )
         }
@@ -66,9 +68,9 @@ fun FilterActionButton(
                     fontFamily = Inter,
                     fontWeight = FontWeight.W600,
                     color = if (isSelected) {
-                        colorResource(R.color.white)
+                        MaterialTheme.colorScheme.onPrimary
                     } else {
-                        colorResource(R.color.disabled_filter_button_text_color)
+                        LocalCustomColors.current.disabledFilterButtonTextColor
                     },
                     letterSpacing = 0.3.sp,
                 ),
