@@ -59,7 +59,7 @@ class FavoritesFeatureApiImpl @Inject constructor(
 
     override suspend fun removeFromFavorites(externalId: String, source: String) {
         val removed = repository.remove(externalId = externalId, source = source)
-        check(removed) { "Не удалось удалить товар из избранного" }
+        check(removed) { "Failed to remove favorite item externalId=$externalId source=$source" }
         updateFavoriteState(
             externalId = externalId,
             source = source,

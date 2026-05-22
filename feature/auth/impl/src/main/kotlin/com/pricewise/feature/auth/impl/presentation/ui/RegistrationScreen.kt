@@ -58,9 +58,21 @@ fun RegistrationScreen(
         }
     }
 
+    val authErrorMessage = uiState.error?.let { error ->
+        stringResource(
+            id = when (error) {
+                com.pricewise.feature.auth.impl.presentation.viewmodel.AuthError.INVALID_CREDENTIALS ->
+                    com.pricewise.core.ui.R.string.auth_error_invalid_credentials
+                com.pricewise.feature.auth.impl.presentation.viewmodel.AuthError.PASSWORD_MISMATCH ->
+                    com.pricewise.core.ui.R.string.auth_error_password_mismatch
+                com.pricewise.feature.auth.impl.presentation.viewmodel.AuthError.GENERIC ->
+                    com.pricewise.core.ui.R.string.auth_error_generic
+            },
+        )
+    }
     LaunchedEffect(uiState.error) {
-        if (uiState.error != null) {
-            Toast.makeText(context, uiState.error, Toast.LENGTH_LONG).show()
+        if (authErrorMessage != null) {
+            Toast.makeText(context, authErrorMessage, Toast.LENGTH_LONG).show()
         }
     }
 

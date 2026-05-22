@@ -9,6 +9,7 @@ import com.pricewise.feature.auth.api.AuthFeatureEntry
 import com.pricewise.feature.auth.api.AuthRoutes
 import com.pricewise.feature.auth.impl.presentation.ui.AuthorizationScreen
 import com.pricewise.feature.auth.impl.presentation.ui.RegistrationScreen
+import com.pricewise.feature.home.api.HomeRoutes
 import javax.inject.Inject
 
 class AuthFeatureEntryImpl @Inject constructor() : AuthFeatureEntry {
@@ -28,7 +29,7 @@ class AuthFeatureEntryImpl @Inject constructor() : AuthFeatureEntry {
                     navController.navigate(registerRoute)
                 },
                 onNavigateToMain = {
-                    navController.navigate("home") { // Replace with actual home route if different
+                    navController.navigate(HomeRoutes.Home) {
                         popUpTo(loginRoute) { inclusive = true }
                     }
                 }
@@ -41,7 +42,7 @@ class AuthFeatureEntryImpl @Inject constructor() : AuthFeatureEntry {
                     navController.popBackStack()
                 },
                 onNavigateToMain = {
-                    navController.navigate("home") {
+                    navController.navigate(HomeRoutes.Home) {
                         popUpTo(loginRoute) { inclusive = true }
                     }
                 }

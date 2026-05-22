@@ -34,5 +34,15 @@
     <string name="after_120_000">120 000 ₽ и дороже</string>
     <string name="pay_later">Оплата в рассрочку</string>
     <string name="show_product_pay_later">Показать товары, которые можно оплатить позже от 0%</string>
+    <string name="price_from">От</string>
+    <string name="price_to">До</string>
+    <string name="search_loading">Ищем товары</string>
+    <string name="search_error">Произошла ошибка при поиске</string>
+    <string name="auth_error_password_mismatch">Пароли не совпадают</string>
+    <string name="auth_error_generic">Произошла ошибка. Попробуйте ещё раз</string>
+    <string name="auth_error_invalid_credentials">Неверные данные для входа</string>
+    <string name="favorites_load_error">Не удалось загрузить избранное</string>
+    <string name="favorites_remove_error">Не удалось удалить товар из избранного</string>
+    <string name="home_load_error">Не удалось загрузить экран</string>
 
 </resources>

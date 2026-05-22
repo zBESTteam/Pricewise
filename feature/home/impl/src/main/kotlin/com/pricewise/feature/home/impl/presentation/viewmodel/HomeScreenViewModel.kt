@@ -52,27 +52,35 @@ class HomeScreenViewModel @Inject constructor(
         loadHomeFeed()
     }
 
+    private val loadErrorState = MutableStateFlow<Throwable?>(null)
+
     private fun loadHomeFeed() {
         viewModelScopeSafe.launch(Dispatchers.IO) {
             try {
                 val feed = getHomeFeedUseCase()
+                loadErrorState.value = null
                 homeFeedState.value = feed
             } catch (e: kotlin.coroutines.cancellation.CancellationException) {
                 throw e
-            } catch (_: Exception) {
-                // homeFeedState stays null → screenState emits Loading
+            } catch (e: Exception) {
+                loadErrorState.value = e
             }
         }
+    }
+
+    fun retry() {
+        loadHomeFeed()
     }
 
     val screenState: StateFlow<HomeScreenState> = combine(
         userInputState,
         homeFeedState,
-    ) { userInput: HomeScreenUserInput, homeFeed: HomeFeed? ->
-        if (homeFeed == null) {
-            HomeScreenState.Loading
-        } else {
-            homeScreenMapper.getScreenState(homeFeed = homeFeed, userInput = userInput)
+        loadErrorState,
+    ) { userInput: HomeScreenUserInput, homeFeed: HomeFeed?, error: Throwable? ->
+        when {
+            error != null && homeFeed == null -> homeScreenMapper.getScreenState(throwable = error)
+            homeFeed == null -> HomeScreenState.Loading
+            else -> homeScreenMapper.getScreenState(homeFeed = homeFeed, userInput = userInput)
         }
     }
         .catch { throwable ->
@@ -96,9 +104,10 @@ class HomeScreenViewModel @Inject constructor(
 
     fun onPopularQueryClick(queryId: String) {
         val loadedState = screenState.value as? HomeScreenState.Loaded ?: return
-        val queryTitle = loadedState.popularQueries.firstOrNull { query -> query.id == queryId }
+        val queryTitle = loadedState.popularQueries
+            .firstOrNull { query -> query.id == queryId }
             ?.title
-            .orEmpty()
+            ?: return
         userInputState.update { currentState ->
             currentState.copy(searchQuery = queryTitle)
         }

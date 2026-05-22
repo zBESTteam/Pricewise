@@ -95,7 +95,7 @@ fun SearchScreen(
         SearchHeaderSection(
             query = state.query,
             onQueryChange = viewModel::onQueryChange,
-            onSearch = viewModel::submitSearch,
+            onSearch = { viewModel.submitSearch(resetFilters = true) },
             onClear = { viewModel.clearQuery() },
             onPhotoSearchClick = {},
             modifier = Modifier,
@@ -105,7 +105,7 @@ fun SearchScreen(
                 start = 15.dp,
                 top = 14.dp
             ),
-            text = "Ищем товары",
+            text = stringResource(com.pricewise.core.ui.R.string.search_loading),
             style = TextStyle(
                 fontSize = 20.sp,
                 lineHeight = 26.sp,
@@ -213,23 +213,64 @@ fun SearchScreen(
                     })
             }
         }
-        if (state.items.isNotEmpty() && !state.isLoading) {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(horizontal = 15.dp)
-                    .fillMaxSize()
-                    .padding(top = 14.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                items(
-                    items = state.items,
-                    key = { it.id }
-                ) { item ->
-                    ProductCard(
-                        product = item,
-                        addToFavourites = { product ->
-                            viewModel.onProductFavoriteClick(productId = product.id)
-                        },
+        when {
+            state.items.isNotEmpty() -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(horizontal = 15.dp)
+                        .fillMaxSize()
+                        .padding(top = 14.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    items(
+                        items = state.items,
+                        key = { item -> "${item.id}|${item.source}" }
+                    ) { item ->
+                        ProductCard(
+                            product = item,
+                            addToFavourites = { product ->
+                                viewModel.onProductFavoriteClick(
+                                    productId = product.id,
+                                    source = product.source,
+                                )
+                            },
+                        )
+                    }
+                    if (state.isLoading) {
+                        items(3) {
+                            ProductCardShimmer()
+                        }
+                    }
+                }
+            }
+            state.isLoading -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(horizontal = 15.dp)
+                        .fillMaxSize()
+                        .padding(top = 14.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    items(6) {
+                        ProductCardShimmer()
+                    }
+                }
+            }
+            state.isError -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 14.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = stringResource(com.pricewise.core.ui.R.string.search_error),
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontFamily = Inter,
+                            fontWeight = FontWeight(500),
+                            color = LocalCustomColors.current.secondaryText,
+                        ),
                     )
                 }
             }

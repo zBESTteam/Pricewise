@@ -119,11 +119,17 @@ class SearchViewModel @Inject constructor(
     }
 
     fun resetAllFilters() {
-        _isProductChosen.value = true
-        _filtersState.value = FiltersState(
-            priceFrom = 0L,
-            priceTo = 0L
-        )
+        isProductChosenState.value = true
+        deliveryChosenState.value = 0
+        onlyOriginalsState.value = false
+        onlyNewState.value = false
+        onlyUsedState.value = false
+        onlyMarketplacesState.value = false
+        onlyOfflineShopsState.value = false
+        priceFromState.value = 0L
+        priceToState.value = 0L
+        popularDiapasonChosenState.value = 0
+        canPayLaterState.value = false
     }
 
     fun onProductFavoriteClick(productId: String) {
@@ -221,18 +227,28 @@ class SearchViewModel @Inject constructor(
         _uiState.update { state ->
             state.copy(query = trimmedSearchQuery)
         }
-        submitSearch()
+        submitSearch(resetFilters = true)
     }
 
-    fun submitSearch() {
-        canRewriteFilters = true
+    fun submitSearch(resetFilters: Boolean = false) {
         searchJob?.cancel()
-        searchAttempts = 0
-        viewModelScope.launch(Dispatchers.IO) {
-            searchJob = viewModelScope.launch {
-                setChosenSort(Sort.DEFAULT)
-                resetAllFilters()
-                performSearch(_uiState.value.query.trim())
+        searchSessionCache.searchAttempts = 0
+        val query = uiStateState.value.query.trim()
+        if (query.isEmpty()) return
+        if (resetFilters) {
+            resetAllFilters()
+        }
+        searchJob = viewModelScopeSafe.launch {
+            allItemsState.value = emptyList()
+            uiStateState.update { state ->
+                state.copy(
+                    isLoading = true,
+                    submittedQuery = query,
+                    isError = false,
+                    items = emptyList(),
+                    checkedSources = 0,
+                    pendingSources = emptyList(),
+                )
             }
         }
         _uiState.update { state ->
@@ -303,12 +319,32 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun repeatSearch(query: String) {
+    private fun applyFavoriteStatesToItems(
+        items: List<Product>,
+        favoriteStates: Map<String, Boolean>,
+    ): List<Product> {
+        return items.map { product ->
+            val favoriteKey = makeFavoriteKey(
+                productId = product.id,
+                source = product.source,
+            )
+            val isFavorite = favoriteStates[favoriteKey] ?: product.isFavorite
+            product.copy(isFavorite = isFavorite)
+        }
+    }
+
+    private fun resumePendingSearchIfNeeded() {
+        val state = uiStateState.value
+        if (!state.isLoading || state.submittedQuery.isBlank()) {
+            return
+        }
+        if (searchJob?.isActive == true) {
+            return
+        }
+        val query = state.submittedQuery
         searchJob?.cancel()
-        searchJob = viewModelScope.launch(Dispatchers.IO) {
-            searchAttempts += 1
-            delay(SEARCH_INTERVAL_MS)
-            performSearch(query)
+        searchJob = viewModelScopeSafe.launch {
+            performSearchLoop(query)
         }
     }
 

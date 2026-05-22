@@ -6,10 +6,6 @@ plugins {
 
 android {
     namespace = "com.pricewise.core.auth"
-
-    defaultConfig {
-        minSdk = 24
-    }
 }
 
 dependencies {

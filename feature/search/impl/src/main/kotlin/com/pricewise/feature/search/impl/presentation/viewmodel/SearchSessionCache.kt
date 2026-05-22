@@ -2,6 +2,7 @@ package com.pricewise.feature.search.impl.presentation.viewmodel
 
 import com.pricewise.feature.search.api.domain.model.Product
 import com.pricewise.feature.search.impl.presentation.ui.SearchUiState
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,5 +26,10 @@ class SearchSessionCache @Inject constructor() {
     val popularDiapasonChosen = MutableStateFlow(0)
     val canPayLater = MutableStateFlow(false)
 
-    var searchAttempts: Int = 0
+    private val searchAttemptsRef = AtomicInteger(0)
+    var searchAttempts: Int
+        get() = searchAttemptsRef.get()
+        set(value) {
+            searchAttemptsRef.set(value)
+        }
 }

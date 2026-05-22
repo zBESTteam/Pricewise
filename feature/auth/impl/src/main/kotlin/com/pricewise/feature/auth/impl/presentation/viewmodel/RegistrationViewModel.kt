@@ -27,7 +27,7 @@ class RegistrationViewModel @Inject constructor(
         val currentState = _uiState.value
 
         if (currentState.password != currentState.passwordConfirm) {
-            _uiState.update { it.copy(isLoading = false, error = "Пароли не совпадают") }
+            _uiState.update { it.copy(isLoading = false, error = AuthError.PASSWORD_MISMATCH) }
             return@launch
         }
 
@@ -41,8 +41,8 @@ class RegistrationViewModel @Inject constructor(
             )
         }.onSuccess { session ->
             _uiState.update { it.copy(isLoading = false, session = session) }
-        }.onFailure { throwable ->
-            _uiState.update { it.copy(isLoading = false, error = throwable.message) }
+        }.onFailure {
+            _uiState.update { it.copy(isLoading = false, error = AuthError.GENERIC) }
         }
     }
 }

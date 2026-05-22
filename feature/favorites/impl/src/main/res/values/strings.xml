@@ -59,4 +59,5 @@
     <string name="favorites_filter_marketplaces">Маркетплейсы</string>
     <string name="favorites_filter_offline">Офлайн магазины</string>
     <string name="favorites_filter_apply">Применить</string>
+    <string name="favorites_session_expired">Сессия истекла. Войдите снова</string>
 </resources>

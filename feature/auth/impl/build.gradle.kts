@@ -15,7 +15,9 @@ android {
 
 dependencies {
     implementation(project(":feature:auth:api"))
+    implementation(project(":feature:home:api"))
     implementation(project(":core:di"))
+    implementation(project(":core:ui"))
     implementation(project(":core:navigation-api"))
     implementation(project(":core:network"))
     implementation(project(":core:auth"))
@@ -31,10 +33,6 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.hilt.navigation.compose)
-
-    val moshiVersion = "1.15.0"
-    implementation("com.squareup.moshi:moshi:$moshiVersion")
-    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
 
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.logging)

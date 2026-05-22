@@ -65,28 +65,47 @@ import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Filters(
-    closeFilters: () -> Unit,
-    viewModel: SearchViewModel = hiltViewModel()
-) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
+    val vmIsProductChosen by viewModel.isProductChosen.collectAsStateWithLifecycle()
+    val vmDeliveryChosen by viewModel.deliveryChosen.collectAsStateWithLifecycle()
+    val vmOnlyOriginals by viewModel.onlyOriginals.collectAsStateWithLifecycle()
+    val vmOnlyNew by viewModel.onlyNew.collectAsStateWithLifecycle()
+    val vmOnlyUsed by viewModel.onlyUsed.collectAsStateWithLifecycle()
+    val vmOnlyMarketplaces by viewModel.onlyMarketplaces.collectAsStateWithLifecycle()
+    val vmOnlyOfflineShops by viewModel.onlyOfflineShops.collectAsStateWithLifecycle()
+    val vmPriceFrom by viewModel.priceFrom.collectAsStateWithLifecycle()
+    val vmPriceTo by viewModel.priceTo.collectAsStateWithLifecycle()
+    val vmPopularDiapasonChosen by viewModel.popularDiapasonChosen.collectAsStateWithLifecycle()
+    val vmCanPayLater by viewModel.canPayLater.collectAsStateWithLifecycle()
+
+    var isProductChosen by rememberSaveable { mutableStateOf(vmIsProductChosen) }
+    var deliveryChosen by rememberSaveable { mutableIntStateOf(vmDeliveryChosen) }
+    var onlyOriginals by rememberSaveable { mutableStateOf(vmOnlyOriginals) }
+    var onlyNew by rememberSaveable { mutableStateOf(vmOnlyNew) }
+    var onlyUsed by rememberSaveable { mutableStateOf(vmOnlyUsed) }
+    var onlyMarketplaces by rememberSaveable { mutableStateOf(vmOnlyMarketplaces) }
+    var onlyOfflineShops by rememberSaveable { mutableStateOf(vmOnlyOfflineShops) }
+    var priceFrom by rememberSaveable { mutableLongStateOf(vmPriceFrom) }
+    var priceTo by rememberSaveable { mutableLongStateOf(vmPriceTo) }
+    var popularDiapasonChosen by rememberSaveable { mutableIntStateOf(vmPopularDiapasonChosen) }
+    var canPayLater by rememberSaveable { mutableStateOf(vmCanPayLater) }
     val state = viewModel.uiState.collectAsStateWithLifecycle()
-    val minPrice =
-        state.value.minPrice.toFloat()
-    val maxPrice =
-        state.value.maxPrice.toFloat()
-    var currentFiltersState by remember {
-        mutableStateOf(
-            FiltersState(
-                priceFrom = floor(minPrice).toLong(),
-                priceTo = ceil(maxPrice).toLong()
-            )
-        )
-    }
-    var isProductChosen by remember { mutableStateOf(true) }
-    LaunchedEffect(Unit) {
-        isProductChosen = viewModel.isProductChosen.value
-        currentFiltersState = viewModel.filtersState.value
+    LaunchedEffect(
+        vmIsProductChosen, vmDeliveryChosen, vmOnlyOriginals, vmOnlyNew, vmOnlyUsed,
+        vmOnlyMarketplaces, vmOnlyOfflineShops, vmPriceFrom, vmPriceTo,
+        vmPopularDiapasonChosen, vmCanPayLater,
+    ) {
+        isProductChosen = vmIsProductChosen
+        deliveryChosen = vmDeliveryChosen
+        onlyOriginals = vmOnlyOriginals
+        onlyNew = vmOnlyNew
+        onlyUsed = vmOnlyUsed
+        onlyMarketplaces = vmOnlyMarketplaces
+        onlyOfflineShops = vmOnlyOfflineShops
+        priceFrom = vmPriceFrom
+        priceTo = vmPriceTo
+        popularDiapasonChosen = vmPopularDiapasonChosen
+        canPayLater = vmCanPayLater
     }
     val customModifier: Modifier = Modifier.offset(y = (-7).dp)
 
@@ -358,7 +377,19 @@ fun Filters(
                             )
                             .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
                             .clickable {
-                                apply()
+                                viewModel.setIsProductChosen(isProductChosen)
+                                viewModel.setDeliveryChosen(deliveryChosen)
+                                viewModel.setOnlyOriginals(onlyOriginals)
+                                viewModel.setOnlyNew(onlyNew)
+                                viewModel.setOnlyUsed(onlyUsed)
+                                viewModel.setOnlyMarketplaces(onlyMarketplaces)
+                                viewModel.setOnlyOfflineShops(onlyOfflineShops)
+                                viewModel.setPriceFrom(priceFrom)
+                                viewModel.setPriceTo(priceTo)
+                                viewModel.setPopularDiapasonChosen(popularDiapasonChosen)
+                                viewModel.setCanPayLater(canPayLater)
+                                viewModel.submitSearch()
+                                closeFilters()
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -395,7 +426,7 @@ fun Filters(
                     ) {
                         PriceInputField(
                             modifier = Modifier.weight(1f),
-                            text = "От",
+                            text = stringResource(R.string.price_from),
                             onValueChange = {
                                 currentFiltersState = currentFiltersState.copy(priceFrom = it)
                                 currentFiltersState =
@@ -406,7 +437,7 @@ fun Filters(
                         )
                         PriceInputField(
                             modifier = Modifier.weight(1f),
-                            text = "До",
+                            text = stringResource(R.string.price_to),
                             onValueChange = {
                                 currentFiltersState = currentFiltersState.copy(priceTo = it)
                                 currentFiltersState =
@@ -422,6 +453,22 @@ fun Filters(
                             .height(13.9.dp)
                             .align(Alignment.CenterHorizontally)
                     ) {
+                        val items = state.value.items
+                        val priceBounds = remember(items) {
+                            if (items.isEmpty()) {
+                                0f to 0f
+                            } else {
+                                var min = Long.MAX_VALUE
+                                var max = Long.MIN_VALUE
+                                for (item in items) {
+                                    if (item.price < min) min = item.price
+                                    if (item.price > max) max = item.price
+                                }
+                                min.toFloat() to max.toFloat()
+                            }
+                        }
+                        val minPrice = priceBounds.first
+                        val maxPrice = priceBounds.second
                         val priceRange = maxPrice - minPrice
                         val normalizedFrom = if (priceRange > 0) {
                             ((currentFiltersState.priceFrom - minPrice) / priceRange).coerceIn(
@@ -582,7 +629,19 @@ fun Filters(
                             )
                             .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
                             .clickable {
-                                apply()
+                                viewModel.setIsProductChosen(isProductChosen)
+                                viewModel.setDeliveryChosen(deliveryChosen)
+                                viewModel.setOnlyOriginals(onlyOriginals)
+                                viewModel.setOnlyNew(onlyNew)
+                                viewModel.setOnlyUsed(onlyUsed)
+                                viewModel.setOnlyMarketplaces(onlyMarketplaces)
+                                viewModel.setOnlyOfflineShops(onlyOfflineShops)
+                                viewModel.setPriceFrom(priceFrom)
+                                viewModel.setPriceTo(priceTo)
+                                viewModel.setPopularDiapasonChosen(popularDiapasonChosen)
+                                viewModel.setCanPayLater(canPayLater)
+                                viewModel.submitSearch()
+                                closeFilters()
                             },
                         contentAlignment = Alignment.Center
                     ) {

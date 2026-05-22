@@ -41,7 +41,7 @@ class HomeScreenMapper {
                     id = product.id,
                     source = normalizedSource,
                     title = product.title,
-                    price = rubleFormatter.format(product.price) + " ₽",
+                    price = rubleFormatter.format(product.price),
                     isFavorite = userInput.favoriteProductIds[favoriteKey] ?: product.isFavorite,
                     thumbnailUrl = product.thumbnailUrl,
                     productUrl = product.productUrl,

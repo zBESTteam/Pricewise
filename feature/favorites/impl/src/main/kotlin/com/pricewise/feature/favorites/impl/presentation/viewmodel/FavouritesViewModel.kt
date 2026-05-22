@@ -33,17 +33,14 @@ class FavouritesViewModel @Inject constructor (
         _uiState.update { it.copy(isLoading = true, error = null) }
 
         val token = runCatching { repository.getAuthHeader() }
-            .getOrElse { error ->
+            .getOrElse {
                 _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = error.message ?: "Ошибка доступа к данным пользователя",
-                    )
+                    it.copy(isLoading = false, error = FavoritesError.UNAUTHORIZED)
                 }
                 return@launch
             }
         if (token.isBlank() || token == "Bearer " || token == "Bearer null") {
-            _uiState.update { it.copy(isLoading = false, error = "Необходима авторизация") }
+            _uiState.update { it.copy(isLoading = false, error = FavoritesError.UNAUTHORIZED) }
             return@launch
         }
 
@@ -63,12 +60,12 @@ class FavouritesViewModel @Inject constructor (
                 )
             }
         }.onFailure { e ->
-            val errorMessage = if (e is HttpException && e.code() == 401) {
-                "Сессия истекла. Перезайдите в приложение."
+            val error = if (e is HttpException && e.code() == 401) {
+                FavoritesError.UNAUTHORIZED
             } else {
-                e.message ?: "Ошибка загрузки"
+                FavoritesError.LOAD_FAILED
             }
-            _uiState.update { it.copy(isLoading = false, error = errorMessage) }
+            _uiState.update { it.copy(isLoading = false, error = error) }
         }
     }
 
@@ -110,19 +107,34 @@ class FavouritesViewModel @Inject constructor (
     }
 
     fun removeFavorite(product: PriceWiseProductCardModel) = viewModelScope.launch {
-        val oldState = _uiState.value
-        val updatedAllItems = oldState.allItems.filterNot { item ->
-            item.id == product.id && item.marketplaceName == product.marketplaceName
-        }
-        _uiState.update { state -> applyFiltersAndSorting(state.copy(allItems = updatedAllItems, error = null)) }
-
         val externalId = product.id
         val source = product.marketplaceName
+        val removedIndex = _uiState.value.allItems.indexOfFirst { item ->
+            item.id == externalId && item.marketplaceName == source
+        }
+        if (removedIndex < 0) return@launch
+
+        _uiState.update { state ->
+            val updatedAllItems = state.allItems.toMutableList().apply { removeAt(removedIndex) }
+            applyFiltersAndSorting(state.copy(allItems = updatedAllItems, error = null))
+        }
 
         runCatching {
             favoritesFeatureApi.removeFromFavorites(externalId = externalId, source = source)
-        }.onFailure { e ->
-            _uiState.value = oldState.copy(error = "Ошибка удаления: ${e.message}")
+        }.onFailure {
+            _uiState.update { state ->
+                val alreadyPresent = state.allItems.any { item ->
+                    item.id == externalId && item.marketplaceName == source
+                }
+                if (alreadyPresent) {
+                    state.copy(error = FavoritesError.REMOVE_FAILED)
+                } else {
+                    val restored = state.allItems.toMutableList().apply {
+                        add(removedIndex.coerceAtMost(size), product)
+                    }
+                    applyFiltersAndSorting(state.copy(allItems = restored, error = FavoritesError.REMOVE_FAILED))
+                }
+            }
         }
     }
 
@@ -166,7 +178,7 @@ private fun FavoriteItem.toPriceWiseProductCardModel(): PriceWiseProductCardMode
     return PriceWiseProductCardModel(
         id = this.externalId,
         title = this.title,
-        price = rubleFormatter.format(this.price) + " ₽",
+        price = rubleFormatter.format(this.price),
         deliveryText = "",
         thumbnailUrl = this.thumbnailUrl,
         marketplaceName = this.source,
