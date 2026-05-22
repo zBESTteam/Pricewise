@@ -193,7 +193,7 @@ private fun ErrorSection(
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = throwable.message.orEmpty().ifBlank { "Не удалось загрузить экран" },
+            text = androidx.compose.ui.res.stringResource(com.pricewise.core.ui.R.string.home_load_error),
             style = HomeTextStyles.ProductTitle,
             color = LocalCustomColors.current.midDark,
         )

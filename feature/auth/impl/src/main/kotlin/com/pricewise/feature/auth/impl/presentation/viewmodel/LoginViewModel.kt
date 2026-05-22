@@ -38,8 +38,8 @@ class LoginViewModel @Inject constructor(
             repo.signIn(LoginInput(currentState.email, currentState.password))
         }.onSuccess { session ->
             _uiState.update { it.copy(isLoading = false, session = session) }
-        }.onFailure { throwable ->
-            _uiState.update { it.copy(isLoading = false, error = throwable.message) }
+        }.onFailure {
+            _uiState.update { it.copy(isLoading = false, error = AuthError.INVALID_CREDENTIALS) }
         }
     }
 }

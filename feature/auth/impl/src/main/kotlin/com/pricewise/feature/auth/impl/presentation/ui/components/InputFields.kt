@@ -88,7 +88,7 @@ fun EmailInputField(email: String, onValueChange: (String) -> Unit) {
                     fontFamily = inter,
                     fontWeight = FontWeight(500),
                     color = colorResource(R.color.input_field_text_color),
-                    textAlign = TextAlign.Justify,
+                    textAlign = TextAlign.Start,
                     letterSpacing = 0.3.sp,
                 )
             ) { innerTextField ->
@@ -103,7 +103,7 @@ fun EmailInputField(email: String, onValueChange: (String) -> Unit) {
                             fontFamily = inter,
                             fontWeight = FontWeight(500),
                             color = colorResource(R.color.input_field_text_color),
-                            textAlign = TextAlign.Justify,
+                            textAlign = TextAlign.Start,
                             letterSpacing = 0.3.sp,
                         )
                     )
@@ -166,7 +166,7 @@ fun PasswordInputField(
                     fontFamily = inter,
                     fontWeight = FontWeight(500),
                     color = colorResource(R.color.input_field_text_color),
-                    textAlign = TextAlign.Justify,
+                    textAlign = TextAlign.Start,
                     letterSpacing = 0.3.sp,
                 ),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(
@@ -184,7 +184,7 @@ fun PasswordInputField(
                             fontFamily = inter,
                             fontWeight = FontWeight(500),
                             color = colorResource(R.color.input_field_text_color),
-                            textAlign = TextAlign.Justify,
+                            textAlign = TextAlign.Start,
                             letterSpacing = 0.3.sp,
                         )
                     )

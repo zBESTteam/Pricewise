@@ -1,6 +1,7 @@
 package com.pricewise.core.network.di
 
 import com.pricewise.core.network.ApiConfig
+import com.pricewise.core.network.BuildConfig
 import com.pricewise.core.network.PriceWiseApi
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -30,15 +31,19 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder()
+        val builder = OkHttpClient.Builder()
             .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .addInterceptor(
-                HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BASIC
-                },
-            )
-            .build()
+        if (BuildConfig.DEBUG) {
+            val logger = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BASIC
+                redactHeader("Authorization")
+                redactHeader("Cookie")
+                redactHeader("Set-Cookie")
+            }
+            builder.addInterceptor(logger)
+        }
+        return builder.build()
     }
 
     @Provides

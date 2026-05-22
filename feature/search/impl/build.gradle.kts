@@ -7,6 +7,10 @@ plugins {
 
 android {
     namespace = "com.pricewise.feature.search.impl"
+
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {

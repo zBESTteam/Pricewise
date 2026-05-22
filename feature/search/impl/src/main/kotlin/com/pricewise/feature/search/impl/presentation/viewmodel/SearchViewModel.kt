@@ -128,6 +128,10 @@ class SearchViewModel @Inject constructor(
         onlyUsedState.value = false
         onlyMarketplacesState.value = false
         onlyOfflineShopsState.value = false
+        priceFromState.value = 0L
+        priceToState.value = 0L
+        popularDiapasonChosenState.value = 0
+        canPayLaterState.value = false
     }
 
     fun onProductFavoriteClick(productId: String, source: String) {
@@ -231,16 +235,18 @@ class SearchViewModel @Inject constructor(
         uiStateState.update { state ->
             state.copy(query = trimmedSearchQuery)
         }
-        submitSearch()
+        submitSearch(resetFilters = true)
     }
 
-    fun submitSearch() {
+    fun submitSearch(resetFilters: Boolean = false) {
         searchJob?.cancel()
         searchSessionCache.searchAttempts = 0
         val query = uiStateState.value.query.trim()
         if (query.isEmpty()) return
-        searchJob = viewModelScopeSafe.launch {
+        if (resetFilters) {
             resetAllFilters()
+        }
+        searchJob = viewModelScopeSafe.launch {
             allItemsState.value = emptyList()
             uiStateState.update { state ->
                 state.copy(
@@ -347,7 +353,11 @@ class SearchViewModel @Inject constructor(
         if (!state.isLoading || state.submittedQuery.isBlank()) {
             return
         }
+        if (searchJob?.isActive == true) {
+            return
+        }
         val query = state.submittedQuery
+        searchJob?.cancel()
         searchJob = viewModelScopeSafe.launch {
             performSearchLoop(query)
         }

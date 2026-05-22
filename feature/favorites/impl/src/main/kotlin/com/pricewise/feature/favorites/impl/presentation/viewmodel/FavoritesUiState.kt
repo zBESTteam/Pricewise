@@ -9,6 +9,13 @@ enum class FavoritesSortOption {
     BRAND_ASC,
 }
 
+enum class FavoritesError {
+    NETWORK,
+    UNAUTHORIZED,
+    REMOVE_FAILED,
+    LOAD_FAILED,
+}
+
 data class FavoritesUiState(
     val allItems: List<PriceWiseProductCardModel> = emptyList(),
     val items: List<PriceWiseProductCardModel> = emptyList(),
@@ -18,5 +25,5 @@ data class FavoritesUiState(
     val priceFrom: Long = 0L,
     val priceTo: Long = 0L,
     val isLoading: Boolean = false,
-    val error: String? = null,
+    val error: FavoritesError? = null,
 )

@@ -117,7 +117,7 @@ fun PriceWiseProductCard(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = product.price,
+                    text = stringResource(R.string.price_currency_template, product.price),
                     style = TextStyle(
                         fontFamily = Inter,
                         fontWeight = FontWeight.W700,

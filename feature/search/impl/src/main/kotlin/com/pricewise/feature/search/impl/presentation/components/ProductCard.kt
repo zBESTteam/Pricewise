@@ -48,7 +48,7 @@ fun ProductCard(product: Product, addToFavourites: (Product) -> Unit) {
 }
 
 private fun Long.toRubles(): String {
-    return "%,d \u20BD".format(this).replace(',', ' ')
+    return "%,d".format(this).replace(',', ' ')
 }
 
 @Composable

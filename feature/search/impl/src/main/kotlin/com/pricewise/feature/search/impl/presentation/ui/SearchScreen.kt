@@ -88,7 +88,7 @@ fun SearchScreen(
         SearchHeaderSection(
             query = state.query,
             onQueryChange = viewModel::onQueryChange,
-            onSearch = viewModel::submitSearch,
+            onSearch = { viewModel.submitSearch(resetFilters = true) },
             onClear = { viewModel.clearQuery() },
             onPhotoSearchClick = {},
             modifier = Modifier,
@@ -98,7 +98,7 @@ fun SearchScreen(
                 start = 15.dp,
                 top = 14.dp
             ),
-            text = "Ищем товары",
+            text = stringResource(com.pricewise.core.ui.R.string.search_loading),
             style = TextStyle(
                 fontSize = 20.sp,
                 lineHeight = 26.sp,
@@ -229,7 +229,7 @@ fun SearchScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "Произошла ошибка при поиске",
+                        text = stringResource(com.pricewise.core.ui.R.string.search_error),
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontFamily = Inter,

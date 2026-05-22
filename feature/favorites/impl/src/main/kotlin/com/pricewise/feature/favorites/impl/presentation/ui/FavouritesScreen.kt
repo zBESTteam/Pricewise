@@ -44,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pricewise.core.ui.components.FilterActionButton
 import com.pricewise.core.ui.components.PriceWiseProductCard
 import com.pricewise.feature.favorites.impl.R
+import com.pricewise.feature.favorites.impl.presentation.viewmodel.FavoritesError
 import com.pricewise.feature.favorites.impl.presentation.viewmodel.FavoritesSortOption
 import com.pricewise.feature.favorites.impl.presentation.viewmodel.FavouritesViewModel
 
@@ -167,14 +168,24 @@ fun FavoritesScreen(
                     }
 
                     uiState.error != null -> {
-                        Text(text = uiState.error ?: "Ошибка", color = Color.Red)
+                        val error = uiState.error
+                        val errorRes = when (error) {
+                            FavoritesError.UNAUTHORIZED -> R.string.favorites_session_expired
+                            FavoritesError.REMOVE_FAILED -> com.pricewise.core.ui.R.string.favorites_remove_error
+                            FavoritesError.NETWORK, FavoritesError.LOAD_FAILED, null ->
+                                com.pricewise.core.ui.R.string.favorites_load_error
+                        }
+                        Text(
+                            text = stringResource(errorRes),
+                            color = MaterialTheme.colorScheme.error,
+                        )
                     }
 
                     uiState.items.isEmpty() -> {
                         Text(
                             text = stringResource(R.string.favorites_list_is_empty),
                             fontSize = 16.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
 
@@ -184,7 +195,10 @@ fun FavoritesScreen(
                             verticalArrangement = Arrangement.spacedBy(12.dp),
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            items(uiState.items) { product ->
+                            items(
+                                items = uiState.items,
+                                key = { product -> "${product.id}|${product.marketplaceName}" },
+                            ) { product ->
                                 PriceWiseProductCard(
                                     product = product,
                                     onFavoriteClick = { viewModel.removeFavorite(product) },
