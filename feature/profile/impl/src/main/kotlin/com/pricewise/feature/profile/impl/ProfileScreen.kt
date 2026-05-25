@@ -106,7 +106,7 @@ fun ProfileScreen(
     onEditProfileClick: () -> Unit
 ) {
     val statusTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -173,11 +173,26 @@ fun ProfileScreen(
                     onClick = {}
                 )
 
-                ProfileMenuButton(
-                    icon = Icons.Outlined.Chat,
-                    text = "Обратиться в поддержку",
-                    onClick = {}
-                )
+              ProfileMenuButton(
+    icon = Icons.Outlined.Chat,
+    text = "Обратиться в поддержку",
+    onClick = {
+        Toast.makeText(
+            context,
+            """
+            Нужна помощь?
+
+            По всем вопросам и техническим неисправностям
+            Вы можете обратиться в поддержку PriceWise:
+
+            Электронная почта: pw@gmail.com
+            Горячая линия: +79996785455
+            Мы всегда готовы помочь!
+            """.trimIndent(),
+            Toast.LENGTH_LONG
+        ).show()
+    }
+)
             }
         }
 
