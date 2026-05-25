@@ -55,7 +55,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -69,16 +68,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.pricewise.core.ui.components.PriceWiseProfileTokens as ProfileTokens
 
-private val AppBackground = Color(0xFFF7F7F7)
-private val GradientStart = Color(0xFFFF9432)
-private val GradientEnd = Color(0xFFFF3426)
-private val OuterAvatarStroke = Color(0xFFFB9833)
-private val FieldBackground = Color(0xFFF1F1F1)
-private val FieldBorder = Color(0xFFB8B8B8)
-private val PrimaryText = Color(0xFF2E2E2E)
-private val SecondaryText = Color(0xFF8E8E93)
-private val White = Color(0xFFFFFFFF)
 private val AppFont = FontFamily.SansSerif
 
 @Composable
@@ -88,7 +79,6 @@ fun ProfileScreenRoot(
 ) {
     val context = LocalContext.current
     var profile by remember { mutableStateOf(viewModel.loadProfile()) }
-
     var showEditScreen by remember { mutableStateOf(false) }
 
     if (showEditScreen) {
@@ -116,11 +106,11 @@ fun ProfileScreen(
     onEditProfileClick: () -> Unit
 ) {
     val statusTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppBackground)
+            .background(ProfileTokens.AppBackground)
     ) {
         Box(
             modifier = Modifier
@@ -152,7 +142,7 @@ fun ProfileScreen(
 
             Text(
                 text = "${profile.lastName} ${profile.firstName}",
-                color = PrimaryText,
+                color = ProfileTokens.PrimaryText,
                 fontFamily = AppFont,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 18.sp,
@@ -186,7 +176,16 @@ fun ProfileScreen(
                 ProfileMenuButton(
                     icon = Icons.Outlined.Chat,
                     text = "Обратиться в поддержку",
-                    onClick = {}
+                    onClick = {
+                        Toast.makeText(
+                            context,
+                            """
+                            Нужна помощь?
+                            Напишите нам: pw@gmail.com
+                            """.trimIndent(),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 )
             }
         }
@@ -195,7 +194,7 @@ fun ProfileScreen(
 
         Text(
             text = "Выйти из аккаунта?",
-            color = Color(0xFFB4B4BA),
+            color = ProfileTokens.LogoutText,
             fontFamily = AppFont,
             fontWeight = FontWeight.Medium,
             fontSize = 15.sp,
@@ -222,7 +221,7 @@ fun EditProfileScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppBackground)
+            .background(ProfileTokens.AppBackground)
             .windowInsetsPadding(WindowInsets.statusBars)
             .verticalScroll(rememberScrollState())
             .imePadding()
@@ -242,7 +241,7 @@ fun EditProfileScreen(
 
             Text(
                 text = "Редактировать профиль",
-                color = PrimaryText,
+                color = ProfileTokens.PrimaryText,
                 fontFamily = AppFont,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 17.sp
@@ -265,7 +264,7 @@ fun EditProfileScreen(
 
         Text(
             text = "Фамилия",
-            color = PrimaryText,
+            color = ProfileTokens.PrimaryText,
             fontFamily = AppFont,
             fontWeight = FontWeight.Bold,
             fontSize = 15.sp
@@ -283,7 +282,7 @@ fun EditProfileScreen(
 
         Text(
             text = "Имя",
-            color = PrimaryText,
+            color = ProfileTokens.PrimaryText,
             fontFamily = AppFont,
             fontWeight = FontWeight.Bold,
             fontSize = 15.sp
@@ -301,7 +300,7 @@ fun EditProfileScreen(
 
         Text(
             text = "Город",
-            color = PrimaryText,
+            color = ProfileTokens.PrimaryText,
             fontFamily = AppFont,
             fontWeight = FontWeight.Bold,
             fontSize = 15.sp
@@ -319,7 +318,7 @@ fun EditProfileScreen(
 
         Text(
             text = "Пароль",
-            color = PrimaryText,
+            color = ProfileTokens.PrimaryText,
             fontFamily = AppFont,
             fontWeight = FontWeight.Bold,
             fontSize = 15.sp
@@ -379,6 +378,7 @@ fun ProfileHeaderBackground(
             moveTo(0f, 0f)
             lineTo(size.width, 0f)
             lineTo(size.width, size.height * 0.72f)
+
             cubicTo(
                 size.width * 0.82f,
                 size.height * 0.77f,
@@ -387,6 +387,7 @@ fun ProfileHeaderBackground(
                 size.width * 0.50f,
                 size.height * 0.49f
             )
+
             cubicTo(
                 size.width * 0.26f,
                 size.height * 0.46f,
@@ -395,13 +396,17 @@ fun ProfileHeaderBackground(
                 0f,
                 size.height * 0.72f
             )
+
             close()
         }
 
         drawPath(
             path = path,
             brush = Brush.linearGradient(
-                colors = listOf(GradientStart, GradientEnd),
+                colors = listOf(
+                    ProfileTokens.GradientStart,
+                    ProfileTokens.GradientEnd
+                ),
                 start = Offset.Zero,
                 end = Offset(size.width, size.height)
             )
@@ -422,22 +427,22 @@ fun ProfileAvatar(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .border(3.5.dp, OuterAvatarStroke, CircleShape)
+                .border(3.5.dp, ProfileTokens.OuterAvatarStroke, CircleShape)
                 .padding(5.dp)
-                .background(White, CircleShape),
+                .background(ProfileTokens.White, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(CircleShape)
-                    .background(Color(0xFFE9E9E9)),
+                    .background(ProfileTokens.AvatarBackground),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Filled.Person,
                     contentDescription = null,
-                    tint = Color(0xFFC5C5C8),
+                    tint = ProfileTokens.AvatarIconTint,
                     modifier = Modifier.size(size * 0.44f)
                 )
             }
@@ -449,14 +454,14 @@ fun ProfileAvatar(
                     .align(Alignment.BottomEnd)
                     .offset(x = (-2).dp, y = (-2).dp)
                     .size(38.dp)
-                    .background(White, CircleShape)
-                    .border(2.dp, GradientEnd, CircleShape),
+                    .background(ProfileTokens.White, CircleShape)
+                    .border(2.dp, ProfileTokens.GradientEnd, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Outlined.CameraAlt,
                     contentDescription = null,
-                    tint = GradientStart,
+                    tint = ProfileTokens.GradientStart,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -476,8 +481,8 @@ fun ProfileMenuButton(
             .fillMaxWidth()
             .height(55.dp)
             .clip(RoundedCornerShape(15.dp))
-            .background(White)
-            .border(1.dp, FieldBorder, RoundedCornerShape(15.dp))
+            .background(ProfileTokens.White)
+            .border(1.dp, ProfileTokens.FieldBorder, RoundedCornerShape(15.dp))
             .clickable { onClick() }
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -485,7 +490,7 @@ fun ProfileMenuButton(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = SecondaryText,
+            tint = ProfileTokens.SecondaryText,
             modifier = Modifier.size(22.dp)
         )
 
@@ -493,7 +498,7 @@ fun ProfileMenuButton(
 
         Text(
             text = text,
-            color = SecondaryText,
+            color = ProfileTokens.SecondaryText,
             fontFamily = AppFont,
             fontWeight = FontWeight.Medium,
             fontSize = 16.sp,
@@ -503,7 +508,7 @@ fun ProfileMenuButton(
         if (value != null) {
             Text(
                 text = value,
-                color = SecondaryText,
+                color = ProfileTokens.SecondaryText,
                 fontFamily = AppFont,
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp
@@ -523,7 +528,7 @@ fun ProfileTextField(
         onValueChange = onValueChange,
         singleLine = true,
         textStyle = TextStyle(
-            color = SecondaryText,
+            color = ProfileTokens.SecondaryText,
             fontFamily = AppFont,
             fontWeight = FontWeight.Medium,
             fontSize = 16.sp
@@ -531,7 +536,7 @@ fun ProfileTextField(
         placeholder = {
             Text(
                 text = placeholder,
-                color = Color(0xFFB0B0B4),
+                color = ProfileTokens.PlaceholderText,
                 fontFamily = AppFont,
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp
@@ -545,12 +550,12 @@ fun ProfileTextField(
             capitalization = KeyboardCapitalization.Words
         ),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = FieldBackground,
-            unfocusedContainerColor = FieldBackground,
-            disabledContainerColor = FieldBackground,
-            focusedBorderColor = Color(0xFFD7D7DA),
-            unfocusedBorderColor = Color(0xFFD7D7DA),
-            cursorColor = GradientEnd
+            focusedContainerColor = ProfileTokens.FieldBackground,
+            unfocusedContainerColor = ProfileTokens.FieldBackground,
+            disabledContainerColor = ProfileTokens.FieldBackground,
+            focusedBorderColor = ProfileTokens.TextFieldBorder,
+            unfocusedBorderColor = ProfileTokens.TextFieldBorder,
+            cursorColor = ProfileTokens.GradientEnd
         )
     )
 }
@@ -567,9 +572,13 @@ fun PasswordField(
         value = value,
         onValueChange = onValueChange,
         singleLine = true,
-        visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
+        visualTransformation = if (visible) {
+            VisualTransformation.None
+        } else {
+            PasswordVisualTransformation()
+        },
         textStyle = TextStyle(
-            color = SecondaryText,
+            color = ProfileTokens.SecondaryText,
             fontFamily = AppFont,
             fontWeight = FontWeight.Medium,
             fontSize = 16.sp
@@ -577,7 +586,7 @@ fun PasswordField(
         placeholder = {
             Text(
                 text = placeholder,
-                color = Color(0xFFB0B0B4),
+                color = ProfileTokens.PlaceholderText,
                 fontFamily = AppFont,
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp
@@ -587,15 +596,21 @@ fun PasswordField(
             Icon(
                 imageVector = Icons.Outlined.Lock,
                 contentDescription = null,
-                tint = Color(0xFFA7A7AC)
+                tint = ProfileTokens.PasswordIconTint
             )
         },
         trailingIcon = {
-            IconButton(onClick = { visible = !visible }) {
+            IconButton(
+                onClick = { visible = !visible }
+            ) {
                 Icon(
-                    imageVector = if (visible) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                    imageVector = if (visible) {
+                        Icons.Outlined.VisibilityOff
+                    } else {
+                        Icons.Outlined.Visibility
+                    },
                     contentDescription = null,
-                    tint = Color(0xFFA7A7AC),
+                    tint = ProfileTokens.PasswordIconTint,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -605,12 +620,12 @@ fun PasswordField(
             .fillMaxWidth()
             .defaultMinSize(minHeight = 58.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = FieldBackground,
-            unfocusedContainerColor = FieldBackground,
-            disabledContainerColor = FieldBackground,
-            focusedBorderColor = Color(0xFFD7D7DA),
-            unfocusedBorderColor = Color(0xFFD7D7DA),
-            cursorColor = GradientEnd
+            focusedContainerColor = ProfileTokens.FieldBackground,
+            unfocusedContainerColor = ProfileTokens.FieldBackground,
+            disabledContainerColor = ProfileTokens.FieldBackground,
+            focusedBorderColor = ProfileTokens.TextFieldBorder,
+            unfocusedBorderColor = ProfileTokens.TextFieldBorder,
+            cursorColor = ProfileTokens.GradientEnd
         )
     )
 }
@@ -627,7 +642,10 @@ fun GradientSaveButton(
             .clip(RoundedCornerShape(9.dp))
             .background(
                 brush = Brush.linearGradient(
-                    colors = listOf(GradientStart, GradientEnd),
+                    colors = listOf(
+                        ProfileTokens.GradientStart,
+                        ProfileTokens.GradientEnd
+                    ),
                     start = Offset.Zero,
                     end = Offset(1200f, 1200f)
                 )
@@ -637,7 +655,7 @@ fun GradientSaveButton(
     ) {
         Text(
             text = text,
-            color = White,
+            color = ProfileTokens.White,
             fontFamily = AppFont,
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp
@@ -646,14 +664,19 @@ fun GradientSaveButton(
 }
 
 @Composable
-fun BackGradientButton(onClick: () -> Unit) {
+fun BackGradientButton(
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .size(34.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(
                 brush = Brush.linearGradient(
-                    colors = listOf(GradientStart, GradientEnd),
+                    colors = listOf(
+                        ProfileTokens.GradientStart,
+                        ProfileTokens.GradientEnd
+                    ),
                     start = Offset.Zero,
                     end = Offset(300f, 300f)
                 )
@@ -664,7 +687,7 @@ fun BackGradientButton(onClick: () -> Unit) {
         Icon(
             imageVector = Icons.Filled.ArrowBackIosNew,
             contentDescription = null,
-            tint = White,
+            tint = ProfileTokens.White,
             modifier = Modifier.size(16.dp)
         )
     }
