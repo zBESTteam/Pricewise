@@ -38,7 +38,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
@@ -59,58 +58,25 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pricewise.core.ui.R
 import com.pricewise.feature.search.impl.presentation.viewmodel.SearchViewModel
-import kotlin.math.ceil
-import kotlin.math.floor
-import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
-    val vmIsProductChosen by viewModel.isProductChosen.collectAsStateWithLifecycle()
-    val vmDeliveryChosen by viewModel.deliveryChosen.collectAsStateWithLifecycle()
-    val vmOnlyOriginals by viewModel.onlyOriginals.collectAsStateWithLifecycle()
-    val vmOnlyNew by viewModel.onlyNew.collectAsStateWithLifecycle()
-    val vmOnlyUsed by viewModel.onlyUsed.collectAsStateWithLifecycle()
-    val vmOnlyMarketplaces by viewModel.onlyMarketplaces.collectAsStateWithLifecycle()
-    val vmOnlyOfflineShops by viewModel.onlyOfflineShops.collectAsStateWithLifecycle()
-    val vmPriceFrom by viewModel.priceFrom.collectAsStateWithLifecycle()
-    val vmPriceTo by viewModel.priceTo.collectAsStateWithLifecycle()
-    val vmPopularDiapasonChosen by viewModel.popularDiapasonChosen.collectAsStateWithLifecycle()
-    val vmCanPayLater by viewModel.canPayLater.collectAsStateWithLifecycle()
-
-    var isProductChosen by rememberSaveable { mutableStateOf(vmIsProductChosen) }
-    var deliveryChosen by rememberSaveable { mutableIntStateOf(vmDeliveryChosen) }
-    var onlyOriginals by rememberSaveable { mutableStateOf(vmOnlyOriginals) }
-    var onlyNew by rememberSaveable { mutableStateOf(vmOnlyNew) }
-    var onlyUsed by rememberSaveable { mutableStateOf(vmOnlyUsed) }
-    var onlyMarketplaces by rememberSaveable { mutableStateOf(vmOnlyMarketplaces) }
-    var onlyOfflineShops by rememberSaveable { mutableStateOf(vmOnlyOfflineShops) }
-    var priceFrom by rememberSaveable { mutableLongStateOf(vmPriceFrom) }
-    var priceTo by rememberSaveable { mutableLongStateOf(vmPriceTo) }
-    var popularDiapasonChosen by rememberSaveable { mutableIntStateOf(vmPopularDiapasonChosen) }
-    var canPayLater by rememberSaveable { mutableStateOf(vmCanPayLater) }
-    val state = viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(
-        vmIsProductChosen, vmDeliveryChosen, vmOnlyOriginals, vmOnlyNew, vmOnlyUsed,
-        vmOnlyMarketplaces, vmOnlyOfflineShops, vmPriceFrom, vmPriceTo,
-        vmPopularDiapasonChosen, vmCanPayLater,
-    ) {
-        isProductChosen = vmIsProductChosen
-        deliveryChosen = vmDeliveryChosen
-        onlyOriginals = vmOnlyOriginals
-        onlyNew = vmOnlyNew
-        onlyUsed = vmOnlyUsed
-        onlyMarketplaces = vmOnlyMarketplaces
-        onlyOfflineShops = vmOnlyOfflineShops
-        priceFrom = vmPriceFrom
-        priceTo = vmPriceTo
-        popularDiapasonChosen = vmPopularDiapasonChosen
-        canPayLater = vmCanPayLater
+fun Filters(
+    closeFilters: () -> Unit,
+    viewModel: SearchViewModel = hiltViewModel(),
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val vmFiltersState by viewModel.filtersState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var currentFiltersState by remember { mutableStateOf(vmFiltersState) }
+    LaunchedEffect(vmFiltersState) {
+        currentFiltersState = vmFiltersState
     }
     val customModifier: Modifier = Modifier.offset(y = (-7).dp)
+    val isProductChosen = currentFiltersState.isProductChosen
 
     fun apply() {
-        viewModel.setIsProductChosen(isProductChosen)
+        viewModel.setIsProductChosen(currentFiltersState.isProductChosen)
         viewModel.setDeliveryChosen(currentFiltersState.deliveryChosen)
         viewModel.setOnlyOriginals(currentFiltersState.onlyOriginals)
         viewModel.setOnlyNew(currentFiltersState.onlyNew)
@@ -121,10 +87,9 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
         viewModel.setPriceTo(currentFiltersState.priceTo)
         viewModel.setPopularDiapasonChosen(currentFiltersState.popularDiapasonChosen)
         viewModel.setCanPayLater(currentFiltersState.canPayLater)
-        viewModel.performSearch(viewModel.uiState.value.query) // Должно начать поиск с фильтрами (не проверено)
+        viewModel.performSearch(viewModel.uiState.value.query)
         closeFilters()
     }
-
 
     ModalBottomSheet(
         sheetState = sheetState,
@@ -190,7 +155,10 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                     )
                                 )
                             )
-                            .clickable { isProductChosen = true },
+                            .clickable {
+                                currentFiltersState =
+                                    currentFiltersState.copy(isProductChosen = true)
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -224,7 +192,10 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                     )
                                 )
                             )
-                            .clickable { isProductChosen = false },
+                            .clickable {
+                                currentFiltersState =
+                                    currentFiltersState.copy(isProductChosen = false)
+                            },
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
@@ -376,21 +347,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                 color = LocalCustomColors.current.midDark
                             )
                             .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
-                            .clickable {
-                                viewModel.setIsProductChosen(isProductChosen)
-                                viewModel.setDeliveryChosen(deliveryChosen)
-                                viewModel.setOnlyOriginals(onlyOriginals)
-                                viewModel.setOnlyNew(onlyNew)
-                                viewModel.setOnlyUsed(onlyUsed)
-                                viewModel.setOnlyMarketplaces(onlyMarketplaces)
-                                viewModel.setOnlyOfflineShops(onlyOfflineShops)
-                                viewModel.setPriceFrom(priceFrom)
-                                viewModel.setPriceTo(priceTo)
-                                viewModel.setPopularDiapasonChosen(popularDiapasonChosen)
-                                viewModel.setCanPayLater(canPayLater)
-                                viewModel.submitSearch()
-                                closeFilters()
-                            },
+                            .clickable { apply() },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -447,46 +404,46 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                             value = currentFiltersState.priceTo.toString()
                         )
                     }
+                    val items = uiState.items
+                    val priceBounds = remember(items) {
+                        if (items.isEmpty()) {
+                            0f to 0f
+                        } else {
+                            var min = Long.MAX_VALUE
+                            var max = Long.MIN_VALUE
+                            for (item in items) {
+                                if (item.price < min) min = item.price
+                                if (item.price > max) max = item.price
+                            }
+                            min.toFloat() to max.toFloat()
+                        }
+                    }
+                    val minPrice = priceBounds.first
+                    val maxPrice = priceBounds.second
+                    val priceRange = maxPrice - minPrice
+                    val normalizedFrom = if (priceRange > 0) {
+                        ((currentFiltersState.priceFrom - minPrice) / priceRange).coerceIn(
+                            0f,
+                            1f
+                        )
+                    } else {
+                        0f
+                    }
+                    val normalizedTo = if (priceRange > 0) {
+                        ((currentFiltersState.priceTo - minPrice) / priceRange).coerceIn(0f, 1f)
+                    } else {
+                        1f
+                    }
+
+                    val containerWidth = 345.dp
+                    val leftOffset = containerWidth * normalizedFrom
+                    val rightOffset = containerWidth * (1 - normalizedTo)
                     Box(
                         modifier = Modifier
                             .width(345.dp)
                             .height(13.9.dp)
                             .align(Alignment.CenterHorizontally)
                     ) {
-                        val items = state.value.items
-                        val priceBounds = remember(items) {
-                            if (items.isEmpty()) {
-                                0f to 0f
-                            } else {
-                                var min = Long.MAX_VALUE
-                                var max = Long.MIN_VALUE
-                                for (item in items) {
-                                    if (item.price < min) min = item.price
-                                    if (item.price > max) max = item.price
-                                }
-                                min.toFloat() to max.toFloat()
-                            }
-                        }
-                        val minPrice = priceBounds.first
-                        val maxPrice = priceBounds.second
-                        val priceRange = maxPrice - minPrice
-                        val normalizedFrom = if (priceRange > 0) {
-                            ((currentFiltersState.priceFrom - minPrice) / priceRange).coerceIn(
-                                0f,
-                                1f
-                            )
-                        } else {
-                            0f
-                        }
-                        val normalizedTo = if (priceRange > 0) {
-                            ((currentFiltersState.priceTo - minPrice) / priceRange).coerceIn(0f, 1f)
-                        } else {
-                            1f
-                        }
-
-                        val containerWidth = 345.dp
-                        val leftOffset = containerWidth * normalizedFrom
-                        val rightOffset = containerWidth * (1 - normalizedTo)
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -580,7 +537,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                 val isSelected = currentFiltersState.popularDiapasonChosen == 2
                                 if (!isSelected) {
                                     currentFiltersState =
-                                        currentFiltersState.copy(popularDiapasonChosen = if (currentFiltersState.popularDiapasonChosen == 2) 0 else 2)
+                                        currentFiltersState.copy(popularDiapasonChosen = 2)
                                     currentFiltersState =
                                         currentFiltersState.copy(priceFrom = (minPrice + (maxPrice - minPrice) / 4).toLong())
                                     currentFiltersState =
@@ -628,21 +585,7 @@ fun Filters(closeFilters: () -> Unit, viewModel: SearchViewModel) {
                                 color = LocalCustomColors.current.midDark
                             )
                             .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
-                            .clickable {
-                                viewModel.setIsProductChosen(isProductChosen)
-                                viewModel.setDeliveryChosen(deliveryChosen)
-                                viewModel.setOnlyOriginals(onlyOriginals)
-                                viewModel.setOnlyNew(onlyNew)
-                                viewModel.setOnlyUsed(onlyUsed)
-                                viewModel.setOnlyMarketplaces(onlyMarketplaces)
-                                viewModel.setOnlyOfflineShops(onlyOfflineShops)
-                                viewModel.setPriceFrom(priceFrom)
-                                viewModel.setPriceTo(priceTo)
-                                viewModel.setPopularDiapasonChosen(popularDiapasonChosen)
-                                viewModel.setCanPayLater(canPayLater)
-                                viewModel.submitSearch()
-                                closeFilters()
-                            },
+                            .clickable { apply() },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
