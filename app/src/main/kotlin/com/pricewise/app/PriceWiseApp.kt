@@ -1,14 +1,30 @@
 package com.pricewise.app
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.SvgDecoder
+import com.pricewise.core.push.PushScheduler
 import dagger.hilt.android.HiltAndroidApp
 import okhttp3.OkHttpClient
+import javax.inject.Inject
 
 @HiltAndroidApp
-class PriceWiseApp : Application(), ImageLoaderFactory {
+class PriceWiseApp : Application(), ImageLoaderFactory, Configuration.Provider {
+
+    @Inject lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
+
+    override fun onCreate() {
+        super.onCreate()
+        PushScheduler.schedulePeriodic(this)
+    }
 
     override fun newImageLoader(): ImageLoader {
         val imageOkHttpClient = OkHttpClient.Builder()

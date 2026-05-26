@@ -39,12 +39,14 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,7 +70,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.pricewise.feature.profile.impl.domain.model.Profile
 
 private val AppBackground = Color(0xFFF7F7F7)
 private val GradientStart = Color(0xFFFF9432)
@@ -87,32 +91,105 @@ fun ProfileScreenRoot(
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    var profile by remember { mutableStateOf(viewModel.loadProfile()) }
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     var showEditScreen by remember { mutableStateOf(false) }
+    var lastSavedAt by remember { mutableStateOf(0L) }
+    var lastPasswordAt by remember { mutableStateOf(0L) }
 
-    if (showEditScreen) {
-        EditProfileScreen(
-            initialProfile = profile,
+    LaunchedEffect(state.savedAt) {
+        if (state.savedAt != 0L && state.savedAt != lastSavedAt) {
+            lastSavedAt = state.savedAt
+            Toast.makeText(context, "Изменения сохранены", Toast.LENGTH_SHORT).show()
+            showEditScreen = false
+        }
+    }
+
+    LaunchedEffect(state.passwordChangedAt) {
+        if (state.passwordChangedAt != 0L && state.passwordChangedAt != lastPasswordAt) {
+            lastPasswordAt = state.passwordChangedAt
+            Toast.makeText(context, "Пароль изменён", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(state.saveError) {
+        state.saveError?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.consumeSaveError()
+        }
+    }
+
+    LaunchedEffect(state.passwordError) {
+        state.passwordError?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.consumePasswordError()
+        }
+    }
+
+    when {
+        state.profile == null && state.isLoading -> ProfileLoading()
+        state.profile == null && state.loadError != null -> ProfileLoadErrorState(
+            message = state.loadError ?: "",
+            onRetry = viewModel::loadProfile
+        )
+        state.profile != null && showEditScreen -> EditProfileScreen(
+            profile = state.profile!!,
+            isSaving = state.isSaving,
             onBack = { showEditScreen = false },
-            onSave = { updatedProfile ->
-                profile = updatedProfile
-                viewModel.saveProfile(updatedProfile)
-                Toast.makeText(context, "Изменения сохранены", Toast.LENGTH_SHORT).show()
-                showEditScreen = false
+            onSave = { firstName, lastName, city ->
+                viewModel.updateProfile(firstName, lastName, city)
+            },
+            onChangePassword = { current, new, confirm ->
+                viewModel.changePassword(current, new, confirm)
             }
         )
-    } else {
-        ProfileScreen(
-            profile = profile,
+        state.profile != null -> ProfileScreen(
+            profile = state.profile!!,
             onEditProfileClick = { showEditScreen = true }
         )
     }
 }
 
 @Composable
+fun ProfileLoading() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppBackground),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = GradientEnd)
+    }
+}
+
+@Composable
+fun ProfileLoadErrorState(
+    message: String,
+    onRetry: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppBackground)
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = message.ifEmpty { "Не удалось загрузить профиль" },
+            color = PrimaryText,
+            fontFamily = AppFont,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        GradientSaveButton(text = "Повторить", onClick = onRetry)
+    }
+}
+
+@Composable
 fun ProfileScreen(
-    profile: ProfileData,
+    profile: Profile,
     onEditProfileClick: () -> Unit
 ) {
     val statusTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
@@ -150,8 +227,13 @@ fun ProfileScreen(
         ) {
             Spacer(modifier = Modifier.height(18.dp))
 
+            val fullName = listOf(profile.lastName, profile.firstName)
+                .filter { it.isNotBlank() }
+                .joinToString(" ")
+                .ifBlank { profile.email }
+
             Text(
-                text = "${profile.lastName} ${profile.firstName}",
+                text = fullName,
                 color = PrimaryText,
                 fontFamily = AppFont,
                 fontWeight = FontWeight.ExtraBold,
@@ -173,7 +255,7 @@ fun ProfileScreen(
                 ProfileMenuButton(
                     icon = Icons.Outlined.LocationOn,
                     text = "Регион",
-                    value = profile.city,
+                    value = profile.city.ifBlank { profile.region },
                     onClick = onEditProfileClick
                 )
 
@@ -208,13 +290,15 @@ fun ProfileScreen(
 
 @Composable
 fun EditProfileScreen(
-    initialProfile: ProfileData,
+    profile: Profile,
+    isSaving: Boolean,
     onBack: () -> Unit,
-    onSave: (ProfileData) -> Unit
+    onSave: (firstName: String, lastName: String, city: String) -> Unit,
+    onChangePassword: (current: String, new: String, confirm: String) -> Unit,
 ) {
-    var lastName by rememberSaveable { mutableStateOf(initialProfile.lastName) }
-    var firstName by rememberSaveable { mutableStateOf(initialProfile.firstName) }
-    var city by rememberSaveable { mutableStateOf(initialProfile.city) }
+    var lastName by rememberSaveable(profile.id) { mutableStateOf(profile.lastName) }
+    var firstName by rememberSaveable(profile.id) { mutableStateOf(profile.firstName) }
+    var city by rememberSaveable(profile.id) { mutableStateOf(profile.city) }
     var oldPassword by rememberSaveable { mutableStateOf("") }
     var newPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
@@ -352,15 +436,16 @@ fun EditProfileScreen(
         Spacer(modifier = Modifier.height(26.dp))
 
         GradientSaveButton(
-            text = "Сохранить",
+            text = if (isSaving) "Сохранение…" else "Сохранить",
             onClick = {
-                onSave(
-                    ProfileData(
-                        firstName = firstName.trim().ifEmpty { initialProfile.firstName },
-                        lastName = lastName.trim().ifEmpty { initialProfile.lastName },
-                        city = city.trim().ifEmpty { initialProfile.city }
-                    )
-                )
+                if (isSaving) return@GradientSaveButton
+                onSave(firstName, lastName, city)
+                if (oldPassword.isNotBlank() || newPassword.isNotBlank() || confirmPassword.isNotBlank()) {
+                    onChangePassword(oldPassword, newPassword, confirmPassword)
+                    oldPassword = ""
+                    newPassword = ""
+                    confirmPassword = ""
+                }
             }
         )
 
@@ -500,7 +585,7 @@ fun ProfileMenuButton(
             modifier = Modifier.weight(1f)
         )
 
-        if (value != null) {
+        if (!value.isNullOrBlank()) {
             Text(
                 text = value,
                 color = SecondaryText,

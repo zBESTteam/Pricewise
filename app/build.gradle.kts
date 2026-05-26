@@ -52,6 +52,9 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.coil.core)
     implementation(libs.coil.svg)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
