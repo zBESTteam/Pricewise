@@ -2,7 +2,6 @@ package com.pricewise.feature.search.impl.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.util.copy
 import com.pricewise.feature.favorites.api.FavoriteMutationRequest
 import com.pricewise.feature.favorites.api.FavoritesFeatureApi
 import com.pricewise.feature.search.api.SearchFeatureApi
@@ -17,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -119,17 +117,12 @@ class SearchViewModel @Inject constructor(
     }
 
     fun resetAllFilters() {
-        isProductChosenState.value = true
-        deliveryChosenState.value = 0
-        onlyOriginalsState.value = false
-        onlyNewState.value = false
-        onlyUsedState.value = false
-        onlyMarketplacesState.value = false
-        onlyOfflineShopsState.value = false
-        priceFromState.value = 0L
-        priceToState.value = 0L
-        popularDiapasonChosenState.value = 0
-        canPayLaterState.value = false
+        _filtersState.value = FiltersState(
+            isProductChosen = true,
+            priceFrom = 0L,
+            priceTo = 0L,
+        )
+        _chosenSort.value = Sort.DEFAULT
     }
 
     fun onProductFavoriteClick(productId: String) {
@@ -232,34 +225,30 @@ class SearchViewModel @Inject constructor(
 
     fun submitSearch(resetFilters: Boolean = false) {
         searchJob?.cancel()
-        searchSessionCache.searchAttempts = 0
-        val query = uiStateState.value.query.trim()
+        searchAttempts = 0
+        val query = _uiState.value.query.trim()
         if (query.isEmpty()) return
         if (resetFilters) {
             resetAllFilters()
         }
-        searchJob = viewModelScopeSafe.launch {
-            allItemsState.value = emptyList()
-            uiStateState.update { state ->
-                state.copy(
-                    isLoading = true,
-                    submittedQuery = query,
-                    isError = false,
-                    items = emptyList(),
-                    checkedSources = 0,
-                    pendingSources = emptyList(),
-                )
-            }
-        }
+        _allItems.value = emptyList()
         _uiState.update { state ->
             state.copy(
-                checkedSources = 0
+                isLoading = true,
+                submittedQuery = query,
+                isError = false,
+                items = emptyList(),
+                checkedSources = 0,
+                pendingSources = emptyList(),
             )
         }
+        canRewriteFilters = true
+        performSearch(query)
     }
 
     fun performSearch(query: String) {
-        viewModelScope.launch {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
             try {
                 _uiState.update { it.copy(isLoading = true, submittedQuery = query) }
                 val result = withContext(Dispatchers.IO) {
@@ -308,43 +297,15 @@ class SearchViewModel @Inject constructor(
                     )
                 }
                 if (shouldSearchAgain) {
-                    repeatSearch(query = query)
-                }
-                else {
+                    searchAttempts++
+                    delay(SEARCH_INTERVAL_MS)
+                    performSearch(query)
+                } else {
                     canRewriteFilters = false
                 }
             } catch (_: Exception) {
                 _uiState.update { state -> state.copy(isError = true) }
             }
-        }
-    }
-
-    private fun applyFavoriteStatesToItems(
-        items: List<Product>,
-        favoriteStates: Map<String, Boolean>,
-    ): List<Product> {
-        return items.map { product ->
-            val favoriteKey = makeFavoriteKey(
-                productId = product.id,
-                source = product.source,
-            )
-            val isFavorite = favoriteStates[favoriteKey] ?: product.isFavorite
-            product.copy(isFavorite = isFavorite)
-        }
-    }
-
-    private fun resumePendingSearchIfNeeded() {
-        val state = uiStateState.value
-        if (!state.isLoading || state.submittedQuery.isBlank()) {
-            return
-        }
-        if (searchJob?.isActive == true) {
-            return
-        }
-        val query = state.submittedQuery
-        searchJob?.cancel()
-        searchJob = viewModelScopeSafe.launch {
-            performSearchLoop(query)
         }
     }
 

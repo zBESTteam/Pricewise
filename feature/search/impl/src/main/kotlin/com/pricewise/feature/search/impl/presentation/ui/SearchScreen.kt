@@ -70,7 +70,8 @@ fun SearchScreen(
 
     if (showFilters) {
         Filters(
-            closeFilters = closeFilters
+            closeFilters = closeFilters,
+            viewModel = viewModel,
         )
     }
     if (showSorts) {
@@ -231,7 +232,6 @@ fun SearchScreen(
                             addToFavourites = { product ->
                                 viewModel.onProductFavoriteClick(
                                     productId = product.id,
-                                    source = product.source,
                                 )
                             },
                         )
