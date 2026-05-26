@@ -21,6 +21,8 @@ dependencies {
     implementation(project(":core:navigation-api"))
     implementation(project(":core:di"))
     implementation(project(":core:ui"))
+    implementation(project(":core:network"))
+    implementation(project(":core:auth"))
     
 
     implementation(platform(libs.compose.bom))

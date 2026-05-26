@@ -36,16 +36,16 @@ class RemoteRepository @Inject constructor(
             perSource = if (perSource) true else null,
             partial = if (partial) true else null,
             sources = sources.takeIf { it.isNotEmpty() }?.joinToString(","),
-            sort = sort,
-            priceMin = priceMin,
-            priceMax = priceMax,
-            delivery = delivery,
-            onlyOriginal = onlyOriginal,
-            onlyNew = onlyNew,
-            onlyUsed = onlyUsed,
-            marketplaceOnly = marketplaceOnly,
-            offlineOnly = offlineOnly,
-            payLaterOnly = playLaterOnly
+            sort = sort.normalizedFilterText()?.takeUnless { it.equals(DEFAULT_SORT, ignoreCase = true) },
+            priceMin = priceMin.takeIf { it > 0 },
+            priceMax = priceMax.takeIf { it in 1 until Long.MAX_VALUE },
+            delivery = delivery.normalizedFilterText()?.takeUnless { it.equals(DEFAULT_DELIVERY, ignoreCase = true) },
+            onlyOriginal = onlyOriginal.takeIf { it },
+            onlyNew = onlyNew.takeIf { it },
+            onlyUsed = onlyUsed.takeIf { it },
+            marketplaceOnly = marketplaceOnly.takeIf { it },
+            offlineOnly = offlineOnly.takeIf { it },
+            payLaterOnly = playLaterOnly.takeIf { it },
         )
         val items = productMapper.parseItems(response.items.orEmpty())
         return SearchResult(
@@ -55,5 +55,12 @@ class RemoteRepository @Inject constructor(
             totalSources = response.totalSources,
             pendingSources = response.pendingSources.orEmpty(),
         )
+    }
+
+    private fun String.normalizedFilterText(): String? = trim().takeIf { it.isNotEmpty() }
+
+    private companion object {
+        const val DEFAULT_SORT = "Без сортировки"
+        const val DEFAULT_DELIVERY = "Любая"
     }
 }

@@ -8,6 +8,9 @@ import com.pricewise.core.network.dto.FavoriteDto
 import com.pricewise.core.network.dto.FavoritesResponseDto
 import com.pricewise.core.network.dto.LoginRequestDto
 import com.pricewise.core.network.dto.MainResponseDto
+import com.pricewise.core.network.dto.NotificationAckRequestDto
+import com.pricewise.core.network.dto.NotificationAckResponseDto
+import com.pricewise.core.network.dto.NotificationListDto
 import com.pricewise.core.network.dto.PasswordChangeRequestDto
 import com.pricewise.core.network.dto.ProductDetailsDto
 import com.pricewise.core.network.dto.ProfileDto
@@ -128,4 +131,17 @@ interface PriceWiseApi {
         @Header("Authorization") authorization: String,
         @Path("recommendation_id") recommendationId: Long,
     ): ApiStatusDto
+
+    @GET("api/notifications")
+    suspend fun getNotifications(
+        @Header("Authorization") authorization: String,
+        @Query("since") since: Long?,
+        @Query("limit") limit: Int?,
+    ): NotificationListDto
+
+    @POST("api/notifications/ack")
+    suspend fun ackNotifications(
+        @Header("Authorization") authorization: String,
+        @Body request: NotificationAckRequestDto,
+    ): NotificationAckResponseDto
 }

@@ -60,8 +60,9 @@ fun SearchScreen(
     val viewModel: SearchViewModel = hiltViewModel()
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    var onlyDeliverySelected by rememberSaveable { mutableStateOf(false) }
-    var onlyNewSelected by rememberSaveable { mutableStateOf(false) }
+    val filters by viewModel.filtersState.collectAsStateWithLifecycle()
+    val onlyNewSelected = filters.onlyNew
+    val onlyDeliverySelected = filters.deliveryChosen != Delivery.ANY
     var showFilters by rememberSaveable { mutableStateOf(false) }
     var showSorts by rememberSaveable { mutableStateOf(false) }
 
@@ -192,11 +193,8 @@ fun SearchScreen(
                     text = stringResource(com.pricewise.feature.search.impl.R.string.only_new),
                     isSelected = onlyNewSelected,
                     onClick = {
-//                        if (!onlyNewSelected) {
-//                            viewModel.setOnlyNew(true)
-//                            viewModel.performSearch(viewModel.uiState.value.query)
-//                        }
-//                        onlyNewSelected = !onlyNewSelected
+                        viewModel.setOnlyNew(!onlyNewSelected)
+                        viewModel.performSearch(viewModel.uiState.value.query)
                     })
             }
             item {
@@ -204,13 +202,10 @@ fun SearchScreen(
                     text = stringResource(com.pricewise.feature.search.impl.R.string.only_with_delievery),
                     isSelected = onlyDeliverySelected,
                     onClick = {
-//                        if (viewModel.filtersState.value.deliveryChosen == Delivery.ANY && !onlyDeliverySelected) {
-//                            viewModel.setDeliveryChosen(
-//                                Delivery.EXIST
-//                            )
-//                            viewModel.performSearch(viewModel.uiState.value.query)
-//                        }
-//                        onlyDeliverySelected = !onlyDeliverySelected
+                        viewModel.setDeliveryChosen(
+                            if (onlyDeliverySelected) Delivery.ANY else Delivery.EXIST
+                        )
+                        viewModel.performSearch(viewModel.uiState.value.query)
                     })
             }
         }

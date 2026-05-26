@@ -9,6 +9,7 @@ data class ProfileDto(
     val firstName: String?,
     @param:Json(name = "last_name")
     val lastName: String?,
+    val city: String?,
     val region: String?,
     @param:Json(name = "avatar_url")
     val avatarUrl: String?,
@@ -19,6 +20,7 @@ data class ProfileUpdateRequestDto(
     val firstName: String?,
     @param:Json(name = "last_name")
     val lastName: String?,
+    val city: String?,
     val region: String?,
     @param:Json(name = "avatar_url")
     val avatarUrl: String?,
